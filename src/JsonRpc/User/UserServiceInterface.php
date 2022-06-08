@@ -23,6 +23,11 @@ interface UserServiceInterface
     public function getUserByUids(array $uidArr): array;
 
     /**
+     * 通过uid获取user token.
+     */
+    public function getUserTokenByUid(int $uid): array;
+
+    /**
      * 通过uid和appid找对应的用户第三方授权信息.
      */
     public function getUserThirdByUidAndAppid(int $uid, string $appid): array;
@@ -31,6 +36,11 @@ interface UserServiceInterface
      * 根据指定uid获取用户附属信息.
      */
     public function getUserExtraData(int $uid): array;
+
+    /**
+     * 查询用户第三方信息.
+     */
+    public function getUserThird(string $appid, int $thirdPlatform, string $thirdToken): array;
 
     /**
      * 绑定用户第三方信息.

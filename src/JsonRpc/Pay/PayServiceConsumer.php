@@ -52,4 +52,18 @@ class PayServiceConsumer extends AbstractServiceClient implements PayServiceInte
             return ApiHelper::genServiceErrorData($this->serviceName, $exception);
         }
     }
+
+    /**
+     * 获取多个订单.
+     * @param string $business 业务类型
+     * @param array $businessIdArr 业务订单ID
+     */
+    public function getOrderMore(string $business, array $businessIdArr): array
+    {
+        try {
+            return $this->__request(__FUNCTION__, compact('business', 'businessIdArr'));
+        } catch (\Exception $exception) {
+            return ApiHelper::genServiceErrorData($this->serviceName, $exception);
+        }
+    }
 }

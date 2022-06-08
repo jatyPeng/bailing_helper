@@ -52,6 +52,18 @@ class UserServiceConsumer extends AbstractServiceClient implements UserServiceIn
     }
 
     /**
+     * 通过uid获取user token.
+     */
+    public function getUserTokenByUid(int $uid): array
+    {
+        try {
+            return $this->__request(__FUNCTION__, compact('uid'));
+        } catch (\Exception $exception) {
+            return ApiHelper::genServiceErrorData($this->serviceName, $exception);
+        }
+    }
+
+    /**
      * 通过uid和appid找对应的用户第三方授权信息.
      */
     public function getUserThirdByUidAndAppid(int $uid, string $appid): array
@@ -70,6 +82,18 @@ class UserServiceConsumer extends AbstractServiceClient implements UserServiceIn
     {
         try {
             return $this->__request(__FUNCTION__, compact('uid'));
+        } catch (\Exception $exception) {
+            return ApiHelper::genServiceErrorData($this->serviceName, $exception);
+        }
+    }
+
+    /**
+     * 查询用户第三方信息.
+     */
+    public function getUserThird(string $appid, int $thirdPlatform, string $thirdToken): array
+    {
+        try {
+            return $this->__request(__FUNCTION__, compact('appid', 'thirdPlatform', 'thirdToken'));
         } catch (\Exception $exception) {
             return ApiHelper::genServiceErrorData($this->serviceName, $exception);
         }

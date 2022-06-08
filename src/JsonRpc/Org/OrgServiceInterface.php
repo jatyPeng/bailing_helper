@@ -19,6 +19,18 @@ interface OrgServiceInterface
     public function addOrgVillageRelation(array $data): array;
 
     /**
+     * 获取用户管理的机构.
+     * @param int uid 用户ID
+     */
+    public function getOrgByAdminUid(int $uid): array;
+
+    /**
+     * 通过机构ID获取项目的绑定关系.
+     * @param int orgId 机构ID
+     */
+    public function getVillageRelationByOrgId(int $orgId): array;
+
+    /**
      * 根据ID数组获取房源标签列表.
      */
     public function getTagHouseList(array $tagIdArr, int $orgId = 0, int $userShow = -1): array;
@@ -82,4 +94,29 @@ interface OrgServiceInterface
      * 获取部门和人员列表.
      */
     public function getOrgDepartmentUser(array $departIdArr, array $userIdArr, int $orgId): array;
+
+    /**
+     * 通过指定楼宇id获取租客列表.
+     */
+    public function getOwnerByBuildId(int $buildId, int $overdueDay = 0): array;
+
+    /**
+     * 通过指定项目id获取租客列表.
+     */
+    public function getOwnerByVillageId(int $villageId, int $overdueDay = 0): array;
+
+    /**
+     * 通过租客ID获取其所有合同对应的项目、楼栋ID.
+     */
+    public function getVillageBuildByOwner(int $ownerId, int $overdueDay = 0): array;
+
+    /**
+     * 水电抄表同步账单数据至org服务接管
+     */
+    public function energyOrderHandel(int $orgId, array $billArr): array;
+
+    /**
+     * 根据指定房间id获取合同列表 return: 租客名称、租赁面积、物业面积、起止日期、状态
+     */
+    public function getContractByRoom(int $orgId, int $roomId): array;
 }

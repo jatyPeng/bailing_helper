@@ -40,6 +40,30 @@ class VillageServiceConsumer extends AbstractServiceClient implements VillageSer
     }
 
     /**
+     * 获取单个项目数据.
+     */
+    public function getVillageById(int $villageId): array
+    {
+        try {
+            return $this->__request(__FUNCTION__, compact('villageId'));
+        } catch (\Exception $exception) {
+            return ApiHelper::genServiceErrorData($this->serviceName, $exception);
+        }
+    }
+
+    /**
+     * 获取多个项目数据.
+     */
+    public function getVillageByIdArr(array $villageIdArr): array
+    {
+        try {
+            return $this->__request(__FUNCTION__, compact('villageIdArr'));
+        } catch (\Exception $exception) {
+            return ApiHelper::genServiceErrorData($this->serviceName, $exception);
+        }
+    }
+
+    /**
      * 通过楼栋ID获取楼栋组合好的数据.
      */
     public function getBuildList(array $buildArr = []): array
@@ -120,6 +144,18 @@ class VillageServiceConsumer extends AbstractServiceClient implements VillageSer
     {
         try {
             return $this->__request(__FUNCTION__, compact('user_id', 'owner_id'));
+        } catch (\Exception $exception) {
+            return ApiHelper::genServiceErrorData($this->serviceName, $exception);
+        }
+    }
+
+    /**
+     * 获取village服务项目相关绑定信息.
+     */
+    public function getVillageRelevantBuildByQuery(string $village_name, string $build_name, string $layer_name, string $room_name): array
+    {
+        try {
+            return $this->__request(__FUNCTION__, compact('village_name', 'build_name', 'layer_name', 'room_name'));
         } catch (\Exception $exception) {
             return ApiHelper::genServiceErrorData($this->serviceName, $exception);
         }

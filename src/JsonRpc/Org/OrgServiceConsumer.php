@@ -41,6 +41,32 @@ class OrgServiceConsumer extends AbstractServiceClient implements OrgServiceInte
     }
 
     /**
+     * 获取用户管理的机构.
+     * @param int uid 用户ID
+     */
+    public function getOrgByAdminUid(int $uid): array
+    {
+        try {
+            return $this->__request(__FUNCTION__, compact('uid'));
+        } catch (\Exception $exception) {
+            return ApiHelper::genServiceErrorData($this->serviceName, $exception);
+        }
+    }
+
+    /**
+     * 通过机构ID获取项目的绑定关系.
+     * @param int orgId 机构ID
+     */
+    public function getVillageRelationByOrgId(int $orgId): array
+    {
+        try {
+            return $this->__request(__FUNCTION__, compact('orgId'));
+        } catch (\Exception $exception) {
+            return ApiHelper::genServiceErrorData($this->serviceName, $exception);
+        }
+    }
+
+    /**
      * 根据ID数组获取房源标签列表.
      */
     public function getTagHouseList(array $tagIdArr, int $orgId = 0, int $userShow = -1): array
@@ -191,6 +217,66 @@ class OrgServiceConsumer extends AbstractServiceClient implements OrgServiceInte
     {
         try {
             return $this->__request(__FUNCTION__, compact('departIdArr', 'userIdArr', 'orgId'));
+        } catch (\Exception $exception) {
+            return ApiHelper::genServiceErrorData($this->serviceName, $exception);
+        }
+    }
+
+    /**
+     * 通过指定楼宇id获取租客列表.
+     */
+    public function getOwnerByBuildId(int $buildId, int $overdueDay = 0): array
+    {
+        try {
+            return $this->__request(__FUNCTION__, compact('buildId', 'overdueDay'));
+        } catch (\Exception $exception) {
+            return ApiHelper::genServiceErrorData($this->serviceName, $exception);
+        }
+    }
+
+    /**
+     * 通过指定项目id获取租客列表.
+     */
+    public function getOwnerByVillageId(int $villageId, int $overdueDay = 0): array
+    {
+        try {
+            return $this->__request(__FUNCTION__, compact('villageId', 'overdueDay'));
+        } catch (\Exception $exception) {
+            return ApiHelper::genServiceErrorData($this->serviceName, $exception);
+        }
+    }
+
+    /**
+     * 通过租客ID获取其所有合同对应的项目、楼栋ID.
+     */
+    public function getVillageBuildByOwner(int $ownerId, int $overdueDay = 0): array
+    {
+        try {
+            return $this->__request(__FUNCTION__, compact('ownerId', 'overdueDay'));
+        } catch (\Exception $exception) {
+            return ApiHelper::genServiceErrorData($this->serviceName, $exception);
+        }
+    }
+
+    /**
+     * 水电抄表同步账单数据至org服务接管
+     */
+    public function energyOrderHandel(int $orgId, array $billArr): array
+    {
+        try {
+            return $this->__request(__FUNCTION__, compact('orgId', 'billArr'));
+        } catch (\Exception $exception) {
+            return ApiHelper::genServiceErrorData($this->serviceName, $exception);
+        }
+    }
+
+    /**
+     * 根据指定房间id获取合同列表 return: 租客名称、租赁面积、物业面积、起止日期、状态
+     */
+    public function getContractByRoom(int $orgId, int $roomId): array
+    {
+        try {
+            return $this->__request(__FUNCTION__, compact('orgId', 'roomId'));
         } catch (\Exception $exception) {
             return ApiHelper::genServiceErrorData($this->serviceName, $exception);
         }
