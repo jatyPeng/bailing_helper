@@ -119,4 +119,9 @@ interface OrgServiceInterface
      * 根据指定房间id获取合同列表 return: 租客名称、租赁面积、物业面积、起止日期、状态
      */
     public function getContractByRoom(int $orgId, int $roomId): array;
+
+    /**
+     * 根据指定项目id获取项目下所有楼宇在租房间的租金收益.
+     */
+    public function getVillageRentalIncome(int $orgId, int $villageId): array;
 }

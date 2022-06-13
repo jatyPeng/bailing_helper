@@ -160,4 +160,28 @@ class VillageServiceConsumer extends AbstractServiceClient implements VillageSer
             return ApiHelper::genServiceErrorData($this->serviceName, $exception);
         }
     }
+
+    /**
+     * 获取项目在住住户数据，带分页.
+     */
+    public function getVillageUserByBuildIdArr(int $buildId, int $overdueDay = 0, int $page = 1, int $pageSize = 100): array
+    {
+        try {
+            return $this->__request(__FUNCTION__, compact('buildId', 'overdueDay', 'page', 'pageSize'));
+        } catch (\Exception $exception) {
+            return ApiHelper::genServiceErrorData($this->serviceName, $exception);
+        }
+    }
+
+    /**
+     * 设置微服务的参数，用于社区服务判断是否要回调服务.
+     */
+    public function setVillageMicroServiceConfig(int $villageId, string $name, mixed $value): array
+    {
+        try {
+            return $this->__request(__FUNCTION__, compact('villageId', 'name', 'value'));
+        } catch (\Exception $exception) {
+            return ApiHelper::genServiceErrorData($this->serviceName, $exception);
+        }
+    }
 }

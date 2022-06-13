@@ -62,8 +62,18 @@ interface VillageServiceInterface
      */
     public function getVillageUser(int $user_id, int $owner_id): array;
 
-     /**
+    /**
      * 获取village服务项目相关绑定信息.
      */
     public function getVillageRelevantBuildByQuery(string $village_name, string $build_name, string $layer_name, string $room_name): array;
+
+    /**
+     * 获取项目在住住户数据，带分页.
+     */
+    public function getVillageUserByBuildIdArr(int $buildId, int $overdueDay = 0, int $page = 1, int $pageSize = 100): array;
+
+    /**
+     * 设置微服务的参数，用于社区服务判断是否要回调服务.
+     */
+    public function setVillageMicroServiceConfig(int $villageId, string $name, mixed $value): array;
 }
