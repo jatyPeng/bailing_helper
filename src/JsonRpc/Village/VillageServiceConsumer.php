@@ -77,8 +77,11 @@ class VillageServiceConsumer extends AbstractServiceClient implements VillageSer
 
     /**
      * 填充房间的合同信息.
+     * @param int $roomId 房间ID
+     * @param array $contractArr 合同列表
+     * @param string $leaseEnd 强制设置租赁结束时间
      */
-    public function setRoomContract(int $roomId, array $contractArr): array
+    public function setRoomContract(int $roomId, array $contractArr, string $leaseEnd = ''): array
     {
         try {
             return $this->__request(__FUNCTION__, compact('roomId', 'contractArr'));

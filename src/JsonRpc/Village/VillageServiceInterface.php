@@ -34,8 +34,11 @@ interface VillageServiceInterface
 
     /**
      * 填充房间的合同信息.
+     * @param int $roomId 房间ID
+     * @param array $contractArr 合同列表
+     * @param string $leaseEnd 强制设置租赁结束时间
      */
-    public function setRoomContract(int $roomId, array $contractArr): array;
+    public function setRoomContract(int $roomId, array $contractArr, string $leaseEnd = ''): array;
 
     /**
      * 获取指定项目或楼栋房间闲置信息.
