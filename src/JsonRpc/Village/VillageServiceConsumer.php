@@ -84,7 +84,7 @@ class VillageServiceConsumer extends AbstractServiceClient implements VillageSer
     public function setRoomContract(int $roomId, array $contractArr, string $leaseEnd = ''): array
     {
         try {
-            return $this->__request(__FUNCTION__, compact('roomId', 'contractArr'));
+            return $this->__request(__FUNCTION__, compact('roomId', 'contractArr', 'leaseEnd'));
         } catch (\Exception $exception) {
             return ApiHelper::genServiceErrorData($this->serviceName, $exception);
         }
