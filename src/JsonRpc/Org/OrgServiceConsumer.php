@@ -103,6 +103,18 @@ class OrgServiceConsumer extends AbstractServiceClient implements OrgServiceInte
     }
 
     /**
+     * 楼宇绑定收支账户.
+     */
+    public function buildBindAccount(array $accountIds, int $buildId, string $buildName): array
+    {
+        try {
+            return $this->__request(__FUNCTION__, compact('accountIds','buildId', 'buildName'));
+        } catch (\Exception $exception) {
+            return ApiHelper::genServiceErrorData($this->serviceName, $exception);
+        }
+    }
+
+    /**
      * 根据ID 获取用户在机构内的信息.
      */
     public function getUserByUserIdArr(array $userIdArr, int $orgId = 0): array
