@@ -129,4 +129,19 @@ interface OrgServiceInterface
      * 根据指定项目id获取项目下所有楼宇在租房间的租金收益.
      */
     public function getVillageRentalIncome(int $orgId, int $villageId): array;
+
+    /**
+     * 获取机构指定用户基本信息及所属部门信息.
+     */
+    public function getOrgUserById(int $orgId, int $uid): array;
+
+    /**
+     * 根据指定部门ID获取机构部门信息.
+     */
+    public function getOrgDepartmentByIds(int $orgId, array $departmentIds, string $labelType = 'one'): array;
+
+    /**
+     * 通过用户名称搜索指定机构用户列表.
+     */
+    public function getOrgUserList(int $orgId, string $name = ''): array;
 }

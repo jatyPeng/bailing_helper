@@ -108,7 +108,7 @@ class OrgServiceConsumer extends AbstractServiceClient implements OrgServiceInte
     public function buildBindAccount(array $accountIds, int $buildId, string $buildName): array
     {
         try {
-            return $this->__request(__FUNCTION__, compact('accountIds','buildId', 'buildName'));
+            return $this->__request(__FUNCTION__, compact('accountIds', 'buildId', 'buildName'));
         } catch (\Exception $exception) {
             return ApiHelper::genServiceErrorData($this->serviceName, $exception);
         }
@@ -301,6 +301,42 @@ class OrgServiceConsumer extends AbstractServiceClient implements OrgServiceInte
     {
         try {
             return $this->__request(__FUNCTION__, compact('orgId', 'villageId'));
+        } catch (\Exception $exception) {
+            return ApiHelper::genServiceErrorData($this->serviceName, $exception);
+        }
+    }
+
+    /**
+     * 获取机构指定用户基本信息及所属部门信息.
+     */
+    public function getOrgUserById(int $orgId, int $uid): array
+    {
+        try {
+            return $this->__request(__FUNCTION__, compact('orgId', 'uid'));
+        } catch (\Exception $exception) {
+            return ApiHelper::genServiceErrorData($this->serviceName, $exception);
+        }
+    }
+
+    /**
+     * 根据指定部门ID获取机构部门信息.
+     */
+    public function getOrgDepartmentByIds(int $orgId, array $departmentIds, string $labelType = 'one'): array
+    {
+        try {
+            return $this->__request(__FUNCTION__, compact('orgId', 'departmentIds', 'labelType'));
+        } catch (\Exception $exception) {
+            return ApiHelper::genServiceErrorData($this->serviceName, $exception);
+        }
+    }
+
+    /**
+     * 通过用户名称搜索指定机构用户列表.
+     */
+    public function getOrgUserList(int $orgId, string $name = ''): array
+    {
+        try {
+            return $this->__request(__FUNCTION__, compact('orgId', 'name'));
         } catch (\Exception $exception) {
             return ApiHelper::genServiceErrorData($this->serviceName, $exception);
         }

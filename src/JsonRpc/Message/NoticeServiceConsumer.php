@@ -49,6 +49,18 @@ class NoticeServiceConsumer extends AbstractServiceClient implements NoticeServi
     }
 
     /**
+     * 批量机构通知消息标记完成.
+     */
+    public function completeNoticeMany(int $orgId, array $uidUniqueArr, string $catLabel): array
+    {
+        try {
+            return $this->__request(__FUNCTION__, compact('orgId', 'uidUniqueArr', 'catLabel'));
+        } catch (\Exception $exception) {
+            return ApiHelper::genServiceErrorData($this->serviceName, $exception);
+        }
+    }
+
+    /**
      * 机构通知消息标记完成.
      */
     public function completeNotice(int $orgId, int $uid, string $catLabel, string $uniqueId): array

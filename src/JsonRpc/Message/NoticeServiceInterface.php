@@ -27,6 +27,11 @@ interface NoticeServiceInterface
     public function addNotice(array $data): array;
 
     /**
+     * 批量机构通知消息标记完成.
+     */
+    public function completeNoticeMany(int $orgId, array $uidUniqueArr, string $catLabel): array;
+
+    /**
      * 机构通知消息标记完成.
      */
     public function completeNotice(int $orgId, int $uid, string $catLabel, string $uniqueId): array;
