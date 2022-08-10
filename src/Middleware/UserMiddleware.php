@@ -12,6 +12,8 @@ namespace Bailing\Middleware;
 
 use Bailing\Helper\ApiHelper;
 use Bailing\Helper\JwtHelper;
+use Bailing\Helper\RequestHelper;
+use Hyperf\Di\Annotation\AnnotationCollector;
 use Hyperf\HttpMessage\Stream\SwooleStream;
 use Hyperf\Utils\Codec\Json;
 use Hyperf\Utils\Context;
@@ -27,8 +29,22 @@ class UserMiddleware implements MiddlewareInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
+        $classMethod = explode(':', RequestHelper::getAdminModule());
+        $annotations = AnnotationCollector::getClassMethodAnnotation($classMethod[0], $classMethod[1]);
         $jwtData = JwtHelper::decodeWithRequest('USER', $request);
-
+        if (! $jwtData && $annotationsMiddleware = (array) $annotations['Hyperf\HttpServer\Annotation\Middleware']) {
+            if (! empty($annotationsMiddleware)) {
+                $annotationsMiddleware = array_values($annotationsMiddleware);
+                array_walk($annotationsMiddleware, function (&$val, $key) {$val = array_unique(array_column((array) $val, 'middleware')); });
+            }
+            //放行中间件配置项
+            $passOtherMiddleware = ['Bailing\Middleware\OrgMiddleware', 'Bailing\Middleware\SystemMiddleware'];
+            $passAuth = array_intersect($annotationsMiddleware[0], $passOtherMiddleware);
+            if (! empty($passAuth)) {
+                return $handler->handle($request);
+            }
+            //针对单个接口继承多个服务中间件鉴权 则只校验本服务token-type的token 其他服务则放行
+        }
         // 如果其他中间件有存储用户信息到上下文，则证明其他中间件有校验用户身份，直接放行。若需要两个中间件，user中间件放后面。
         if (! $jwtData && contextGet('nowUser')) {
             return $handler->handle($request);
