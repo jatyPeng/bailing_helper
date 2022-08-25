@@ -28,6 +28,11 @@ interface VillageServiceInterface
     public function getVillageByIdArr(array $villageIdArr): array;
 
     /**
+     * 通过楼栋ID获取单个楼栋.
+     */
+    public function getBuildById(int $buildId): array;
+
+    /**
      * 通过楼栋ID获取楼栋组合好的数据.
      */
     public function getBuildList(array $buildArr = []): array;
@@ -56,6 +61,11 @@ interface VillageServiceInterface
     public function getRooms(array $roomArr = []): array;
 
     /**
+     * 根据楼层ID获取单个楼层数据.
+     */
+    public function getLayerById(int $layerId): array;
+
+    /**
      * 根据楼层ID获取楼层列表数据.
      */
     public function getLayers(array $layerArr = []): array;
@@ -63,7 +73,7 @@ interface VillageServiceInterface
     /**
      * 获取village服务项目租客信息.
      */
-    public function getVillageUser(int $user_id, int $owner_id): array;
+    public function getVillageUser(int $user_id, int $owner_id = 0): array;
 
     /**
      * 获取village服务项目相关绑定信息.

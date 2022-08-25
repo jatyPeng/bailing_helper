@@ -88,7 +88,7 @@ interface OrgServiceInterface
     /**
      * 根据指定uid获取机构绑定的最新登录的用户信息.
      */
-    public function getOrgUserDataByUid(int $userId, array $fields = []): array;
+    public function getOrgUserDataByUid(int $userId, array $fields = [], int $orgId = 0): array;
 
     /**
      * 根据指定uid获取机构绑定的楼层管理的权限.

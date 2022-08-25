@@ -201,10 +201,10 @@ class OrgServiceConsumer extends AbstractServiceClient implements OrgServiceInte
     /**
      * 根据指定uid获取机构绑定的最新登录的用户信息.
      */
-    public function getOrgUserDataByUid(int $userId, array $fields = []): array
+    public function getOrgUserDataByUid(int $userId, array $fields = [], int $orgId = 0): array
     {
         try {
-            return $this->__request(__FUNCTION__, compact('userId', 'fields'));
+            return $this->__request(__FUNCTION__, compact('userId', 'fields', 'orgId'));
         } catch (\Exception $exception) {
             return ApiHelper::genServiceErrorData($this->serviceName, $exception);
         }

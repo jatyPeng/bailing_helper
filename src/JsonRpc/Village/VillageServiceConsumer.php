@@ -66,6 +66,18 @@ class VillageServiceConsumer extends AbstractServiceClient implements VillageSer
     /**
      * 通过楼栋ID获取楼栋组合好的数据.
      */
+    public function getBuildById(int $buildId): array
+    {
+        try {
+            return $this->__request(__FUNCTION__, compact('buildId'));
+        } catch (\Exception $exception) {
+            return ApiHelper::genServiceErrorData($this->serviceName, $exception);
+        }
+    }
+
+    /**
+     * 通过楼栋ID获取楼栋组合好的数据.
+     */
     public function getBuildList(array $buildArr = []): array
     {
         try {
@@ -117,6 +129,18 @@ class VillageServiceConsumer extends AbstractServiceClient implements VillageSer
     }
 
     /**
+     * 根据楼层ID获取单个楼层数据.
+     */
+    public function getLayerById(int $layerId): array
+    {
+        try {
+            return $this->__request(__FUNCTION__, compact('layerId'));
+        } catch (\Exception $exception) {
+            return ApiHelper::genServiceErrorData($this->serviceName, $exception);
+        }
+    }
+
+    /**
      * 根据房间ID获取楼层列表数据.
      */
     public function getRooms(array $roomArr = []): array
@@ -143,7 +167,7 @@ class VillageServiceConsumer extends AbstractServiceClient implements VillageSer
     /**
      * 获取village服务项目租客信息.
      */
-    public function getVillageUser(int $user_id, int $owner_id): array
+    public function getVillageUser(int $user_id, int $owner_id = 0): array
     {
         try {
             return $this->__request(__FUNCTION__, compact('user_id', 'owner_id'));
