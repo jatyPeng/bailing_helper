@@ -35,4 +35,9 @@ interface ThirdServiceInterface
      * @param string $url 链接
      */
     public function pushWechatToSingleByUid(int $orgId, int $userId, array $pushData, string $url): array;
+
+    /**
+     * 获取企业微信联系二维码.
+     */
+    public function getWorkWechatContactQrcode(int $orgId, array $uidArr, int $scene, bool $isTemp = false): array;
 }

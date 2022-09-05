@@ -76,6 +76,18 @@ class UserServiceConsumer extends AbstractServiceClient implements UserServiceIn
     }
 
     /**
+     * 通过uid数组和appid找对应的用户第三方授权信息.
+     */
+    public function getUserThirdByUidArrAndAppid(array $uidArr, string $appid): array
+    {
+        try {
+            return $this->__request(__FUNCTION__, compact('uidArr', 'appid'));
+        } catch (\Exception $exception) {
+            return ApiHelper::genServiceErrorData($this->serviceName, $exception);
+        }
+    }
+
+    /**
      * 根据指定uid获取用户附属信息.
      */
     public function getUserExtraData(int $uid): array

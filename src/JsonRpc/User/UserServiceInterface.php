@@ -33,6 +33,11 @@ interface UserServiceInterface
     public function getUserThirdByUidAndAppid(int $uid, string $appid): array;
 
     /**
+     * 通过uid数组和appid找对应的用户第三方授权信息.
+     */
+    public function getUserThirdByUidArrAndAppid(array $uidArr, string $appid): array;
+
+    /**
      * 根据指定uid获取用户附属信息.
      */
     public function getUserExtraData(int $uid): array;
