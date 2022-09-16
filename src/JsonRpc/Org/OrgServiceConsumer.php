@@ -297,10 +297,10 @@ class OrgServiceConsumer extends AbstractServiceClient implements OrgServiceInte
     /**
      * 根据指定项目id获取项目下所有楼宇在租房间的租金收益.
      */
-    public function getVillageRentalIncome(int $orgId, int $villageId): array
+    public function getVillageRentalIncome(int $orgId, int $villageId, int $buildId): array
     {
         try {
-            return $this->__request(__FUNCTION__, compact('orgId', 'villageId'));
+            return $this->__request(__FUNCTION__, compact('orgId', 'villageId', 'buildId'));
         } catch (\Exception $exception) {
             return ApiHelper::genServiceErrorData($this->serviceName, $exception);
         }
