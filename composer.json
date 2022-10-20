@@ -23,6 +23,7 @@
     "require": {
         "php": ">=8.0",
         "firebase/php-jwt": "^5.4",
+        "hyperf/cache": "^2.2",
         "hyperf/config-center": "^2.2",
         "hyperf/config-nacos": "^2.2",
         "hyperf/db-connection": "^2.2",
