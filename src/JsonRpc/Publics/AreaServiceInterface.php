@@ -16,4 +16,9 @@ interface AreaServiceInterface
      * 获取单个数据.
      */
     public function getArea(int $areaCode): array;
+
+    /**
+     * 根据中心坐标获取周边的区域地点.
+     */
+    public function getAreaListByLocationDistance(float $lng, float $lat, float $distance, int $level): array;
 }

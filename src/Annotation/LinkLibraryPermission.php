@@ -39,4 +39,6 @@ class LinkLibraryPermission extends AbstractAnnotation
     public string $sort = '0'; // 排序，越大越前，一级菜单千进位，二级菜单百进位，默认0
 
     public string $micro = ''; // 服务提供者，重新上报时会清空
+
+    public string $icon = ''; // 链接库按钮icon
 }

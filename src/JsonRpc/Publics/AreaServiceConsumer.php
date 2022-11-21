@@ -38,4 +38,16 @@ class AreaServiceConsumer extends AbstractServiceClient implements AreaServiceIn
             return ApiHelper::genServiceErrorData($this->serviceName, $exception);
         }
     }
+
+    /**
+     * 根据中心坐标获取周边的区域地点.
+     */
+    public function getAreaListByLocationDistance(float $lng, float $lat, float $distance, int $level): array
+    {
+        try {
+            return $this->__request(__FUNCTION__, compact('lng', 'lat', 'distance', 'level'));
+        } catch (\Exception $exception) {
+            return ApiHelper::genServiceErrorData($this->serviceName, $exception);
+        }
+    }
 }
