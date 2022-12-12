@@ -73,6 +73,16 @@ class OrgPermission extends AbstractAnnotation
     /**
      * @var string
      */
+    public $type = ''; // 类型，label作为小标识，无法点击
+
+    /**
+     * @var string
+     */
+    public $appId = ''; // 是否关联应用，填写 appid 表的自增ID
+
+    /**
+     * @var string
+     */
     public $app = ''; // 微前端提供者
 
     /**
