@@ -11,6 +11,7 @@ declare(strict_types=1);
 namespace Bailing\Job;
 
 use Bailing\Annotation\XxlJobTask;
+use Bailing\Helper\FileHelper;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\XxlJob\Annotation\XxlJob;
 use Hyperf\XxlJob\Handler\AbstractJobHandler;
@@ -18,10 +19,10 @@ use Hyperf\XxlJob\Logger\JobExecutorLoggerInterface;
 use Hyperf\XxlJob\Requests\RunRequest;
 
 /**
- * 缓存文件的清空（日志）.
+ * 缓存文件的清空（日志）每天凌晨2点2分执行.
  */
 #[XxlJob('planRuntimeFileClear')]
-#[XxlJobTask(jobDesc: '缓存文件的清空（日志）', cron: '0 0/1 * * * ?', jobHandler: 'planRuntimeFileClear')]
+#[XxlJobTask(jobDesc: '缓存文件的清空（日志）', cron: '0 2 2 * * ?', jobHandler: 'planRuntimeFileClear')]
 class RuntimeFileClearJob extends AbstractJobHandler
 {
     #[Inject]
@@ -32,6 +33,25 @@ class RuntimeFileClearJob extends AbstractJobHandler
      */
     public function execute(RunRequest $request): void
     {
-        var_dump(BASE_PATH);
+        $fileList = FileHelper::getDirFiles(BASE_PATH . '/runtime/', false);
+        stdLog()->info('清空缓存日志文件开始执行，文件总数：' . strval(count($fileList)));
+        $clearCount = 0;
+        foreach ($fileList as $item) {
+            //程序缓存文件不删除
+            if (! str_contains($item['pathName'], '/container/') && ! str_contains($item['pathName'], 'hyperf.pid')) {
+                if (env('APP_ENV') == 'dev') {
+                    $day = cfg('clear_cache_day') ?: 1;
+                } else {
+                    $day = cfg('clear_cache_day') ?: 7;
+                }
+                if ($item['mTime'] < time() - $day * 86400) {
+                    stdLog()->info('清空缓存日志文件欲删除：', [$item['pathName'], date('Y-m-d H:i:s', $item['mTime'])]);
+                    if (@unlink($item['pathName'])) {
+                        ++$clearCount;
+                    }
+                }
+            }
+        }
+        stdLog()->info('清空缓存日志文件完成执行，删除文件总数：' . strval($clearCount));
     }
 }

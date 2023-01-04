@@ -31,7 +31,8 @@ class SystemMiddleware implements MiddlewareInterface
         $classMethod = explode(':', RequestHelper::getAdminModule());
         $annotations = AnnotationCollector::getClassMethodAnnotation($classMethod[0], $classMethod[1]);
         $jwtData = JwtHelper::decodeWithRequest('SYSTEM', $request);
-        if (! $jwtData && $annotationsMiddleware = (array) $annotations['Hyperf\HttpServer\Annotation\Middleware']) {
+        $annotationsArr = (array) $annotations;
+        if (! $jwtData && isset($annotationsArr['Hyperf\HttpServer\Annotation\Middleware']) && $annotationsMiddleware = $annotationsArr['Hyperf\HttpServer\Annotation\Middleware']) {
             if (! empty($annotationsMiddleware)) {
                 $annotationsMiddleware = array_values($annotationsMiddleware);
                 array_walk($annotationsMiddleware, function (&$val, $key) {$val = array_unique(array_column((array) $val, 'middleware')); });
