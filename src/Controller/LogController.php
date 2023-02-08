@@ -35,7 +35,13 @@ class LogController
         //系统后台超级管理员才有权限查看
         if ($nowUser->level === 99) {
             $list = FileHelper::getDir(realpath(BASE_PATH . '/runtime/' . $path), realpath(BASE_PATH . '/runtime') . '/');
-            return ApiHelper::genSuccessData(['result' => $list], '获取成功');
+            foreach ($list as $key => $value) {
+                //如果是隐藏文件，则不返回
+                if (str_starts_with($value['fileName'], '.')) {
+                    unset($list[$key]);
+                }
+            }
+            return ApiHelper::genSuccessData(['result' => array_values($list)], '获取成功');
         }
 
         return ApiHelper::genErrorData('暂无权限查看', 4001);
