@@ -19,8 +19,8 @@ use Hyperf\Framework\Event\MainWorkerStart;
 
 /**
  * Hyperf worker 启动后执行.
- * @Listener
  */
+#[Listener]
 class MainWorkerStartListener implements ListenerInterface
 {
     public function listen(): array
@@ -30,10 +30,7 @@ class MainWorkerStartListener implements ListenerInterface
         ];
     }
 
-    /**
-     * @param MainWorkerStart $event
-     */
-    public function process(object $event)
+    public function process(object $event): void
     {
         // 初始化打开 xxl-job
         stdLog()->info('xxl-job-task init now');

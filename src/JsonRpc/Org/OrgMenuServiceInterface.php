@@ -16,4 +16,6 @@ interface OrgMenuServiceInterface
      * 添加菜单.
      */
     public function addMenu(array $menuData): array;
+
+    public function getMenu(array $nowUser, string $micro): array;
 }

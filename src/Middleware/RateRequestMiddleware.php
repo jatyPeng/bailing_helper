@@ -12,11 +12,11 @@ namespace Bailing\Middleware;
 
 use Bailing\Helper\ApiHelper;
 use Bailing\Helper\RequestHelper;
+use Hyperf\Context\Context;
 use Hyperf\HttpMessage\Stream\SwooleStream;
 use Hyperf\HttpServer\Contract\RequestInterface;
 use Hyperf\HttpServer\Contract\ResponseInterface as HttpResponse;
 use Hyperf\Utils\Codec\Json;
-use Hyperf\Utils\Context;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -25,20 +25,11 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 class RateRequestMiddleware implements MiddlewareInterface
 {
-    /**
-     * @var ContainerInterface
-     */
-    protected $container;
+    protected ContainerInterface $container;
 
-    /**
-     * @var RequestInterface
-     */
-    protected $request;
+    protected RequestInterface $request;
 
-    /**
-     * @var HttpResponse
-     */
-    protected $response;
+    protected HttpResponse $response;
 
     public function __construct(ContainerInterface $container, HttpResponse $response, RequestInterface $request)
     {

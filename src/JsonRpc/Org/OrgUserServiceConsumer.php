@@ -17,15 +17,13 @@ class OrgUserServiceConsumer extends AbstractServiceClient implements OrgUserSer
 {
     /**
      * 定义对应服务提供者的服务名称.
-     * @var string
      */
-    protected $serviceName = 'OrgUserService';
+    protected string $serviceName = 'OrgUserService';
 
     /**
      * 定义对应服务提供者的服务协议.
-     * @var string
      */
-    protected $protocol = 'jsonrpc-http';
+    protected string $protocol = 'jsonrpc-http';
 
     public function call(string $method, array $param): array
     {

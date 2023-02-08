@@ -17,15 +17,13 @@ class AreaServiceConsumer extends AbstractServiceClient implements AreaServiceIn
 {
     /**
      * 定义对应服务提供者的服务名称.
-     * @var string
      */
-    protected $serviceName = 'AreaService';
+    protected string $serviceName = 'AreaService';
 
     /**
      * 定义对应服务提供者的服务协议.
-     * @var string
      */
-    protected $protocol = 'jsonrpc-http';
+    protected string $protocol = 'jsonrpc-http';
 
     /**
      * 获取单个数据.

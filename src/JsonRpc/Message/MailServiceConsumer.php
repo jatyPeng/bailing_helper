@@ -17,15 +17,13 @@ class MailServiceConsumer extends AbstractServiceClient implements MailServiceIn
 {
     /**
      * 定义对应服务提供者的服务名称.
-     * @var string
      */
-    protected $serviceName = 'MailService';
+    protected string $serviceName = 'MailService';
 
     /**
      * 定义对应服务提供者的服务协议.
-     * @var string
      */
-    protected $protocol = 'jsonrpc-http';
+    protected string $protocol = 'jsonrpc-http';
 
     /**
      * 压入指定业务信息至mail消费队列.

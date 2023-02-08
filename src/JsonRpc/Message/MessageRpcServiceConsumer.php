@@ -8,17 +8,17 @@ declare(strict_types=1);
  * @document https://help.kuaijingai.com
  * @contact  www.kuaijingai.com 7*12 9:00-21:00
  */
-namespace Bailing\JsonRpc\WorkTask;
+namespace Bailing\JsonRpc\Message;
 
 use Bailing\Helper\ApiHelper;
 use Hyperf\RpcClient\AbstractServiceClient;
 
-class WorkTaskServiceConsumer extends AbstractServiceClient implements WorkTaskServiceInterface
+class MessageRpcServiceConsumer extends AbstractServiceClient implements MessageRpcServiceInterface
 {
     /**
      * 定义对应服务提供者的服务名称.
      */
-    protected string $serviceName = 'WorkTaskService';
+    protected string $serviceName = 'MessageRpcService';
 
     /**
      * 定义对应服务提供者的服务协议.

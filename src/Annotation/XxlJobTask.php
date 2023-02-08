@@ -14,10 +14,8 @@ use Attribute;
 use Hyperf\Di\Annotation\AbstractAnnotation;
 
 /**
- * @Annotation
- * @Target({"CLASS", "METHOD"})
  * 简单示例：#[XxlJobTask(jobDesc: '任务到期提醒', cron: '0/30 * * * * ?', jobHandler: 'taskEndTimeNoticeHandler')]
- * （上面示例30秒一次，规则使用xxl-Job后台的生成，确保正确）
+ * （上面示例30秒一次，规则使用xxl-Job后台的生成，确保正确）.
  */
 #[Attribute(Attribute::TARGET_CLASS | Attribute::TARGET_METHOD)]
 class XxlJobTask extends AbstractAnnotation

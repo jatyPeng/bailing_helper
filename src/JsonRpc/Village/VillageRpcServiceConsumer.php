@@ -17,15 +17,13 @@ class VillageRpcServiceConsumer extends AbstractServiceClient implements Village
 {
     /**
      * 定义对应服务提供者的服务名称.
-     * @var string
      */
-    protected $serviceName = 'VillageRpcService';
+    protected string $serviceName = 'VillageRpcService';
 
     /**
      * 定义对应服务提供者的服务协议.
-     * @var string
      */
-    protected $protocol = 'jsonrpc-http';
+    protected string $protocol = 'jsonrpc-http';
 
     public function call(string $method, array $param): array
     {

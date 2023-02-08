@@ -17,15 +17,13 @@ class NoticeServiceConsumer extends AbstractServiceClient implements NoticeServi
 {
     /**
      * 定义对应服务提供者的服务名称.
-     * @var string
      */
-    protected $serviceName = 'NoticeService';
+    protected string $serviceName = 'NoticeService';
 
     /**
      * 定义对应服务提供者的服务协议.
-     * @var string
      */
-    protected $protocol = 'jsonrpc-http';
+    protected string $protocol = 'jsonrpc-http';
 
     /*
      * 添加机构通知消息.

@@ -12,9 +12,9 @@ namespace Bailing\Middleware;
 
 use Bailing\Helper\ApiHelper;
 use Bailing\Helper\JwtHelper;
+use Hyperf\Context\Context;
 use Hyperf\HttpMessage\Stream\SwooleStream;
 use Hyperf\Utils\Codec\Json;
-use Hyperf\Utils\Context;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
