@@ -114,7 +114,7 @@ class OperationLogMiddleware implements MiddlewareInterface
         $message = new OperationLogProducer($operationLog);
         $producer = container()->get(Producer::class);
         $proResult = $producer->produce($message);
-        stdLog()->info('OperationLogProducer amqp', [$proResult]);
+        stdLog()->debug('OperationLogProducer amqp', [$proResult]);
 
         return $result;
     }
