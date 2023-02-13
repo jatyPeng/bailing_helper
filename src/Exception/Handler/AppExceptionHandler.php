@@ -11,6 +11,8 @@ declare(strict_types=1);
 namespace Bailing\Exception\Handler;
 
 use Bailing\Helper\ApiHelper;
+use Bailing\Helper\RequestHelper;
+use Bailing\Helper\Webhook\FeishuHelper;
 use Hyperf\Contract\StdoutLoggerInterface;
 use Hyperf\ExceptionHandler\ExceptionHandler;
 use Hyperf\HttpMessage\Stream\SwooleStream;
@@ -37,9 +39,26 @@ class AppExceptionHandler extends ExceptionHandler
                 $errorData = Json::encode(ApiHelper::genErrorData($message));
                 return $response->withHeader('Content-Type', 'application/json;charset=utf-8')->withHeader('Server', 'Hyperf')->withStatus(200)->withBody(new SwooleStream($errorData));
         }
-        $errMsg = sprintf('%s[%s] in %s', $throwable->getMessage(), $throwable->getLine(), $throwable->getFile());
+        $errMsg = sprintf('%s in %s[%s] ', $throwable->getMessage(), $throwable->getFile(), $throwable->getLine());
         $this->logger->error($errMsg);
         $this->logger->error($throwable->getTraceAsString());
+
+        if (FeishuHelper::checkConfig()) {
+            FeishuHelper::sendMarkDown('php线上代码错误（' . RequestHelper::getClientDomain() . '）', [
+                [[
+                    'tag' => 'text',
+                    'text' => '服务名：' . env('APP_NAME'),
+                ]],
+                [[
+                    'tag' => 'text',
+                    'text' => '错误概要：' . $errMsg,
+                ]],
+                [[
+                    'tag' => 'text',
+                    'text' => '详细错误：' . $throwable->getTraceAsString(),
+                ]],
+            ]);
+        }
 
         $errorData = Json::encode(ApiHelper::genErrorData(env('APP_ENV') == 'dev' ? $errMsg : 'Internal Server Error.', ApiHelper::CODE_ERROR));
 
