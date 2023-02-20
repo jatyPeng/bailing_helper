@@ -44,10 +44,19 @@ class AppExceptionHandler extends ExceptionHandler
         $this->logger->error($throwable->getTraceAsString());
 
         if (FeishuHelper::checkConfig()) {
+            $request = request();
             FeishuHelper::sendMarkDown('php线上代码错误（' . RequestHelper::getClientDomain() . '）', [
                 [[
                     'tag' => 'text',
                     'text' => '服务名：' . env('APP_NAME'),
+                ]],
+                [[
+                    'tag' => 'text',
+                    'text' => sprintf('访问路由：[%s] %s', $request->getServerParams()['request_method'], $request->getServerParams()['path_info']),
+                ]],
+                [[
+                    'tag' => 'text',
+                    'text' => sprintf('访问参数：%s', http_build_query($request->all())),
                 ]],
                 [[
                     'tag' => 'text',
