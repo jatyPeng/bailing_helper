@@ -42,6 +42,10 @@ class OrgMiddleware implements MiddlewareInterface
         $this->request = $request;
     }
 
+    /**
+     * Org格式：{"id":1,"phone_country":86,"phone":"1xxxxxxxxxx","last_time":"2023-02-23 14:15:10","last_ip":"127.0.0.1","user_id":1,"name":"管理员","org_id":1,"org_name":"xx楼宇","role_id":1,"level":99,"isSuper":true,"isLayerAdmin":false}
+     * Ps：id为user服务id(user服务-user表-id) 用户唯一标识身份id； user_id为所处org用户身份id(org服务-user表-id).
+     */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         $classMethod = explode(':', RequestHelper::getAdminModule());

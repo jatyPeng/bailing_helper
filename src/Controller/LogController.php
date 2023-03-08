@@ -41,6 +41,7 @@ class LogController
                     unset($list[$key]);
                 }
             }
+            $list = arraySort($list, 'fileName');
             return ApiHelper::genSuccessData(['result' => array_values($list)], '获取成功');
         }
 
@@ -61,7 +62,11 @@ class LogController
         $nowUser = contextGet('nowUser');
         //系统后台超级管理员才有权限查看
         if ($nowUser->level === 99) {
-            $result = FileHelper::getContent(realpath(BASE_PATH . '/runtime/' . $path));
+            $realPath = realpath(BASE_PATH . '/runtime/' . $path);
+            if (! $realPath) {
+                return ApiHelper::genErrorData('文件系统中没找到该文件');
+            }
+            $result = FileHelper::getContent($realPath);
             return ApiHelper::genSuccessData(['result' => $result], '获取成功');
         }
 
