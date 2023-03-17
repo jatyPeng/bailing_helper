@@ -20,13 +20,13 @@ interface OrgServiceInterface
 
     /**
      * 获取用户管理的机构.
-     * @param int uid 用户ID
+     * @param int $uid 用户ID
      */
     public function getOrgByAdminUid(int $uid): array;
 
     /**
      * 通过机构ID获取项目的绑定关系.
-     * @param int orgId 机构ID
+     * @param int $orgId 机构ID
      */
     public function getVillageRelationByOrgId(int $orgId): array;
 
@@ -58,7 +58,7 @@ interface OrgServiceInterface
     /**
      * 根据ID 获取机构的基本信息.
      */
-    public function getOrgByOrgIdArr(array $orgIdArr): array;
+    public function getOrgByOrgIdArr(array|int $orgIdArr): array;
 
     /**
      * 根据域名前缀获取机构的基本信息.

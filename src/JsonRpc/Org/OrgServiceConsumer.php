@@ -40,7 +40,7 @@ class OrgServiceConsumer extends AbstractServiceClient implements OrgServiceInte
 
     /**
      * 获取用户管理的机构.
-     * @param int uid 用户ID
+     * @param int $uid 用户ID
      */
     public function getOrgByAdminUid(int $uid): array
     {
@@ -53,7 +53,7 @@ class OrgServiceConsumer extends AbstractServiceClient implements OrgServiceInte
 
     /**
      * 通过机构ID获取项目的绑定关系.
-     * @param int orgId 机构ID
+     * @param int $orgId 机构ID
      */
     public function getVillageRelationByOrgId(int $orgId): array
     {
@@ -127,7 +127,7 @@ class OrgServiceConsumer extends AbstractServiceClient implements OrgServiceInte
     /**
      * 根据ID 获取机构的基本信息.
      */
-    public function getOrgByOrgIdArr(array $orgIdArr): array
+    public function getOrgByOrgIdArr(array|int $orgIdArr): array
     {
         try {
             return $this->__request(__FUNCTION__, compact('orgIdArr'));
