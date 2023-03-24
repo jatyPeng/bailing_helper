@@ -55,18 +55,23 @@ class RateRequestMiddleware implements MiddlewareInterface
 
         $redis = redis();
         $strKey = 'rate_request:' . md5(serialize($handleArr));
+
         //如果锁存在
         $info = $redis->get($strKey);
         if ($info) {
+            stdLog()->warning('RateRequestMiddleware', [$handleArr]);
             return self::json('请求正在执行，请稍后再试');
         }
 
+        //写redis缓存
         $redis->set($strKey, Json::encode($handleArr), 6);
 
-        //写进协程，由业务自行删除
-        contextSet('rateRequestKey', $strKey);
+        $result = $handler->handle($request);
 
-        return $handler->handle($request);
+        //删redis缓存
+        $redis->del($strKey);
+
+        return $result;
     }
 
     private static function json(string $msg, int $errCode = ApiHelper::NORMAL_ERROR)

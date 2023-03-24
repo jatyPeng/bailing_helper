@@ -64,4 +64,33 @@ class PayServiceConsumer extends AbstractServiceClient implements PayServiceInte
             return ApiHelper::genServiceErrorData($this->serviceName, $exception);
         }
     }
+
+    /**
+     * 修改订单价格.
+     * @param string $orderId 支付业务订单号
+     * @param float $orderMoney 新的订单金额
+     */
+    public function changeOrderMoney(string $orderId, float $orderMoney): array
+    {
+        try {
+            return $this->__request(__FUNCTION__, compact('orderId', 'orderMoney'));
+        } catch (\Exception $exception) {
+            return ApiHelper::genServiceErrorData($this->serviceName, $exception);
+        }
+    }
+
+    /**
+     * 订单退款.
+     * @param string $orderId 支付业务订单号
+     * @param float $orderMoney 退款订单金额
+     * @param string $remark 备注
+     */
+    public function refundOrderMoney(string $orderId, float $refundMoney, string $remark): array
+    {
+        try {
+            return $this->__request(__FUNCTION__, compact('orderId', 'refundMoney', 'remark'));
+        } catch (\Exception $exception) {
+            return ApiHelper::genServiceErrorData($this->serviceName, $exception);
+        }
+    }
 }
