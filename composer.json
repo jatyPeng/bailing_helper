@@ -44,7 +44,7 @@
         "hyperf/redis": "^3.0.0",
         "hyperf/rpc-client": "^3.0.0",
         "hyperf/validation": "^3.0.0",
-        "hyperf/xxl-job-incubator": "^0.1.3",
+        "hyperf/xxl-job-incubator": "^0.2.0",
         "hyperf/memory": "^3.0.0",
         "hyperf/model-cache": "^3.0.0",
         "hyperf/paginator": "^3.0.0",

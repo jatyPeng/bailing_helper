@@ -52,6 +52,10 @@ class AppExceptionHandler extends ExceptionHandler
                 ]],
                 [[
                     'tag' => 'text',
+                    'text' => sprintf('报错时间：[%s]', getTime()),
+                ]],
+                [[
+                    'tag' => 'text',
                     'text' => sprintf('访问路由：[%s] %s', $request->getServerParams()['request_method'], $request->getServerParams()['path_info']),
                 ]],
                 [[

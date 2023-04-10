@@ -29,7 +29,7 @@ class OperationLogProducer extends ProducerMessage
             $logConfig = Json::decode($logConfig);
         }
 
-        $this->config->set('amqp.log.host', $logConfig['amqp']['AMQP_HOST']);
+        $this->config->set('amqp.log.host', env('LOG_AMQP_HOST', $logConfig['amqp']['AMQP_HOST']));
         $this->config->set('amqp.log.port', (int) $logConfig['amqp']['AMQP_PORT']);
         $this->config->set('amqp.log.user', $logConfig['amqp']['AMQP_USER']);
         $this->config->set('amqp.log.password', $logConfig['amqp']['AMQP_PASSWORD']);
