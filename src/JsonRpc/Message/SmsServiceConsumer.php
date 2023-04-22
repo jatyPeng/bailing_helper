@@ -25,10 +25,10 @@ class SmsServiceConsumer extends AbstractServiceClient implements SmsServiceInte
      */
     protected string $protocol = 'jsonrpc-http';
 
-    public function sendSms(string $phone, string $phoneCountry, string $alias, array $templateParam): array
+    public function sendSms(string $phone, string $phoneCountry, string $alias, array $templateParam, int $orgId = 0, string $microName = ''): array
     {
         try {
-            return $this->__request(__FUNCTION__, compact('phone', 'phoneCountry', 'alias', 'templateParam'));
+            return $this->__request(__FUNCTION__, compact('phone', 'phoneCountry', 'alias', 'templateParam', 'orgId', 'microName'));
         } catch (\Exception $exception) {
             return ApiHelper::genServiceErrorData($this->serviceName, $exception);
         }

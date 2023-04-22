@@ -19,7 +19,7 @@ interface SmsServiceInterface
      * @param string $alias 模板别名
      * @param array $templateParam 模板参数
      */
-    public function sendSms(string $phone, string $phoneCountry, string $alias, array $templateParam): array;
+    public function sendSms(string $phone, string $phoneCountry, string $alias, array $templateParam, int $orgId = 0, string $microName = ''): array;
 
     /**
      * 校验验证码.
