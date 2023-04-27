@@ -82,13 +82,29 @@ class PayServiceConsumer extends AbstractServiceClient implements PayServiceInte
     /**
      * 订单退款.
      * @param string $orderId 支付业务订单号
-     * @param float $orderMoney 退款订单金额
+     * @param float $refundMoney 退款金额
      * @param string $remark 备注
+     * @return array
      */
     public function refundOrderMoney(string $orderId, float $refundMoney, string $remark): array
     {
         try {
             return $this->__request(__FUNCTION__, compact('orderId', 'refundMoney', 'remark'));
+        } catch (\Exception $exception) {
+            return ApiHelper::genServiceErrorData($this->serviceName, $exception);
+        }
+    }
+
+    /**
+     * 获取支付宝应用appid对应的密钥，一般只有third服务在支付授权时使用.
+     * @param int $orgId 机构ID
+     * @param string $appid 支付宝应用appid
+     * @return array
+     */
+    public function getAlipayParams(int $orgId, string $appid): array
+    {
+        try {
+            return $this->__request(__FUNCTION__, compact('orgId', 'appid'));
         } catch (\Exception $exception) {
             return ApiHelper::genServiceErrorData($this->serviceName, $exception);
         }
