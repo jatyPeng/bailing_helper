@@ -88,4 +88,16 @@ class ThirdServiceConsumer extends AbstractServiceClient implements ThirdService
             return ApiHelper::genServiceErrorData($this->serviceName, $exception);
         }
     }
+
+    /**
+     * 获取公众号带参数二维码.
+     */
+    public function getWechatMpQrcode(int $orgId, string $sceneStr, string $appid = '', bool $isTemp = true): array
+    {
+        try {
+            return $this->__request(__FUNCTION__, compact('orgId', 'sceneStr', 'appid', 'isTemp'));
+        } catch (\Exception $exception) {
+            return ApiHelper::genServiceErrorData($this->serviceName, $exception);
+        }
+    }
 }

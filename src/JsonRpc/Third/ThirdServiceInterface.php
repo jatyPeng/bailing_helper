@@ -40,4 +40,9 @@ interface ThirdServiceInterface
      * 获取企业微信联系二维码.
      */
     public function getWorkWechatContactQrcode(int $orgId, array $uidArr, int $scene, bool $isTemp = false): array;
+
+    /**
+     * 获取公众号带参数二维码.
+     */
+    public function getWechatMpQrcode(int $orgId, string $sceneStr, string $appid = '', bool $isTemp = true): array;
 }
