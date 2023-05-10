@@ -60,6 +60,10 @@ class AppExceptionHandler extends ExceptionHandler
                 ]],
                 [[
                     'tag' => 'text',
+                    'text' => sprintf('用户IP：%s', RequestHelper::getClientIp()),
+                ]],
+                [[
+                    'tag' => 'text',
                     'text' => sprintf('访问参数：%s', http_build_query($request->all())),
                 ]],
                 [[

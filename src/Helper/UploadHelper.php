@@ -11,6 +11,8 @@ declare(strict_types=1);
 namespace Bailing\Helper;
 
 use Exception;
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
 use Hyperf\Contract\ConfigInterface;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\Filesystem\FilesystemFactory;
@@ -146,6 +148,38 @@ class UploadHelper
         logger()->info('uploadImage' . $fileName);
 
         return ['fileName' => $fileName, 'fileUrl' => fileDomain($fileName)];
+    }
+
+    /**
+     * 上传远程文件(服务应用内部调用，先下载再上传).
+     * @param string $fileUrl 远程文件网址，可get，且状态码200
+     * @param string $folder 文件目录
+     * @throws FilesystemException
+     * @throws GuzzleException
+     * @throws Exception
+     */
+    public function uploadRemoteFile(string $fileUrl, string $extension = '', string $folder = 'remote'): array
+    {
+        $clientHttp = new Client();
+        $response = $clientHttp->get($fileUrl);
+        $body = $response->getBody();
+
+        if ($response->getStatusCode() != 200) {
+            throw new Exception(sprintf('文件下载失败（错误码%s）', $response->getStatusCode()));
+        }
+
+        //获取响应体，对象
+        $fileStr = (string) $body;
+
+        //没有指定上传保存扩展名，通过链接获取
+        if (! $extension) {
+            $extension = pathinfo($fileUrl, PATHINFO_EXTENSION);
+        }
+
+        $uploadFile = 'upload/' . $folder . '/' . date('Ymd') . '/' . uniqid() . mt_rand(10000, 99999) . '.' . $extension;
+        $this->filesystemFactory->get($this->filesystemType)->write($uploadFile, $fileStr);
+
+        return ['fileName' => $uploadFile, 'fileUrl' => fileDomain($uploadFile)];
     }
 
     /**
