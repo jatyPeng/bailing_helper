@@ -50,7 +50,6 @@ interface PayServiceInterface
      * 获取支付宝应用appid对应的密钥，一般只有third服务在支付授权时使用.
      * @param int $orgId 机构ID
      * @param string $appid 支付宝应用appid
-     * @return array
      */
     public function getAlipayParams(int $orgId, string $appid): array;
 }

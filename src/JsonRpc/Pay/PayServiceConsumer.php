@@ -84,7 +84,6 @@ class PayServiceConsumer extends AbstractServiceClient implements PayServiceInte
      * @param string $orderId 支付业务订单号
      * @param float $refundMoney 退款金额
      * @param string $remark 备注
-     * @return array
      */
     public function refundOrderMoney(string $orderId, float $refundMoney, string $remark): array
     {
@@ -99,7 +98,6 @@ class PayServiceConsumer extends AbstractServiceClient implements PayServiceInte
      * 获取支付宝应用appid对应的密钥，一般只有third服务在支付授权时使用.
      * @param int $orgId 机构ID
      * @param string $appid 支付宝应用appid
-     * @return array
      */
     public function getAlipayParams(int $orgId, string $appid): array
     {
