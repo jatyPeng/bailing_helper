@@ -53,9 +53,9 @@
         "hyperf/rpc-server": "^3.0.0",
         "hyperf/service-governance": "^3.0.0",
         "hyperf/service-governance-nacos": "^3.0.0",
-        "league/flysystem": "^2.3",
-        "league/flysystem-aws-s3-v3": "^2.0",
-        "overtrue/flysystem-cos": "^4.0",
+        "league/flysystem": "^3.0",
+        "league/flysystem-aws-s3-v3": "^3.0",
+        "overtrue/flysystem-cos": "^5.0",
         "tencentcloud/captcha": "^3.0",
         "viest/php-ext-xlswriter-ide-helper": "^1.3.6",
         "ext-redis": "*"
