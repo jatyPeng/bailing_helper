@@ -144,4 +144,9 @@ interface OrgServiceInterface
      * 通过用户名称搜索指定机构用户列表.
      */
     public function getOrgUserList(int $orgId, string $name = ''): array;
+
+    /**
+     * 获取当前指定角色的权限.
+     */
+    public function getRoleRbacList(int $roleId): array;
 }

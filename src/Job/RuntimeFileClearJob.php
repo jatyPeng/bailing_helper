@@ -33,7 +33,7 @@ class RuntimeFileClearJob extends AbstractJobHandler
      */
     public function execute(RunRequest $request): void
     {
-        $fileList = FileHelper::getDirFiles(BASE_PATH . '/runtime/', false);
+        $fileList = FileHelper::getDirFiles(RUNTIME_BASE_PATH . '/', false);
         stdLog()->info('清空缓存日志文件开始执行，文件总数：' . strval(count($fileList)));
         $clearCount = 0;
         foreach ($fileList as $item) {

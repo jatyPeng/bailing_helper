@@ -13,6 +13,7 @@ namespace Bailing\Middleware;
 use Bailing\Helper\ApiHelper;
 use Bailing\Helper\JwtHelper;
 use Bailing\Helper\RequestHelper;
+use Bailing\JsonRpc\Publics\SystemMenuServiceInterface;
 use Hyperf\Context\Context;
 use Hyperf\Di\Annotation\AnnotationCollector;
 use Hyperf\HttpMessage\Stream\SwooleStream;
@@ -104,28 +105,20 @@ class SystemMiddleware implements MiddlewareInterface
     }
 
     /**
-     * Notes:判断路由节点访问是否拥有权限
-     * User: Endness
-     * Date: 2021/10/11
-     * Time: 17:22.
-     * @param int $role_id 当前用户角色id
+     * Notes: 判断路由节点访问是否拥有权限(系统后台控制)
+     * Author: Endness
+     * Date: 2023/5/16 14:31.
+     * @return bool
      */
     private function allowAccess(int $role_id)
     {
-        $authRedisKey = 'SYSTEM_RBAC_' . $role_id;
-        $rbacAccess = [];
-        try {
-            //从redis中获取该用户最新菜单权限
-            $redisClient = redis('public');
-            if ($redisClient->exists($authRedisKey)) {
-                $rbacAccess = Json::decode($redisClient->get($authRedisKey));
-            } else {
-                return self::json('请重新登录！');
-            }
-        } catch (\Exception $exception) {
-            logger()->error('SYSTEM REDIS CLIENT ERROR', ['module' => RequestHelper::getAdminModule()]);
+        if (env('APP_NAME') == 'public' && class_exists('\App\JsonRpc\SystemMenuService')) {
+            $orgService = container()->get(\App\JsonRpc\SystemMenuService::class)->getRoleRbacList($role_id);
+        } else {
+            $orgService = container()->get(SystemMenuServiceInterface::class)->getRoleRbacList($role_id);
         }
         $adminModule = RequestHelper::getAdminModule();
+        $rbacAccess = ! empty($orgService['data']['rbacList']) ? $orgService['data']['rbacList'] : [];
         if (in_array($adminModule, $rbacAccess) && ! empty($rbacAccess)) {
             return true;
         }

@@ -34,7 +34,7 @@ class LogController
         $nowUser = contextGet('nowUser');
         //系统后台超级管理员才有权限查看
         if ($nowUser->level === 99) {
-            $list = FileHelper::getDir(realpath(BASE_PATH . '/runtime/' . $path), realpath(BASE_PATH . '/runtime') . '/');
+            $list = FileHelper::getDir(realpath(RUNTIME_BASE_PATH . '/' . $path), realpath(RUNTIME_BASE_PATH) . '/');
             foreach ($list as $key => $value) {
                 //如果是隐藏文件，则不返回
                 if (str_starts_with($value['fileName'], '.')) {
@@ -62,7 +62,7 @@ class LogController
         $nowUser = contextGet('nowUser');
         //系统后台超级管理员才有权限查看
         if ($nowUser->level === 99) {
-            $realPath = realpath(BASE_PATH . '/runtime/' . $path);
+            $realPath = realpath(RUNTIME_BASE_PATH . '/' . $path);
             if (! $realPath) {
                 return ApiHelper::genErrorData('文件系统中没找到该文件');
             }

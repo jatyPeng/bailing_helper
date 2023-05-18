@@ -339,4 +339,16 @@ class OrgServiceConsumer extends AbstractServiceClient implements OrgServiceInte
             return ApiHelper::genServiceErrorData($this->serviceName, $exception);
         }
     }
+
+    /**
+     * 获取当前指定角色的权限.
+     */
+    public function getRoleRbacList(int $roleId): array
+    {
+        try {
+            return $this->__request(__FUNCTION__, compact('roleId'));
+        } catch (\Exception $exception) {
+            return ApiHelper::genServiceErrorData($this->serviceName, $exception);
+        }
+    }
 }

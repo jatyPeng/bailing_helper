@@ -36,4 +36,16 @@ class SystemMenuServiceConsumer extends AbstractServiceClient implements SystemM
             return ApiHelper::genServiceErrorData($this->serviceName, $exception);
         }
     }
+
+    /**
+     * 获取当前指定角色的权限.
+     */
+    public function getRoleRbacList(int $roleId): array
+    {
+        try {
+            return $this->__request(__FUNCTION__, compact('roleId'));
+        } catch (\Exception $exception) {
+            return ApiHelper::genServiceErrorData($this->serviceName, $exception);
+        }
+    }
 }

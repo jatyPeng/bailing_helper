@@ -16,4 +16,9 @@ interface SystemMenuServiceInterface
      * 添加菜单.
      */
     public function addMenu(array $menuData): array;
+
+    /**
+     * 获取当前指定角色的权限.
+     */
+    public function getRoleRbacList(int $roleId): array;
 }

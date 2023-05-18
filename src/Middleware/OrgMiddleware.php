@@ -13,6 +13,7 @@ namespace Bailing\Middleware;
 use Bailing\Helper\ApiHelper;
 use Bailing\Helper\JwtHelper;
 use Bailing\Helper\RequestHelper;
+use Bailing\JsonRpc\Org\OrgServiceInterface;
 use Hyperf\Context\Context;
 use Hyperf\Di\Annotation\AnnotationCollector;
 use Hyperf\HttpMessage\Stream\SwooleStream;
@@ -128,21 +129,13 @@ class OrgMiddleware implements MiddlewareInterface
      */
     private function allowAccess(int $role_id)
     {
-        $authRedisKey = 'ORG_RBAC_' . $role_id;
-        $rbacAccess = [];
-        try {
-            //从redis中获取该用户最新菜单权限
-            $redisClient = redis('org');
-            if ($redisClient->exists($authRedisKey)) {
-                $rbacAccess = Json::decode($redisClient->get($authRedisKey));
-            } else {
-                logger()->notice($authRedisKey . 'NOT FOUND', ['module' => RequestHelper::getAdminModule()]);
-                return false;
-            }
-        } catch (\Exception $exception) {
-            logger()->error('ORG REDIS CLIENT ERROR', ['module' => RequestHelper::getAdminModule()]);
+        if (env('APP_NAME') == 'org' && class_exists('\App\JsonRpc\OrgService')) {
+            $orgService = container()->get(\App\JsonRpc\OrgService::class)->getRoleRbacList($role_id);
+        } else {
+            $orgService = container()->get(OrgServiceInterface::class)->getRoleRbacList($role_id);
         }
         $adminModule = RequestHelper::getAdminModule();
+        $rbacAccess = ! empty($orgService['data']['rbacList']) ? $orgService['data']['rbacList'] : [];
         if (in_array($adminModule, $rbacAccess) && ! empty($rbacAccess)) {
             return true;
         }
