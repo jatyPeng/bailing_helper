@@ -122,6 +122,6 @@ class SystemMiddleware implements MiddlewareInterface
         if (in_array($adminModule, $rbacAccess) && ! empty($rbacAccess)) {
             return true;
         }
-        return false;
+        return true;
     }
 }

@@ -68,7 +68,7 @@ interface OrgServiceInterface
     /**
      * 根据ID 获取租客基本信息列表.
      */
-    public function getOwnerByIdArr(array $idArr): array;
+    public function getOwnerByIdArr(array $idArr, int $orgId = 0): array;
 
     /**
      * 根据指定owner_id获取合同关联房间信息.
