@@ -107,4 +107,21 @@ class PayServiceConsumer extends AbstractServiceClient implements PayServiceInte
             return ApiHelper::genServiceErrorData($this->serviceName, $exception);
         }
     }
+
+    /**
+     * 企业付款
+     *
+     * @param int $orgId 机构ID
+     * @param string $type 支付方式 enum('wxpay', 'alipay')
+     * @param int|float $money 金额
+     * @param array $orderData ['openid' => '用户openid(必填)', 'appid' => '可不填', 'remark' => '付款备注(必填)']
+     */
+    public function merchantPay(int $orgId, string $type, int|float $money, array $orderData): array
+    {
+        try {
+            return $this->__request(__FUNCTION__, compact('orgId', 'type', 'money', 'orderData'));
+        } catch (\Exception $exception) {
+            return ApiHelper::genServiceErrorData($this->serviceName, $exception);
+        }
+    }
 }

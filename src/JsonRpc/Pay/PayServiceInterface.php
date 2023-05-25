@@ -52,4 +52,14 @@ interface PayServiceInterface
      * @param string $appid 支付宝应用appid
      */
     public function getAlipayParams(int $orgId, string $appid): array;
+
+    /**
+     * 企业付款
+     *
+     * @param int $orgId 机构ID
+     * @param string $type 支付方式 enum('wxpay', 'alipay')
+     * @param int|float $money 金额
+     * @param array $orderData ['openid' => '用户openid(必填)', 'appid' => '可不填', 'remark' => '付款备注(必填)']
+     */
+    public function merchantPay(int $orgId, string $type, int|float $money, array $orderData): array;
 }
