@@ -61,6 +61,13 @@ class UploadHelper
             $this->config->set('file.storage.' . $this->filesystemType . '.endpoint', cfg('filesystem_s3_endpoint'));
             $this->config->set('file.storage.' . $this->filesystemType . '.bucket_name', cfg('filesystem_s3_bucket'));
         }
+        if ($this->filesystemType == 'oss') {
+            // 重新从数据库读 oss 配置项
+            $this->config->set('file.storage.' . $this->filesystemType . '.accessId', cfg('filesystem_oss_access_id'));
+            $this->config->set('file.storage.' . $this->filesystemType . '.accessSecret', cfg('filesystem_oss_access_secret'));
+            $this->config->set('file.storage.' . $this->filesystemType . '.bucket', cfg('filesystem_oss_bucket'));
+            $this->config->set('file.storage.' . $this->filesystemType . '.endpoint', cfg('filesystem_oss_endpoint'));
+        }
     }
 
     /**
