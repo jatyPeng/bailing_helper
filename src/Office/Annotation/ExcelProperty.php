@@ -89,14 +89,14 @@ class ExcelProperty extends AbstractAnnotation
     ) {
         $this->value = $value;
         $this->index = $index;
-        $this->width = $width;
-        $this->align = $align;
-        $this->headColor = $headColor;
-        $this->headBgColor = $headBgColor;
-        $this->color = $color;
-        $this->bgColor = $bgColor;
-        $this->dictData = $dictData;
-        $this->dictName = $dictName;
-        $this->path = $path;
+        isset($width) && $this->width = $width;
+        isset($align) && $this->align = $align;
+        isset($headColor) && $this->headColor = $headColor;
+        isset($headBgColor) && $this->headBgColor = $headBgColor;
+        isset($color) && $this->color = $color;
+        isset($bgColor) && $this->bgColor = $bgColor;
+        isset($dictData) && $this->dictData = $dictData;
+        isset($dictName) && $this->dictName = $dictName;
+        isset($path) && $this->path = $path;
     }
 }
