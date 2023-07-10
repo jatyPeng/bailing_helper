@@ -10,9 +10,9 @@ declare(strict_types=1);
  */
 namespace Bailing\Office\Excel;
 
+use Bailing\Exception\BusinessException;
 use Bailing\Office\Excel;
 use Bailing\Office\Interfaces\ExcelPropertyInterface;
-use Bailing\Exception\BusinessException;
 use Hyperf\DbConnection\Model\Model;
 use Hyperf\HttpServer\Contract\RequestInterface;
 use Hyperf\HttpServer\Contract\ResponseInterface;

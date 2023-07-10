@@ -17,7 +17,11 @@ class ConfigProvider
     public function __invoke(): array
     {
         return [
-            'dependencies' => [],
+            'dependencies' => [
+                \Bailing\IotCloud\HikCloud\Application::class => \Bailing\IotCloud\HikCloud\ApplicationFactory::class,
+                \Bailing\IotCloud\YunRui\Application::class => \Bailing\IotCloud\YunRui\ApplicationFactory::class,
+                \Bailing\IotCloud\Ys7\Application::class => \Bailing\IotCloud\Ys7\ApplicationFactory::class,
+            ],
             'listeners' => [
                 MainWorkerStartListener::class,
             ],

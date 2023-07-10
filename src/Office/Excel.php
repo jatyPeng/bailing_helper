@@ -10,11 +10,10 @@ declare(strict_types=1);
  */
 namespace Bailing\Office;
 
-use Bailing\Office\Interfaces\ModelExcelInterface;
 use Bailing\Exception\BusinessException;
+use Bailing\Office\Interfaces\ModelExcelInterface;
 use Hyperf\Di\Annotation\AnnotationCollector;
 use Hyperf\HttpMessage\Stream\SwooleStream;
-use Hyperf\HttpServer\Contract\ResponseInterface;
 
 abstract class Excel
 {

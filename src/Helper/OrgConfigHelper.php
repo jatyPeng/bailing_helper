@@ -105,7 +105,6 @@ class OrgConfigHelper
      * @param int $orgId 机构ID
      * @param string $name 配置名
      * @param string $index 唯一索引值，用于细项配置（例如 项目ID_楼宇ID，店铺ID）
-     * @return void
      */
     #[CacheEvict(prefix: 'bailingOrgConfig', value: '_#{orgId}_#{name}_#{index}')]
     public static function clearCache(int $orgId, string $name, string $index = ''): void
