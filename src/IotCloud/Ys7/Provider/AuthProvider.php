@@ -1,6 +1,6 @@
 <?php
 
-    declare(strict_types=1);
+declare(strict_types=1);
 /**
  * This file is part of Kuaijing Bailing.
  *
@@ -10,20 +10,20 @@
  */
 namespace Bailing\IotCloud\Ys7\Provider;
 
-    use Bailing\IotCloud\Ys7\AbstractProvider;
+use Bailing\IotCloud\Ys7\AbstractProvider;
 
-    class AuthProvider extends AbstractProvider
+class AuthProvider extends AbstractProvider
+{
+    public function accessToken()
     {
-        public function accessToken()
-        {
-            $params = [
-                'appKey' => $this->config->getYs7Config()['appKey'],
-                'appSecret' => $this->config->getYs7Config()['appSecret'],
-            ];
-            $options = [
-                'headers' => [],
-                'form_params' => $params,
-            ];
-            return $this->setBaseUri($this->config->getYsCloudBaseUri())->request('POST', '/api/lapp/token/get', $options);
-        }
+        $params = [
+            'appKey' => $this->config->getYs7Config()['appKey'],
+            'appSecret' => $this->config->getYs7Config()['appSecret'],
+        ];
+        $options = [
+            'headers' => [],
+            'form_params' => $params,
+        ];
+        return $this->setBaseUri($this->config->getYsCloudBaseUri())->request('POST', '/api/lapp/token/get', $options);
     }
+}

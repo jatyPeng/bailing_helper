@@ -68,6 +68,14 @@ class UploadHelper
             $this->config->set('file.storage.' . $this->filesystemType . '.bucket', cfg('filesystem_oss_bucket'));
             $this->config->set('file.storage.' . $this->filesystemType . '.endpoint', cfg('filesystem_oss_endpoint'));
         }
+        if ($this->filesystemType == 'ftp') {
+            // 重新从数据库读 ftp 配置项
+            $this->config->set('file.storage.' . $this->filesystemType . '.host', cfg('filesystem_ftp_host'));
+            $this->config->set('file.storage.' . $this->filesystemType . '.port', cfg('filesystem_ftp_port'));
+            $this->config->set('file.storage.' . $this->filesystemType . '.username', cfg('filesystem_ftp_username'));
+            $this->config->set('file.storage.' . $this->filesystemType . '.password', cfg('filesystem_ftp_password'));
+            $this->config->set('file.storage.' . $this->filesystemType . '.root', cfg('filesystem_ftp_root'));
+        }
     }
 
     /**

@@ -1,6 +1,6 @@
 <?php
 
-    declare(strict_types=1);
+declare(strict_types=1);
 /**
  * This file is part of Kuaijing Bailing.
  *
@@ -10,16 +10,16 @@
  */
 namespace Bailing\IotCloud\Ys7;
 
-    use Bailing\IotCloud\Config;
-    use Hyperf\Contract\ConfigInterface;
-    use Psr\Container\ContainerInterface;
+use Bailing\IotCloud\Config;
+use Hyperf\Contract\ConfigInterface;
+use Psr\Container\ContainerInterface;
 
-    class ApplicationFactory
+class ApplicationFactory
+{
+    public function __invoke(ContainerInterface $container)
     {
-        public function __invoke(ContainerInterface $container)
-        {
-            $config = $container->get(ConfigInterface::class)->get('ys7');
-            file_put_contents('ApplicationFactory.log', print_r(['$config' => $config], true) . PHP_EOL, 8);
-            return new Application(new Config($config));
-        }
+        $config = $container->get(ConfigInterface::class)->get('ys7');
+        file_put_contents('ApplicationFactory.log', print_r(['$config' => $config], true) . PHP_EOL, 8);
+        return new Application(new Config($config));
     }
+}
