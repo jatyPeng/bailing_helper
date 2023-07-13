@@ -75,6 +75,7 @@ class UploadHelper
             $this->config->set('file.storage.' . $this->filesystemType . '.username', cfg('filesystem_ftp_username'));
             $this->config->set('file.storage.' . $this->filesystemType . '.password', cfg('filesystem_ftp_password'));
             $this->config->set('file.storage.' . $this->filesystemType . '.root', cfg('filesystem_ftp_root'));
+            $this->config->set('file.storage.' . $this->filesystemType . '.ssl', (bool) cfg('filesystem_ftp_ssl'));
         }
     }
 
