@@ -75,6 +75,7 @@ class LogController
             if ($page) {
                 $resultArr = explode(PHP_EOL, $result);
                 $result = array_slice($resultArr, ($page - 1) * $pageSize, $pageSize);
+                return ApiHelper::genSuccessData(['result' => $result, 'length' => count($result)], '获取成功');
             }
 
             return ApiHelper::genSuccessData(['result' => $result], '获取成功');
