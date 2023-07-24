@@ -55,6 +55,9 @@ class LogController
     #[Middleware(SystemMiddleware::class)]
     public function getLogContent(): array
     {
+        $page = request()->input('page');
+        $pageSize = request()->input('pageSize', 1000);
+
         $path = request()->input('path', '');
         $path = str_replace('\\', '/', $path);
         $path = str_replace('../', '/', $path);
@@ -67,6 +70,13 @@ class LogController
                 return ApiHelper::genErrorData('文件系统中没找到该文件');
             }
             $result = FileHelper::getContent($realPath);
+
+            //如果有分页
+            if ($page) {
+                $resultArr = explode(PHP_EOL, $result);
+                $result = array_slice($resultArr, ($page - 1) * $pageSize, $pageSize);
+            }
+
             return ApiHelper::genSuccessData(['result' => $result], '获取成功');
         }
 
