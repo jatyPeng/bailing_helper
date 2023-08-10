@@ -33,7 +33,7 @@ class Request
         $this->action = $action;
         $this->uri = $uri;
         $url = parse_url($endpoint);
-        $this->endpoint = $url['host'];
+        $this->endpoint = isset($url['port']) ? ($url['host'] . ':' . $url['port']) : $url['host'];
         $url['scheme'] === 'http' || $this->secure = true;
         $this->headers = [
             'Content-MD5' => '',
