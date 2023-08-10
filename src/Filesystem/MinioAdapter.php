@@ -41,6 +41,12 @@ class MinioAdapter implements FilesystemAdapter
 
     public function __construct(array $config)
     {
+        //检测endpoint是否正确
+        $url = parse_url($config['endpoint']);
+        if (empty($url['host'])) {
+            throw UnableToReadFile::fromLocation($config['endpoint'], 'ENDPOINT错误，需要是http[s]://开头的网址');
+        }
+
         $this->config = $config;
 
         $this->minio = new Minio($this->config);
