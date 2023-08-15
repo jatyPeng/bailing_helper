@@ -16,7 +16,6 @@ use League\Flysystem\DirectoryAttributes;
 use League\Flysystem\FileAttributes;
 use League\Flysystem\FilesystemAdapter;
 use League\Flysystem\PathPrefixer;
-use League\Flysystem\UnableToCopyFile;
 use League\Flysystem\UnableToDeleteDirectory;
 use League\Flysystem\UnableToDeleteFile;
 use League\Flysystem\UnableToReadFile;
@@ -243,19 +242,7 @@ class MinioAdapter implements FilesystemAdapter
     {
         $prefixedSource = $this->prefixer->prefixPath($source);
 
-        $location = $this->getSourcePath($prefixedSource);
-
-        $prefixedDestination = $this->prefixer->prefixPath($destination);
-
-        $response = $this->getObjectClient()->copyObject(
-            $prefixedDestination,
-            [
-                'x-cos-copy-source' => $location,
-            ]
-        );
-        if (! $response->isSuccessful()) {
-            throw UnableToCopyFile::fromLocationTo($source, $destination);
-        }
+        $this->write($destination, file_get_contents($prefixedSource), $config);
     }
 
     public function getUrl(string $path): string
