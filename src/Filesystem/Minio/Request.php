@@ -90,7 +90,7 @@ class Request
         $string_to_sign .= "{$this->headers['Date']}\n";
 
         if (! empty($canonical_amz_headers)) {
-            $string_to_sign .= implode($canonical_amz_headers, "\n") . "\n";
+            $string_to_sign .= implode("\n", $canonical_amz_headers) . "\n";
         }
 
         $string_to_sign .= "/{$this->uri}";
@@ -214,7 +214,7 @@ class Request
             $header = trim(strtolower($header));
             $value = trim($value);
 
-            if (strpos($header, 'x-amz-') === 0) {
+            if (str_starts_with($header, 'x-amz-')) {
                 $canonical_amz_headers[$header] = "{$header}:{$value}";
             }
         }
