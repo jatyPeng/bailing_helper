@@ -206,23 +206,14 @@ class Minio
 
     /**
      * 拷贝文件.
-     * @param $fromObject 源文件
-     * @param $toObject 目标文件
+     * @param string $fromObject 源文件
+     * @param string $toObject 目标文件
      * @return array|mixed {"code":200}
      */
-    public function copyObject($fromObject, $toObject)
+    public function copyObject(string $fromObject, string $toObject)
     {
-        $fromObject = ltrim($fromObject, DIRECTORY_SEPARATOR);
-        $toObject = ltrim($toObject, DIRECTORY_SEPARATOR);
-
-        //判断目标bucket是否存在，不存在则创建
-        $toArr = explode(DIRECTORY_SEPARATOR, $toObject);
-        $toBucket = $toArr[0];
-        $listBuckets = $this->listBuckets();
-        $bucketArr = $listBuckets['data']['bucket'];
-        if (! in_array($toBucket, $bucketArr)) {
-            $this->createBucket($toBucket);
-        }
+        $fromObject = ltrim($this->bucket . DIRECTORY_SEPARATOR . $fromObject, DIRECTORY_SEPARATOR);
+        $toObject = ltrim($this->bucket . DIRECTORY_SEPARATOR . $toObject, DIRECTORY_SEPARATOR);
 
         $request = (new Request('PUT', $this->endpoint, $toObject))
             ->setHeaders(['x-amz-copy-source' => $fromObject])

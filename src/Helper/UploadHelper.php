@@ -86,7 +86,6 @@ class UploadHelper
      */
     public function uploadFile(mixed $file, string $fileDir): array
     {
-        $filesystem = new Filesystem();
         if (! $fileDir) {
             $fileDir = 'files';
         }
@@ -112,11 +111,13 @@ class UploadHelper
         $stream = fopen($file->getRealPath(), 'r+');
 
         $fileName = 'upload/' . $fileDir . '/' . date('Ymd') . '/' . uniqid() . mt_rand(10000, 99999) . '.' . $file->getExtension();
-        $filesystem->writeStream(
+        $this->filesystemFactory->get($this->filesystemType)->writeStream(
             $fileName,
             $stream
         );
-        fclose($stream);
+        if (is_resource($stream)) {
+            fclose($stream);
+        }
 
         //为了后续纠出传不合法文件人的信息，记入日志。
         logger()->info('uploadFile' . $fileName, request()->getHeaders());
@@ -132,7 +133,6 @@ class UploadHelper
      */
     public function uploadImage(mixed $file, string $fileDir): array
     {
-        $filesystem = new Filesystem();
         if (! $fileDir) {
             $fileDir = 'images';
         }
@@ -154,11 +154,13 @@ class UploadHelper
         $stream = fopen($file->getRealPath(), 'r+');
 
         $fileName = 'upload/' . $fileDir . '/' . date('Ymd') . '/' . uniqid() . mt_rand(10000, 99999) . '.' . $file->getExtension();
-        $filesystem->writeStream(
+        $this->filesystemFactory->get($this->filesystemType)->writeStream(
             $fileName,
             $stream
         );
-        fclose($stream);
+        if (is_resource($stream)) {
+            fclose($stream);
+        }
 
         //为了后续纠出传不合法文件人的信息，记入日志。
         logger()->info('uploadImage' . $fileName);

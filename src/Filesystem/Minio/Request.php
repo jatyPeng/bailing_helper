@@ -103,6 +103,17 @@ class Request
     }
 
     /**
+     * header头设置.
+     * @param array $headers
+     * @return $this
+     */
+    public function setHeaders(array $headers = [])
+    {
+        $this->headers = array_merge($this->headers, $headers);
+        return $this;
+    }
+
+    /**
      * multi_curl设置.
      * @param $mh
      * @return $this
