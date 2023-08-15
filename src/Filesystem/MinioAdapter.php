@@ -102,7 +102,7 @@ class MinioAdapter implements FilesystemAdapter
         return (string) $response['data'];
     }
 
-    public function readStream(string $path): bool|string
+    public function readStream(string $path)
     {
         $prefixedPath = $this->prefixer->prefixPath($path);
 
@@ -112,7 +112,11 @@ class MinioAdapter implements FilesystemAdapter
             return false;
         }
 
-        return (string) $response['data'];
+        // 先将文件存储到本地临时目录
+        $tmpFile = tmpDir() . uniqid() . mt_rand(10000, 99999);
+        file_put_contents($tmpFile, $response['data']);
+
+        return fopen($tmpFile, 'r+');
     }
 
     public function delete(string $path): void
