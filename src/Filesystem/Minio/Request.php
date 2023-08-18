@@ -104,7 +104,6 @@ class Request
 
     /**
      * header头设置.
-     * @param array $headers
      * @return $this
      */
     public function setHeaders(array $headers = [])
