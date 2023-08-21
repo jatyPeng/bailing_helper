@@ -80,6 +80,7 @@ class MinioAdapter implements FilesystemAdapter
         $response = $this->minio->putObject($tmpFile, $prefixedPath);
 
         if ($response['code'] != 200) {
+            stdLog()->error('minio write file error：' . ($response['error']['message'] ?? '写入失败'));
             throw UnableToWriteFile::atLocation($path, (string) ($response['error']['message'] ?? '写入失败'));
         }
     }
@@ -96,6 +97,7 @@ class MinioAdapter implements FilesystemAdapter
         $response = $this->minio->getObject($prefixedPath);
 
         if ($response['code'] != 200) {
+            stdLog()->error('minio read file error：' . ($response['error']['message'] ?? '读取失败'));
             throw UnableToReadFile::fromLocation($path, (string) ($response['error']['message'] ?? '读取失败'));
         }
 
@@ -252,6 +254,7 @@ class MinioAdapter implements FilesystemAdapter
         $response = $this->minio->copyObject($prefixedSource, $prefixedDestination);
 
         if ($response['code'] != 200) {
+            stdLog()->error('minio copy file error：' . ($response['error']['message'] ?? '复制失败'));
             throw UnableToCopyFile::fromLocationTo($source, $destination);
         }
     }
