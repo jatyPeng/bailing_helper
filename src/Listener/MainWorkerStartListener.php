@@ -45,7 +45,7 @@ class MainWorkerStartListener implements ListenerInterface
         if (env('AMQP_VHOST_AUTO_CREATE') === true && env('AMQP_PORT_ADMIN')) {
             $clientHttp = new Client();
             try {
-                $response = $clientHttp->request('PUT', sprintf('http://%s:%s/api/vhosts/%s', env('AMQP_HOST'), env('AMQP_PORT_ADMIN'), env('AMQP_VHOST')), [
+                $response = $clientHttp->request('PUT', sprintf('http://%s:%s/api/vhosts/%s', env('AMQP_HOST'), env('AMQP_PORT_ADMIN'), env('AMQP_BALING_VHOST', 'bailing')), [
                     'auth' => [env('AMQP_USER'), env('AMQP_PASSWORD')],
                     'content-type' => 'application/json',
                 ]);
