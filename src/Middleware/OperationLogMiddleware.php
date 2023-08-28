@@ -104,12 +104,6 @@ class OperationLogMiddleware implements MiddlewareInterface
             return $result;
         }
 
-        //判断日志配置信息是否存在
-        $logConfig = config('logConfig');
-        if (! $logConfig) {
-            return $result;
-        }
-
         //将日志存储到amqp中
         $message = new OperationLogProducer($operationLog);
         $producer = container()->get(Producer::class);
