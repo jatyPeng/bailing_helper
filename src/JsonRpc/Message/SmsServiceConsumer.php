@@ -42,4 +42,13 @@ class SmsServiceConsumer extends AbstractServiceClient implements SmsServiceInte
             return ApiHelper::genServiceErrorData($this->serviceName, $exception);
         }
     }
+
+    public function checkVerifyCode(string $token, string $input): array
+    {
+        try {
+            return $this->__request(__FUNCTION__, compact('token', 'input'));
+        } catch (\Exception $exception) {
+            return ApiHelper::genServiceErrorData($this->serviceName, $exception);
+        }
+    }
 }

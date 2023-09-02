@@ -10,6 +10,8 @@ declare(strict_types=1);
  */
 namespace Bailing\JsonRpc\Message;
 
+use App\Helper\VerifyCodeHelper;
+
 interface SmsServiceInterface
 {
     /**
@@ -25,4 +27,9 @@ interface SmsServiceInterface
      * 校验验证码.
      */
     public function checkSmsCode(string $phone, string $phoneCountry, string $code): array;
+
+    /**
+     * 图形验证码校验.
+     */
+    public function checkVerifyCode(string $token, string $input): array;
 }
