@@ -35,6 +35,11 @@ class ExcelProperty extends AbstractAnnotation
     public int $width;
 
     /**
+     * 高度（仅取第一个的）.
+     */
+    public int $height;
+
+    /**
      * 对齐方式，默认居左.
      */
     public string $align;
@@ -48,6 +53,11 @@ class ExcelProperty extends AbstractAnnotation
      * 列表头背景颜色.
      */
     public string|int $headBgColor;
+
+    /**
+     * 列表头的高度（仅取第一个的）.
+     */
+    public int $headHeight;
 
     /**
      * 列表体字体颜色.
@@ -78,9 +88,11 @@ class ExcelProperty extends AbstractAnnotation
         string $value,
         int $index,
         int $width = null,
+        int $height = null,
         string $align = null,
         string|int $headColor = null,
         string|int $headBgColor = null,
+        int $headHeight = null,
         string|int $color = null,
         string|int $bgColor = null,
         array $dictData = null,
@@ -90,9 +102,11 @@ class ExcelProperty extends AbstractAnnotation
         $this->value = $value;
         $this->index = $index;
         isset($width) && $this->width = $width;
+        isset($height) && $this->height = $height;
         isset($align) && $this->align = $align;
         isset($headColor) && $this->headColor = $headColor;
         isset($headBgColor) && $this->headBgColor = $headBgColor;
+        isset($headHeight) && $this->headHeight = $headHeight;
         isset($color) && $this->color = $color;
         isset($bgColor) && $this->bgColor = $bgColor;
         isset($dictData) && $this->dictData = $dictData;

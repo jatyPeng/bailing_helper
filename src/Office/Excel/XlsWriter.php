@@ -100,31 +100,50 @@ class XlsWriter extends Excel implements ExcelPropertyInterface
         $columnFormat = new Format($fileObject->getHandle());
         $rowFormat = new Format($fileObject->getHandle());
 
-        $index = 0;
         for ($i = 0; $i < count($columnField); ++$i) {
-            $columnNumber = chr($i) . '1';
             $fileObject->setColumn(
                 sprintf('%s1:%s1', $this->getColumnIndex($i), $this->getColumnIndex($i)),
-                $this->property[$index]['width'] ?? mb_strlen($columnName[$index]) * 5,
-                $columnFormat->align($this->property[$index]['align'] ? $aligns[$this->property[$index]['align']] : $aligns['left'])
-                    ->background($this->property[$index]['bgColor'] ?? Format::COLOR_WHITE)
+                $this->property[$i]['width'] ?? mb_strlen($columnName[$i]) * 5,
+                $columnFormat->align($this->property[$i]['align'] ? $aligns[$this->property[$i]['align']] : $aligns['left'])
+                    ->background($this->property[$i]['bgColor'] ?? Format::COLOR_WHITE)
                     ->border(Format::BORDER_THIN)
-                    ->fontColor($this->property[$index]['color'] ?? Format::COLOR_BLACK)
+                    ->fontColor($this->property[$i]['color'] ?? Format::COLOR_BLACK)
                     ->toResource()
             );
-            ++$index;
         }
 
         // 表头加样式
         $fileObject->setRow(
             sprintf('A1:%s1', $this->getColumnIndex(count($columnField))),
-            20,
-            $rowFormat->bold()->align(Format::FORMAT_ALIGN_CENTER, Format::FORMAT_ALIGN_VERTICAL_CENTER)
-                ->background($this->property[0]['headBgColor'] ?? 0x4AC1FF)->fontColor($this->property[0]['headColor'] ?? Format::COLOR_BLACK)
-                ->border(Format::BORDER_THIN)
-                ->toResource()
+            $this->property[0]['headHeight'] ?? 20,
+            $rowFormat->bold()->toResource()
         );
-        $exportData = [];
+        for ($i = 0; $i < count($data); ++$i) {
+            $fileObject->setRow(
+                sprintf('A%s:%s1', $i + 1, $this->getColumnIndex(count($columnField))),
+                $this->property[0]['height'] ?? 20,
+                (new Format($fileObject->getHandle()))->toResource()
+            );
+        }
+        for ($i = 0; $i < count($columnField); ++$i) {
+            $fileObject->insertText(
+                0,
+                $i,
+                $columnName[$i],
+                null,
+                (new Format($fileObject->getHandle()))
+                    ->bold()
+                    ->align(Format::FORMAT_ALIGN_CENTER, Format::FORMAT_ALIGN_VERTICAL_CENTER)
+                    ->background($this->property[$i]['headBgColor'] ?? 0x4AC1FF)
+                    ->fontColor($this->property[$i]['headColor'] ?? Format::COLOR_BLACK)
+                    ->border(Format::BORDER_THIN)
+                    ->toResource()
+            );
+        }
+
+        $exportData = [
+            [],
+        ];
         foreach ($data as $item) {
             $yield = [];
             if ($callbackData) {

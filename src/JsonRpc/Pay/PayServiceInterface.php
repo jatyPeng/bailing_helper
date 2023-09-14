@@ -59,7 +59,7 @@ interface PayServiceInterface
      * @param int $orgId 机构ID
      * @param string $type 支付方式 enum('wxpay', 'alipay')
      * @param float $money 金额
-     * @param array $orderData ['openid' => '用户openid(必填)', 'appid' => '可不填', 'remark' => '付款备注(必填)']
+     * @param array $orderData ['order_id' => '订单ID(必填)', 'openid' => '用户openid(必填)', 'appid' => '可不填', 'remark' => '付款备注(必填)', 'notify_url' => '回调地址(必填)']
      */
     public function merchantPay(int $orgId, string $type, float $money, array $orderData): array;
 }

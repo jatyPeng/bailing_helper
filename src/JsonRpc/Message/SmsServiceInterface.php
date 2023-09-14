@@ -10,8 +10,6 @@ declare(strict_types=1);
  */
 namespace Bailing\JsonRpc\Message;
 
-use App\Helper\VerifyCodeHelper;
-
 interface SmsServiceInterface
 {
     /**
