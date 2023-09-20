@@ -90,12 +90,28 @@ class ThirdServiceConsumer extends AbstractServiceClient implements ThirdService
     }
 
     /**
-     * 获取公众号带参数二维码.
+     * 获取微信公众号带参数二维码.
      */
     public function getWechatMpQrcode(int $orgId, string $sceneStr, string $appid = '', bool $isTemp = true): array
     {
         try {
             return $this->__request(__FUNCTION__, compact('orgId', 'sceneStr', 'appid', 'isTemp'));
+        } catch (\Exception $exception) {
+            return ApiHelper::genServiceErrorData($this->serviceName, $exception);
+        }
+    }
+
+    /**
+     * 获取微信小程序带参数二维码.
+     * @param int $orgId 机构ID
+     * @param string $path 页面路径，场景码也一样通过?组装参数，程序会分割
+     * @param string $appid 限定使用的小程序
+     * @param bool $isScene 是否生成场景二维码，永久有效，数量无限制，参数限制32个字符（只支持数字，大小写英文以及部分特殊字符：!#$&'()*+,/:;=?@-._~）
+     */
+    public function getWechatAppQrcode(int $orgId, string $path, string $appid = '', bool $isScene = false): array
+    {
+        try {
+            return $this->__request(__FUNCTION__, compact('orgId', 'path', 'appid', 'isScene'));
         } catch (\Exception $exception) {
             return ApiHelper::genServiceErrorData($this->serviceName, $exception);
         }

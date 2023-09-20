@@ -1,0 +1,128 @@
+<?php
+
+declare(strict_types=1);
+/**
+ * This file is part of Kuaijing Bailing.
+ *
+ * @link     https://www.kuaijingai.com
+ * @document https://help.kuaijingai.com
+ * @contact  www.kuaijingai.com 7*12 9:00-21:00
+ */
+namespace App\Controller\%DIR%;
+
+use App\Controller\AbstractController;
+use App\Model\%CLASS%;
+use App\Request\%CLASS%Request;
+use Bailing\Helper\ApiHelper;
+use Bailing\Middleware\OrgMiddleware;
+use Hyperf\HttpServer\Annotation\Controller;
+use Hyperf\HttpServer\Annotation\DeleteMapping;
+use Hyperf\HttpServer\Annotation\GetMapping;
+use Hyperf\HttpServer\Annotation\Middleware;
+use Hyperf\HttpServer\Annotation\PostMapping;
+use Hyperf\HttpServer\Annotation\PutMapping;
+
+#[Controller]
+#[Middleware(OrgMiddleware::class)]
+class %CLASS%Controller extends AbstractController
+{
+    #[GetMapping(path: '%ROUTER%')]
+    public function list(): array
+    {
+        $get = validateForm(%CLASS%Request::class, 'list', %CLASS%::class);
+        $nowAdmin = contextGet('nowUser');
+
+        $list = %CLASS%::query()->where(['org_id' => $nowAdmin->org_id])->orderByDesc('id')->paginate((int) $this->request->input('pageSize', 20))->toArray();
+        // 如果不需要处理列表，则删除掉
+        if ($list['data']) {
+            foreach ($list['data'] as $key => &$item) {
+                $item = $item;
+                // todo...
+            }
+        }
+
+        return ApiHelper::genSuccessData(genListData($list));
+    }
+
+    #[PostMapping(path: '%ROUTER%')]
+    public function add(): array
+    {
+        $post = validateForm(%CLASS%Request::class, 'add', %CLASS%::class);
+        $nowAdmin = contextGet('nowUser');
+
+        $model = new %CLASS%();
+        %ADD_FIELDS%
+
+        if (! $model->save()) {
+            return ApiHelper::genErrorData('添加失败，请重试');
+        }
+
+        return ApiHelper::genSuccessData(['id' => $model->id], '添加成功');
+    }
+
+    #[GetMapping(path: '%ROUTER%/{id:\d+}')]
+    public function detail($id): array
+    {
+        $get = validateForm(%CLASS%Request::class, 'detail', %CLASS%::class);
+        $nowAdmin = contextGet('nowUser');
+
+        $detail = %CLASS%::query()->where(['id' => $id, 'org_id' => $nowAdmin->org_id])->first();
+        if (empty($detail)) {
+             return ApiHelper::genErrorDataEmpty();
+        }
+        $detailArr = $detail->toArray();
+
+        return ApiHelper::genSuccessData(['detail' => $detailArr]);
+    }
+
+    #[PutMapping(path: '%ROUTER%')]
+    public function edit(): array
+    {
+        $post = validateForm(%CLASS%Request::class, 'edit', %CLASS%::class);
+        $nowAdmin = contextGet('nowUser');
+
+        $detail = %CLASS%::query()->where(['id' => $post['id'], 'org_id' => $nowAdmin->org_id])->first();
+        if (empty($detail)) {
+            return ApiHelper::genErrorDataEmpty();
+        }
+
+        %EDIT_FIELDS%
+
+        if (! $detail->save()) {
+            return ApiHelper::genErrorData('保存失败，请重试');
+        }
+
+        return ApiHelper::genSuccessData(['id' => $detail->id], '保存成功');
+    }
+
+    #[DeleteMapping(path: '%ROUTER%/{id:\d+}')]
+    public function delete($id): array
+    {
+        $get = validateForm(%CLASS%Request::class, 'delete', %CLASS%::class);
+        $nowAdmin = contextGet('nowUser');
+
+        $detail = %CLASS%::query()->where(['id' => $id, 'org_id' => $nowAdmin->org_id])->first();
+        if (empty($detail)) {
+            return ApiHelper::genErrorDataEmpty();
+        }
+
+        /**
+        // todo...（如果没有子数据，请移除此段代码。如果需要连带子数据一并删除，请另外编写代码）本行代码必须移除
+        // 存在子数据，不允许删除
+        if (SubData::query()->where(['cat_id' => $detail->id])->first()) {
+            return ApiHelper::genErrorData('请先删除子数据后，再删除此数据');
+        }
+        **/
+
+        try {
+            if (! $detail->delete()) {
+                return ApiHelper::genErrorData('删除失败，请重试');
+            }
+        } catch (\Exception $e) {
+            stdLog()->error('%CLASS% delete error：' . $e->getMessage());
+            return ApiHelper::genErrorData('删除失败，' . $e->getMessage());
+        }
+
+        return ApiHelper::genSuccessData(['id' => $detail->id], '删除成功');
+    }
+}

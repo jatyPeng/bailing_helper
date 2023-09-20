@@ -1,0 +1,51 @@
+<?php
+
+declare(strict_types=1);
+/**
+ * This file is part of Kuaijing Bailing.
+ *
+ * @link     https://www.kuaijingai.com
+ * @document https://help.kuaijingai.com
+ * @contact  www.kuaijingai.com 7*12 9:00-21:00
+ */
+namespace App\Request;
+
+use Hyperf\Validation\Request\FormRequest;
+
+class %CLASS%Request extends FormRequest
+{
+    protected array $scenes = [
+        'list' => [],
+        'add' => [%TRIM_FIELDS%],
+        'detail' => [],
+        'edit' => ['id', %TRIM_FIELDS%],
+        'delete' => [],
+    ];
+
+    /**
+     * Determine if the user is authorized to make this request.
+     */
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+    /**
+     * Get the validation rules that apply to the request.
+     */
+    public function rules(): array
+    {
+        return [
+            'id' => 'required|integer',
+            %REQUEST_RULES%
+        ];
+    }
+
+    /**
+     * Get the validation rules that apply to the request.
+     */
+    public function attributes(): array
+    {
+        return [];
+    }
+}
