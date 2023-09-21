@@ -91,12 +91,12 @@ class PhpOffice extends Excel implements ExcelPropertyInterface
 
             empty($item['align']) || $sheet->getStyle($headerColumn)->getAlignment()->setHorizontal($item['align']);
 
-            empty($item['headColor']) || $style->setColor(new Color(str_replace('#', '', $item['headColor'])));
+            empty($item['headColor']) || $style->setColor(new Color(str_replace('#', '', (string) $item['headColor'])));
 
             if (! empty($item['headBgColor'])) {
                 $sheet->getStyle($headerColumn)->getFill()
                     ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-                    ->getStartColor()->setARGB(str_replace('#', '', $item['headBgColor']));
+                    ->getStartColor()->setARGB(str_replace('#', '', (string) $item['headBgColor']));
             }
             ++$titleStart;
         }
@@ -133,13 +133,13 @@ class PhpOffice extends Excel implements ExcelPropertyInterface
 
                     if (! empty($item['color'])) {
                         $sheet->getStyle($columnRow)->getFont()
-                            ->setColor(new Color(str_replace('#', '', $annotation['color'])));
+                            ->setColor(new Color(str_replace('#', '', (string) $annotation['color'])));
                     }
 
                     if (! empty($item['bgColor'])) {
                         $sheet->getStyle($columnRow)->getFill()
                             ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-                            ->getStartColor()->setARGB(str_replace('#', '', $annotation['bgColor']));
+                            ->getStartColor()->setARGB(str_replace('#', '', (string) $annotation['bgColor']));
                     }
                     ++$column;
                 }
