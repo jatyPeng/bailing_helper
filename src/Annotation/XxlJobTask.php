@@ -34,6 +34,8 @@ class XxlJobTask extends AbstractAnnotation
 
     public string $jobParam = ''; //任务参数
 
+    public string $routeStrategy = ''; //路由策略
+
     public int $jobTimeout = 0; //任务超时时间，单位秒
 
     public int $jobRetry = 0; //失败重试次数
@@ -46,6 +48,7 @@ class XxlJobTask extends AbstractAnnotation
         string $cron = '',
         string $jobHandler = '',
         string $jobParam = '',
+        string $routeStrategy = '',
         int $jobTimeout = 0,
         int $jobRetry = 0
     ) {
@@ -56,6 +59,7 @@ class XxlJobTask extends AbstractAnnotation
         $this->cron = $cron;
         $this->jobHandler = $jobHandler;
         $this->jobParam = $jobParam;
+        $this->routeStrategy = $routeStrategy;
         $this->jobTimeout = $jobTimeout;
         $this->jobRetry = $jobRetry;
     }

@@ -19,10 +19,10 @@ use Hyperf\XxlJob\Logger\JobExecutorLoggerInterface;
 use Hyperf\XxlJob\Requests\RunRequest;
 
 /**
- * 缓存文件的清空（日志）每天凌晨2点2分执行.
+ * 缓存文件的清空（日志）每天凌晨2点2分执行，轮询保证每天都能执行到一个.
  */
 #[XxlJob('planRuntimeFileClear')]
-#[XxlJobTask(jobDesc: '缓存文件的清空（日志）', cron: '0 2 2 * * ?', jobHandler: 'planRuntimeFileClear')]
+#[XxlJobTask(jobDesc: '缓存文件的清空（日志）', cron: '0 2 2 * * ?', jobHandler: 'planRuntimeFileClear', routeStrategy: 'ROUND')]
 class RuntimeFileClearJob extends AbstractJobHandler
 {
     #[Inject]
