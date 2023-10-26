@@ -105,7 +105,12 @@ class OrgMiddleware implements MiddlewareInterface
             return self::json('账号异常!未绑定角色身份', ApiHelper::AUTH_ERROR);
         }
         if (! $adminRole || ! $this->allowAccess($jwtData->data->role_id)) {
-            return self::json('无权访问', ApiHelper::AUTH_ERROR);
+	        $authName = $this->getAuthName();
+	        if (!empty($authName)) {
+		        return self::json('无权访问' . '【' . $authName . '】', ApiHelper::AUTH_ERROR);
+	        }else{
+		        return self::json('无权访问', ApiHelper::AUTH_ERROR);
+	        }
         }
         contextSet('nowUser', $jwtData->data); //将登录信息存储到协程上下文
         unset($jwtData, $adminRole);
@@ -141,4 +146,18 @@ class OrgMiddleware implements MiddlewareInterface
         }
         return false;
     }
+
+	/**
+	 * 获取菜单和权限名称
+	 */
+	private function getAuthName(){
+		$adminModule = RequestHelper::getAdminModule();
+		if (env('APP_NAME') == 'org' && class_exists('\App\JsonRpc\OrgService')) {
+			$authResult = container()->get(\App\JsonRpc\OrgService::class)->getMenuAuthName($adminModule);
+		} else {
+			$authResult = container()->get(OrgServiceInterface::class)->getMenuAuthName($adminModule);
+		}
+		$authName = !empty($authResult['data']['name']) ? $authResult['data']['name'] : '';
+		return $authName;
+	}
 }

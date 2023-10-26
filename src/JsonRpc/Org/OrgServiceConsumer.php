@@ -351,4 +351,16 @@ class OrgServiceConsumer extends AbstractServiceClient implements OrgServiceInte
             return ApiHelper::genServiceErrorData($this->serviceName, $exception);
         }
     }
+
+	/**
+	 * 查询没有权限时的菜单名称和权限名称.
+	 */
+	public function getMenuAuthName(string $adminModule): array
+	{
+		try {
+			return $this->__request(__FUNCTION__,compact('adminModule'));
+		} catch (\Exception $exception) {
+			return ApiHelper::genServiceErrorData($this->serviceName, $exception);
+		}
+	}
 }

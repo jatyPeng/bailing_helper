@@ -36,4 +36,16 @@ class MailServiceConsumer extends AbstractServiceClient implements MailServiceIn
             return ApiHelper::genServiceErrorData($this->serviceName, $exception);
         }
     }
+
+    public function call(string $method, array $param): array
+    {
+        try {
+            if (! $method) {
+                throw new \Exception('method不存在，请传参');
+            }
+            return $this->__request(__FUNCTION__, compact('method', 'param'));
+        } catch (\Exception $exception) {
+            return ApiHelper::genServiceErrorData($this->serviceName, $exception);
+        }
+    }
 }

@@ -149,4 +149,9 @@ interface OrgServiceInterface
      * 获取当前指定角色的权限.
      */
     public function getRoleRbacList(int $roleId): array;
+
+	/**
+	 * 获取菜单名称和权限名称
+	 */
+	public function getMenuAuthName(string $adminModule): array;
 }

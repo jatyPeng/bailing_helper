@@ -83,4 +83,12 @@ class LogController
 
         return ApiHelper::genErrorData('暂无权限查看', 4001);
     }
+    /**
+     * 查看日志版本.
+     */
+    #[GetMapping(path: '/system/getLogVersion')]
+    public function getLogVersion(): string
+    {
+        return '62f7111c77a90';
+    }
 }

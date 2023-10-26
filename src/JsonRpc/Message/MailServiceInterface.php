@@ -13,4 +13,6 @@ namespace Bailing\JsonRpc\Message;
 interface MailServiceInterface
 {
     public function pressEmailServiceQueue(array $data): array;
+
+    public function call(string $method, array $param): array;
 }
