@@ -62,4 +62,12 @@ interface PayServiceInterface
      * @param array $orderData ['order_id' => '订单ID(必填)', 'openid' => '用户openid(必填)', 'appid' => '可不填', 'remark' => '付款备注(必填)', 'notify_url' => '回调地址(必填)']
      */
     public function merchantPay(int $orgId, string $type, float $money, array $orderData): array;
+
+    /**
+     * 生成支付业务场景.
+     *
+     * @param string $business 业务类型
+     * @param string $business_name 业务名称
+     */
+    public function insertBusiness(string $business,string $business_name):array;
 }
