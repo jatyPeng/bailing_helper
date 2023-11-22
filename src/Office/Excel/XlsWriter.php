@@ -120,7 +120,7 @@ class XlsWriter extends Excel implements ExcelPropertyInterface
         );
         for ($i = 0; $i < count($data); ++$i) {
             $fileObject->setRow(
-                sprintf('A%s:%s1', $i + 1, $this->getColumnIndex(count($columnField))),
+	            sprintf('A%s:%s%s', $i + 1, $this->getColumnIndex(count($columnField)),$i + 1),
                 $this->property[0]['height'] ?? 20,
                 (new Format($fileObject->getHandle()))->toResource()
             );
