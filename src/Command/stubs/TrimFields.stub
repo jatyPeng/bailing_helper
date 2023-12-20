@@ -1,0 +1,6 @@
+
+
+    public static function trimFields(): array
+    {
+        return [%TRIM_FIELDS%];
+    }

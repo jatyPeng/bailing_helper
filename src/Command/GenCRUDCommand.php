@@ -12,11 +12,14 @@ namespace Bailing\Command;
 
 use Hyperf\Command\Annotation\Command;
 use Hyperf\Command\Command as HyperfCommand;
+use Hyperf\Contract\ApplicationInterface;
 use Hyperf\Database\Schema\Schema;
 use Hyperf\Stringable\Str;
 use Psr\Container\ContainerInterface;
+use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\NullOutput;
 
 #[Command]
 class GenCRUDCommand extends HyperfCommand
@@ -41,6 +44,12 @@ class GenCRUDCommand extends HyperfCommand
         $dir = Str::ucfirst(trim(strval($this->input->getOption('dir'))));
         if (empty($dir)) {
             $dir = 'Org';
+        } else {
+            $dirArr = explode('/', $dir);
+            foreach ($dirArr as &$item) {
+                $item = ucfirst($item);
+            }
+            $dir = implode('/', $dirArr);
         }
 
         // 引入model
@@ -48,7 +57,31 @@ class GenCRUDCommand extends HyperfCommand
         $model = Str::ucfirst(Str::camel(trim($table)));
         $tmp = 'App\Model\\' . $model;
         if (! class_exists($tmp)) {
-            $this->line($model . ' Model不存在', 'error');
+            // 尝试自动构建Model
+            $input = new ArrayInput(['command' => 'gen:model', 'table' => $table]);
+            $output = new NullOutput();
+            $application = container()->get(ApplicationInterface::class);
+            $application->setAutoExit(false);
+            $exitCode = $application->run($input, $output);
+            stdLog()->info('gen:model result：', [$table, $exitCode]);
+
+            // 尝试自动构建trimFields
+            $columnsTypeArr = array_column(Schema::getColumnTypeListing($table), null, 'column_name');
+            $trimFields = [];
+            foreach ($columnsTypeArr as $item) {
+                if (! empty($item['data_type']) && in_array($item['data_type'], ['varchar', 'char'])) {
+                    $trimFields[] = $item['column_name'];
+                }
+            }
+            $modelFile = $this->makeDirectory(BASE_PATH . '/app/Model/') . $model . '.php';
+            $stub = file_get_contents(__DIR__ . '/stubs/TrimFields.stub');
+            $stub = $this->replaceTrimFields($stub, $trimFields);
+            $trimFieldsStr = str_replace(PHP_EOL . '}' . PHP_EOL, $stub . PHP_EOL . '}' . PHP_EOL, file_get_contents($modelFile));
+            file_put_contents($modelFile, $trimFieldsStr);
+            // trimFields完成
+
+            // 尝试重新执行一次cmd，为了重新加载生成的model
+            passthru('cd ' . BASE_PATH . ' && php bin/hyperf.php gen:crud ' . $table . ' --dir=' . $dir);
             return;
         }
         $class = new $tmp();
@@ -77,8 +110,8 @@ class GenCRUDCommand extends HyperfCommand
 
     protected function makeDirectory(string $path): string
     {
-        if (! is_dir(dirname($path))) {
-            mkdir(dirname($path), 0777, true);
+        if (! is_dir($path)) {
+            mkdir($path, 0777, true);
         }
 
         return $path;
@@ -97,7 +130,7 @@ class GenCRUDCommand extends HyperfCommand
 
     protected function replaceRoute(string $stub, string $dir, string $model): string
     {
-        $route = '/' . Str::snake($dir, '/') . '/' . Str::snake($model, '/');
+        $route = '/' . Str::snake(str_replace('/', '', $dir), '/') . '/' . Str::snake($model, '/');
         return str_replace('%ROUTER%', $route, $stub);
     }
 
