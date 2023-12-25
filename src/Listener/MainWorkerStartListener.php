@@ -22,7 +22,7 @@ use Hyperf\Event\Contract\ListenerInterface;
 use Hyperf\Framework\Event\MainWorkerStart;
 use Swoole\Process;
 use Symfony\Component\Console\Input\ArrayInput;
-use Symfony\Component\Console\Output\NullOutput;
+use Symfony\Component\Console\Output\ConsoleOutput;
 
 /**
  * Hyperf worker 启动后执行.
@@ -42,7 +42,7 @@ class MainWorkerStartListener implements ListenerInterface
         // 生产环境，执行下 preStart，初始下sql语句
         if (env('APP_ENV') == 'production') {
             $input = new ArrayInput(['command' => 'preStart']);
-            $output = new NullOutput();
+            $output = new ConsoleOutput();
             $application = container()->get(ApplicationInterface::class);
             $application->setAutoExit(false);
             $exitCode = $application->run($input, $output);
