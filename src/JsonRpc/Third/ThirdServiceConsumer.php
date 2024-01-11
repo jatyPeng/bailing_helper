@@ -116,4 +116,16 @@ class ThirdServiceConsumer extends AbstractServiceClient implements ThirdService
             return ApiHelper::genServiceErrorData($this->serviceName, $exception);
         }
     }
+
+    /**
+     * 获取openid.
+     */
+    public function getOpenidByUserid(int $orgId, int $userId): array
+    {
+        try {
+            return $this->__request(__FUNCTION__, compact('orgId', 'userId'));
+        } catch (\Exception $exception) {
+            return ApiHelper::genServiceErrorData($this->serviceName, $exception);
+        }
+    }
 }

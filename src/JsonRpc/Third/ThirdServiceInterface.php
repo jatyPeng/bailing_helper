@@ -54,4 +54,9 @@ interface ThirdServiceInterface
      * @param bool $isScene 是否生成场景二维码，永久有效，数量无限制，参数限制32个字符（只支持数字，大小写英文以及部分特殊字符：!#$&'()*+,/:;=?@-._~）
      */
     public function getWechatAppQrcode(int $orgId, string $path, string $appid = '', bool $isScene = false): array;
+
+    /**
+     * 获取openid.
+     */
+    public function getOpenidByUserid(int $orgId, int $userId): array;
 }
