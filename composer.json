@@ -9,7 +9,8 @@
     "description": "常见帮助类",
     "autoload": {
         "psr-4": {
-            "Bailing\\": "src/"
+            "Bailing\\": "src/",
+            "esign\\": "src/Esign/esign"
         },
         "files": [
             "src/Functions.php"
