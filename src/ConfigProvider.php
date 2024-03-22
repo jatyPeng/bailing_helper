@@ -11,6 +11,7 @@ declare(strict_types=1);
 namespace Bailing;
 
 use Bailing\Listener\MainWorkerStartListener;
+use Bailing\Middleware\TranslationMiddleware;
 
 class ConfigProvider
 {
@@ -26,6 +27,11 @@ class ConfigProvider
                 MainWorkerStartListener::class,
             ],
             'commands' => [
+            ],
+            'middlewares' => [
+                'http' => [
+                    TranslationMiddleware::class,
+                ],
             ],
             'annotations' => [
                 'scan' => [

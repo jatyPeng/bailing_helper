@@ -56,6 +56,7 @@
         "hyperf/rpc-server": "^3.0.0",
         "hyperf/service-governance": "^3.0.0",
         "hyperf/service-governance-nacos": "^3.0.0",
+        "hyperf/translation": "^3.0.0",
         "hyperf/validation": "^3.0.0",
         "hyperf/xxl-job-incubator": "^0.2.0",
         "league/flysystem": "^3.0",
