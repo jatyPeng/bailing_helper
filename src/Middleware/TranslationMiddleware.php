@@ -10,9 +10,9 @@ declare(strict_types=1);
  */
 namespace Bailing\Middleware;
 
+use Hyperf\Contract\TranslatorInterface;
 use Hyperf\HttpServer\Contract\RequestInterface;
 use Hyperf\HttpServer\Contract\ResponseInterface as HttpResponse;
-use Hyperf\Contract\TranslatorInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -21,7 +21,6 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 class TranslationMiddleware implements MiddlewareInterface
 {
-
     protected ContainerInterface $container;
 
     protected RequestInterface $request;
@@ -43,7 +42,10 @@ class TranslationMiddleware implements MiddlewareInterface
             $language = $this->request->input('language');
         }
 
-        ! empty($language) && container()->get(TranslatorInterface::class)->setLocale($language);
+        if (! empty($language)) {
+            $language = str_replace('-', '_', $language);
+            container()->get(TranslatorInterface::class)->setLocale($language);
+        }
 
         return $handler->handle($request);
     }
