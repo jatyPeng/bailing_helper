@@ -69,7 +69,6 @@ class OperationLogMiddleware implements MiddlewareInterface
             'router' => $request->getServerParams()['path_info'],
             'protocol' => $request->getServerParams()['server_protocol'],
             'ip' => $ip,
-            //'ip_location' => StrHelper::ipToRegion($ip),
             'service_name' => config('app_name'),
             'request_data' => $this->request->all(),
             'response_code' => $result->getStatusCode(),
@@ -99,12 +98,12 @@ class OperationLogMiddleware implements MiddlewareInterface
             return $result;
         }
 
-        //GET请求的不存
+        // GET请求的不存
         if ($operationLog['method'] == 'GET') {
             return $result;
         }
 
-        //将日志存储到amqp中
+        // 将日志存储到amqp中
         $message = new OperationLogProducer($operationLog);
         $producer = container()->get(Producer::class);
         $proResult = $producer->produce($message);
