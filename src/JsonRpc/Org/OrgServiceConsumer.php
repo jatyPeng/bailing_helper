@@ -343,24 +343,24 @@ class OrgServiceConsumer extends AbstractServiceClient implements OrgServiceInte
     /**
      * 获取当前指定角色的权限.
      */
-    public function getRoleRbacList(int $roleId): array
+    public function getRoleRbacList(int $roleId, int $orgId, int $userId): array
     {
         try {
-            return $this->__request(__FUNCTION__, compact('roleId'));
+            return $this->__request(__FUNCTION__, compact('roleId', 'orgId', 'userId'));
         } catch (\Exception $exception) {
             return ApiHelper::genServiceErrorData($this->serviceName, $exception);
         }
     }
 
-	/**
-	 * 查询没有权限时的菜单名称和权限名称.
-	 */
-	public function getMenuAuthName(string $adminModule): array
-	{
-		try {
-			return $this->__request(__FUNCTION__,compact('adminModule'));
-		} catch (\Exception $exception) {
-			return ApiHelper::genServiceErrorData($this->serviceName, $exception);
-		}
-	}
+    /**
+     * 查询没有权限时的菜单名称和权限名称.
+     */
+    public function getMenuAuthName(string $adminModule): array
+    {
+        try {
+            return $this->__request(__FUNCTION__, compact('adminModule'));
+        } catch (\Exception $exception) {
+            return ApiHelper::genServiceErrorData($this->serviceName, $exception);
+        }
+    }
 }

@@ -20,7 +20,9 @@ use Hyperf\HttpMessage\Stream\SwooleStream;
 use Hyperf\HttpServer\Contract\RequestInterface;
 use Hyperf\HttpServer\Contract\ResponseInterface as HttpResponse;
 use Hyperf\Utils\Codec\Json;
+use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
+use Psr\Container\NotFoundExceptionInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -104,13 +106,12 @@ class OrgMiddleware implements MiddlewareInterface
         if ($jwtData->data->id && empty($adminRole)) {
             return self::json('账号异常!未绑定角色身份', ApiHelper::AUTH_ERROR);
         }
-        if (! $adminRole || ! $this->allowAccess($jwtData->data->role_id)) {
-	        $authName = $this->getAuthName();
-	        if (!empty($authName)) {
-		        return self::json('无权访问' . '【' . $authName . '】', ApiHelper::AUTH_ERROR);
-	        }else{
-		        return self::json('无权访问', ApiHelper::AUTH_ERROR);
-	        }
+        if (! $adminRole || ! $this->allowAccess($jwtData->data->role_id, $jwtData->data->org_id, $jwtData->data->id)) {
+            $authName = $this->getAuthName();
+            if (! empty($authName)) {
+                return self::json('无权访问' . '【' . $authName . '】', ApiHelper::AUTH_ERROR);
+            }
+            return self::json('无权访问', ApiHelper::AUTH_ERROR);
         }
         contextSet('nowUser', $jwtData->data); //将登录信息存储到协程上下文
         unset($jwtData, $adminRole);
@@ -130,14 +131,15 @@ class OrgMiddleware implements MiddlewareInterface
      * User: Endness
      * Date: 2021/10/11
      * Time: 17:22.
-     * @param int $role_id 当前用户角色id
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
-    private function allowAccess(int $role_id)
+    private function allowAccess(int $roleId, int $orgId, int $userId): bool
     {
         if (env('APP_NAME') == 'org' && class_exists('\App\JsonRpc\OrgService')) {
-            $orgService = container()->get(\App\JsonRpc\OrgService::class)->getRoleRbacList($role_id);
+            $orgService = container()->get(\App\JsonRpc\OrgService::class)->getRoleRbacList($roleId, $orgId, $userId);
         } else {
-            $orgService = container()->get(OrgServiceInterface::class)->getRoleRbacList($role_id);
+            $orgService = container()->get(OrgServiceInterface::class)->getRoleRbacList($roleId, $orgId, $userId);
         }
         $adminModule = RequestHelper::getAdminModule();
         $rbacAccess = ! empty($orgService['data']['rbacList']) ? $orgService['data']['rbacList'] : [];
@@ -147,17 +149,17 @@ class OrgMiddleware implements MiddlewareInterface
         return false;
     }
 
-	/**
-	 * 获取菜单和权限名称
-	 */
-	private function getAuthName(){
-		$adminModule = RequestHelper::getAdminModule();
-		if (env('APP_NAME') == 'org' && class_exists('\App\JsonRpc\OrgService')) {
-			$authResult = container()->get(\App\JsonRpc\OrgService::class)->getMenuAuthName($adminModule);
-		} else {
-			$authResult = container()->get(OrgServiceInterface::class)->getMenuAuthName($adminModule);
-		}
-		$authName = !empty($authResult['data']['name']) ? $authResult['data']['name'] : '';
-		return $authName;
-	}
+    /**
+     * 获取菜单和权限名称.
+     */
+    private function getAuthName()
+    {
+        $adminModule = RequestHelper::getAdminModule();
+        if (env('APP_NAME') == 'org' && class_exists('\App\JsonRpc\OrgService')) {
+            $authResult = container()->get(\App\JsonRpc\OrgService::class)->getMenuAuthName($adminModule);
+        } else {
+            $authResult = container()->get(OrgServiceInterface::class)->getMenuAuthName($adminModule);
+        }
+        return ! empty($authResult['data']['name']) ? $authResult['data']['name'] : '';
+    }
 }
