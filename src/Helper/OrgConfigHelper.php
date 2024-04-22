@@ -13,6 +13,8 @@ namespace Bailing\Helper;
 use Hyperf\Cache\Annotation\Cacheable;
 use Hyperf\Cache\Annotation\CacheEvict;
 use Hyperf\Cache\Annotation\CachePut;
+use Hyperf\Database\Schema\Blueprint;
+use Hyperf\Database\Schema\Schema;
 use Hyperf\DbConnection\Db;
 
 class OrgConfigHelper
@@ -23,21 +25,16 @@ class OrgConfigHelper
     #[Cacheable(prefix: 'bailingOrgConfigTable', ttl: 86400)]
     public static function createTable(): string
     {
-        $queryList = Db::select("SHOW TABLES LIKE 'bailing_org_config'");
-        if (empty($queryList)) {
-            Db::select("CREATE TABLE `bailing_org_config` (
-  `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `org_id` int DEFAULT NULL COMMENT '机构ID',
-  `index` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '额外的唯一索引名，例如（项目ID_楼宇ID）',
-  `name` varchar(100) DEFAULT NULL COMMENT '名称',
-  `value` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci COMMENT '值',
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `idx_org_id` (`org_id`),
-  KEY `idx_index` (`index`),
-  KEY `idx_name` (`name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;");
+        if (! Schema::hasTable('bailing_org_config')) {
+            Schema::create('bailing_org_config', function (Blueprint $table) {
+                $table->bigIncrements('id');
+                $table->integer('org_id')->nullable()->comment('机构ID')->index('idx_org_id');
+                $table->string('index', 100)->nullable()->comment('额外的唯一索引名，例如（项目ID_楼宇ID）')->index('idx_index');
+                $table->string('name', 100)->nullable()->comment('名称')->index('idx_name');
+                $table->text('value')->nullable()->comment('值');
+                $table->timestamps();
+                $table->comment('机构配置表');
+            });
         }
         return 'bailingOrgConfigTable';
     }
