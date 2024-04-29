@@ -15,6 +15,7 @@ use App\Model\%CLASS%;
 use App\Request\%CLASS%Request;
 use Bailing\Helper\ApiHelper;
 use Bailing\Middleware\OrgMiddleware;
+use Bailing\Middleware\RateRequestMiddleware;
 use Hyperf\HttpServer\Annotation\Controller;
 use Hyperf\HttpServer\Annotation\DeleteMapping;
 use Hyperf\HttpServer\Annotation\GetMapping;
@@ -45,6 +46,7 @@ class %CLASS%Controller extends AbstractController
     }
 
     #[PostMapping(path: '%ROUTER%')]
+    #[Middleware(RateRequestMiddleware::class)]
     public function add(): array
     {
         $post = validateForm(%CLASS%Request::class, 'add', %CLASS%::class);
