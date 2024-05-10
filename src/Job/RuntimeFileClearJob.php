@@ -10,13 +10,17 @@ declare(strict_types=1);
  */
 namespace Bailing\Job;
 
+use App\Event\OrgBillApproved;
 use Bailing\Annotation\XxlJobTask;
+use Bailing\Event\RuntimeFileClear;
+use Bailing\Event\RuntimeFileClearEvent;
 use Bailing\Helper\FileHelper;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\XxlJob\Annotation\XxlJob;
 use Hyperf\XxlJob\Handler\AbstractJobHandler;
 use Hyperf\XxlJob\Logger\JobExecutorLoggerInterface;
 use Hyperf\XxlJob\Requests\RunRequest;
+use Psr\EventDispatcher\EventDispatcherInterface;
 
 /**
  * 缓存文件的清空（日志）每天凌晨2点2分执行，轮询保证每天都能执行到一个.
@@ -53,5 +57,8 @@ class RuntimeFileClearJob extends AbstractJobHandler
             }
         }
         stdLog()->info('清空缓存日志文件完成执行，删除文件总数：' . strval($clearCount));
+
+        container()->get(EventDispatcherInterface::class)->dispatch(new RuntimeFileClear());
+
     }
 }
