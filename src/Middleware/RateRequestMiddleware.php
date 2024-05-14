@@ -12,11 +12,11 @@ namespace Bailing\Middleware;
 
 use Bailing\Helper\ApiHelper;
 use Bailing\Helper\RequestHelper;
+use Hyperf\Codec\Json;
 use Hyperf\Context\Context;
 use Hyperf\HttpMessage\Stream\SwooleStream;
 use Hyperf\HttpServer\Contract\RequestInterface;
 use Hyperf\HttpServer\Contract\ResponseInterface as HttpResponse;
-use Hyperf\Utils\Codec\Json;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -54,17 +54,15 @@ class RateRequestMiddleware implements MiddlewareInterface
         $handleArr['method'] = $classMethod[1];
 
         $redis = redis();
+
         $strKey = 'rate_request:' . md5(serialize($handleArr));
 
-        //如果锁存在
-        $info = $redis->get($strKey);
-        if ($info) {
+        $result = $redis->set($strKey, Json::encode($handleArr), ['NX', 'EX' => 6]);
+
+        if (empty($result)) {
             stdLog()->warning('RateRequestMiddleware', [$handleArr]);
             return self::json('请求正在执行，请稍后再试');
         }
-
-        //写redis缓存
-        $redis->set($strKey, Json::encode($handleArr), 6);
 
         $result = $handler->handle($request);
 
