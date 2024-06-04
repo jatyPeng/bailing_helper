@@ -24,25 +24,63 @@ class OrgPermission extends AbstractAnnotation
 
     public string $activeIcon = ''; // 选中后图标
 
-    public string $menuType = '1'; // 1展示，0归类
+    public int $menuType = 1; // 1展示，0归类
 
     public string $urlType = 'path'; // 	URL类别(path, frame_url, target_url)
 
     public string $alias = ''; // 路由别名
 
-    public string $param = ''; // 路由参数
+    public string $url = ''; // 菜单链接
 
-    public string $sort = '0'; // 排序，越大越前，一级菜单千进位，二级菜单百进位，默认0
+    public int $keepAlive = 1; // 前端是否缓存
 
-    public string $status = '1'; // 状态，0和1，默认1
+    public int $sort = 0; // 排序，越大越前，一级菜单千进位，二级菜单百进位，默认0
+
+    public int $status = 1; // 状态，0和1，默认1
 
     public string $type = ''; // 类型，label作为小标识，无法点击
 
-    public string $appId = ''; // 是否关联应用，填写 appid 表的自增ID
+    public int $appId = 0; // 是否关联应用，填写 appid 表的自增ID
 
     public string $app = ''; // 微前端提供者
 
-    public string $orgId = '0'; // 固定的自增ID
+    public int $orgId = 0; // 固定的自增ID
 
-    public string $parentOrgId = '0'; // 固定的父自增ID
+    public int $parentOrgId = 0; // 固定的父自增ID
+
+    public function __construct(
+        string $module = '',
+        string $action = '',
+        string $icon = '',
+        string $activeIcon = '',
+        int $menuType = 1,
+        string $urlType = 'path',
+        string $alias = '',
+        string $url = '',
+        int $keepAlive = 1,
+        int $sort = 0,
+        int $status = 1,
+        string $type = '',
+        int $appId = 0,
+        string $app = '',
+        int $orgId = 0,
+        int $parentOrgId = 0,
+    ) {
+        $this->module = $module;
+        $this->action = $action;
+        $this->icon = $icon;
+        $this->activeIcon = $activeIcon;
+        $this->menuType = $menuType;
+        $this->urlType = $urlType;
+        $this->alias = $alias;
+        $this->url = $url;
+        $this->keepAlive = $keepAlive;
+        $this->sort = $sort;
+        $this->status = $status;
+        $this->type = $type;
+        $this->appId = $appId;
+        $this->app = $app;
+        $this->orgId = $orgId;
+        $this->parentOrgId = $parentOrgId;
+    }
 }

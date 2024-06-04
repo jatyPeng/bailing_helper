@@ -68,7 +68,7 @@ class %CLASS%Controller extends AbstractController
         $get = validateForm(%CLASS%Request::class, 'detail', %CLASS%::class);
         $nowAdmin = contextGet('nowUser');
 
-        $detail = %CLASS%::query()->where(['id' => $id, 'org_id' => $nowAdmin->org_id])->first();
+        $detail = %CLASS%::query()->where(['id' => (int) $id, 'org_id' => $nowAdmin->org_id])->first();
         if (empty($detail)) {
              return ApiHelper::genErrorDataEmpty();
         }
@@ -83,7 +83,7 @@ class %CLASS%Controller extends AbstractController
         $post = validateForm(%CLASS%Request::class, 'edit', %CLASS%::class);
         $nowAdmin = contextGet('nowUser');
 
-        $detail = %CLASS%::query()->where(['id' => $post['id'], 'org_id' => $nowAdmin->org_id])->first();
+        $detail = %CLASS%::query()->where(['id' => (int) $post['id'], 'org_id' => $nowAdmin->org_id])->first();
         if (empty($detail)) {
             return ApiHelper::genErrorDataEmpty();
         }
@@ -103,7 +103,7 @@ class %CLASS%Controller extends AbstractController
         $get = validateForm(%CLASS%Request::class, 'delete', %CLASS%::class);
         $nowAdmin = contextGet('nowUser');
 
-        $detail = %CLASS%::query()->where(['id' => $id, 'org_id' => $nowAdmin->org_id])->first();
+        $detail = %CLASS%::query()->where(['id' => (int) $id, 'org_id' => $nowAdmin->org_id])->first();
         if (empty($detail)) {
             return ApiHelper::genErrorDataEmpty();
         }

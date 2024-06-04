@@ -22,7 +22,7 @@ class XxlJobTask extends AbstractAnnotation
 {
     public string $xxlVersion = '2.3.0';  //xxl 版本
 
-    public string $author = '机器注册';  // 任务负责人
+    public string $author = '机器注册(bailing)';  // 任务负责人
 
     public string $jobDesc = ''; // 任务描述
 
@@ -42,7 +42,7 @@ class XxlJobTask extends AbstractAnnotation
 
     public function __construct(
         string $xxlVersion = '2.3.0',
-        string $author = '机器注册',
+        string $author = '机器注册(bailing)',
         string $jobDesc = '',
         string $scheduleType = 'CRON',
         string $cron = '',
