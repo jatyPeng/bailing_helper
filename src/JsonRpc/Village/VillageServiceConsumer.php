@@ -189,7 +189,7 @@ class VillageServiceConsumer extends AbstractServiceClient implements VillageSer
     /**
      * 获取项目在住住户数据，带分页.
      */
-    public function getVillageUserByBuildIdArr(int $buildId, int $overdueDay = 0, int $page = 1, int $pageSize = 100): array
+    public function getVillageUserByBuildIdArr(int $villageId, int $buildId = 0, int $layerId = 0, int $overdueDay = 0, int $page = 1, int $pageSize = 100): array
     {
         try {
             return $this->__request(__FUNCTION__, compact('buildId', 'overdueDay', 'page', 'pageSize'));

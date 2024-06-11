@@ -83,7 +83,7 @@ interface VillageServiceInterface
     /**
      * 获取项目在住住户数据，带分页.
      */
-    public function getVillageUserByBuildIdArr(int $buildId, int $overdueDay = 0, int $page = 1, int $pageSize = 100): array;
+    public function getVillageUserByBuildIdArr(int $villageId, int $buildId = 0, int $layerId = 0, int $overdueDay = 0, int $page = 1, int $pageSize = 100): array;
 
     /**
      * 设置微服务的参数，用于社区服务判断是否要回调服务.
