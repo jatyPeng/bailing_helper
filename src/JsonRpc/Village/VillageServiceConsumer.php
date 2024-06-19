@@ -192,7 +192,7 @@ class VillageServiceConsumer extends AbstractServiceClient implements VillageSer
     public function getVillageUserByBuildIdArr(int $villageId, int $buildId = 0, int $layerId = 0, int $overdueDay = 0, int $page = 1, int $pageSize = 100): array
     {
         try {
-            return $this->__request(__FUNCTION__, compact('buildId', 'overdueDay', 'page', 'pageSize'));
+            return $this->__request(__FUNCTION__, compact('villageId', 'buildId', 'layerId', 'overdueDay', 'page', 'pageSize'));
         } catch (\Exception $exception) {
             return ApiHelper::genServiceErrorData($this->serviceName, $exception);
         }
