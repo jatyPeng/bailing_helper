@@ -49,7 +49,7 @@ class MainWorkerStartListener implements ListenerInterface
             stdLog()->info('preStart result：', [$exitCode]);
         }
 
-        // 检测mq的queue、exchange是否以当前服务名开始，避免复制其他代码导致queue相同，引发问题
+        // 检测mq的queue、exchange是否以当前服务名开始，避免复制其他代码导致queue相同，引发问题（system.开头的代表系统级）
         if (env('AMQP_USER') && env('AMQP_PASSWORD') && env('APP_NAME')) {
             $consumerExchangeArr = [];
             // Consumer的queue必须以当前服务名开始
@@ -69,7 +69,7 @@ class MainWorkerStartListener implements ListenerInterface
             $class = AnnotationCollector::getClassesByAnnotation(Producer::class);
             if (! empty($class)) {
                 foreach ($class as $item) {
-                    if (! empty($item->exchange) && stripos($item->exchange, env('APP_NAME')) !== 0 && in_array($item->exchange, $consumerExchangeArr)) {
+                    if (! empty($item->exchange) && stripos($item->exchange, env('APP_NAME')) !== 0 && stripos($item->exchange, 'system') !== 0 && in_array($item->exchange, $consumerExchangeArr)) {
                         stdLog()->error('发现mq投递者的exchange不符合规则，必须以服务名（' . env('APP_NAME') . '）开始：' . $item->exchange);
                         Process::kill((int) file_get_contents(\Hyperf\Config\config('server.settings.pid_file')));
                         break;
