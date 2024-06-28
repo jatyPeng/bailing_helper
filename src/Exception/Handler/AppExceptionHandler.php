@@ -13,10 +13,10 @@ namespace Bailing\Exception\Handler;
 use Bailing\Helper\ApiHelper;
 use Bailing\Helper\RequestHelper;
 use Bailing\Helper\Webhook\FeishuHelper;
+use Hyperf\Codec\Json;
 use Hyperf\Contract\StdoutLoggerInterface;
 use Hyperf\ExceptionHandler\ExceptionHandler;
 use Hyperf\HttpMessage\Stream\SwooleStream;
-use Hyperf\Utils\Codec\Json;
 use Hyperf\Validation\ValidationException;
 use Psr\Http\Message\ResponseInterface;
 use Throwable;
@@ -45,6 +45,7 @@ class AppExceptionHandler extends ExceptionHandler
 
         if (FeishuHelper::checkConfig()) {
             $request = request();
+            $nowUser = (array) (contextGet('nowUser') ?: []);
             FeishuHelper::sendMarkDown('php线上代码错误（' . RequestHelper::getClientDomain() . '）', [
                 [[
                     'tag' => 'text',
@@ -65,6 +66,10 @@ class AppExceptionHandler extends ExceptionHandler
                 [[
                     'tag' => 'text',
                     'text' => sprintf('访问参数：%s', http_build_query($request->all())),
+                ]],
+                [[
+                    'tag' => 'text',
+                    'text' => sprintf('访问参数：%s', http_build_query($nowUser)),
                 ]],
                 [[
                     'tag' => 'text',
