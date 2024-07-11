@@ -12,14 +12,12 @@ namespace Bailing\Command;
 
 use Hyperf\Command\Annotation\Command;
 use Hyperf\Command\Command as HyperfCommand;
-use Hyperf\Contract\ApplicationInterface;
 use Hyperf\Database\Schema\Schema;
+use Hyperf\DbConnection\Db;
 use Hyperf\Stringable\Str;
 use Psr\Container\ContainerInterface;
-use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Output\NullOutput;
 
 #[Command]
 class GenCRUDCommand extends HyperfCommand
@@ -58,12 +56,7 @@ class GenCRUDCommand extends HyperfCommand
         $tmp = 'App\Model\\' . $model;
         if (! class_exists($tmp)) {
             // 尝试自动构建Model
-            $input = new ArrayInput(['command' => 'gen:model', 'table' => $table]);
-            $output = new NullOutput();
-            $application = container()->get(ApplicationInterface::class);
-            $application->setAutoExit(false);
-            $exitCode = $application->run($input, $output);
-            stdLog()->info('gen:model result：', [$table, $exitCode]);
+            passthru('cd ' . BASE_PATH . ' && php bin/hyperf.php gen:model ' . $table);
 
             // 尝试自动构建trimFields
             $columnsTypeArr = array_column(Schema::getColumnTypeListing($table), null, 'column_name');
@@ -95,7 +88,7 @@ class GenCRUDCommand extends HyperfCommand
         $stub = $this->replaceClass($stub, $model);
         $stub = $this->replaceDir($stub, $dir);
         $stub = $this->replaceRoute($stub, $dir, $model);
-        $stub = $this->replaceControllerFields($stub, $table, $class::trimFields());
+        $stub = $this->replaceControllerFields($stub, $table);
         $controllerDir = $this->makeDirectory(BASE_PATH . '/app/Controller/' . $dir);
         file_put_contents($controllerDir . '/' . $model . 'Controller.php', $stub);
 
@@ -141,70 +134,66 @@ class GenCRUDCommand extends HyperfCommand
         return str_replace('%TRIM_FIELDS%', $str, $stub);
     }
 
-    protected function replaceControllerFields(string $stub, string $table, array $fields): string
+    protected function replaceControllerFields(string $stub, string $table): string
     {
-        $columns = Schema::getColumnListing($table);
-        $columnsTypeArr = array_column(Schema::getColumnTypeListing($table), null, 'column_name');
-        if ($columns) {
+        $columnsDefaultArr = Db::table('INFORMATION_SCHEMA.columns')->where(['TABLE_NAME' => $table])->orderBy('ORDINAL_POSITION')->get(['COLUMN_NAME', 'COLUMN_DEFAULT', 'IS_NULLABLE', 'DATA_TYPE'])->toArray();
+        if ($columnsDefaultArr) {
             // 控制器的表单
             $addFields = '';
-            foreach ($columns as $item) {
-                if (! in_array($item, ['id', 'created_at', 'updated_at', 'deleted_at'])) {
-                    if ($item == 'org_id') {
-                        $addFields .= '$model->org_id = $nowAdmin->org_id;' . PHP_EOL . '        ';
-                    } elseif (in_array($item, $fields)) {
-                        $addFields .= '$model->' . $item . ' = $post[\'' . $item . '\'];' . PHP_EOL . '        ';
+            foreach ($columnsDefaultArr as $item) {
+                if (! in_array($item->COLUMN_NAME, ['id', 'created_at', 'updated_at', 'deleted_at', 'org_id'])) {
+                    if ($item->COLUMN_DEFAULT === null && $item->IS_NULLABLE === 'NO') {
+                        $addFields .= '$model->' . $item->COLUMN_NAME . ' = ';
                     } else {
-                        if (in_array($columnsTypeArr[$item]['data_type'], ['int', 'smallint', 'mediumint', 'tinyint'])) {
-                            $addFields .= 'isset($post[\'' . $item . '\']) && $model->' . $item . ' = (int) $post[\'' . $item . '\'];' . PHP_EOL . '        ';
-                        } else {
-                            $addFields .= 'isset($post[\'' . $item . '\']) && $model->' . $item . ' = $post[\'' . $item . '\'];' . PHP_EOL . '        ';
-                        }
+                        $addFields .= 'isset($post[\'' . $item->COLUMN_NAME . '\']) && $model->' . $item->COLUMN_NAME . ' = ';
                     }
+                    if (in_array(strtolower($item->DATA_TYPE), ['int', 'smallint', 'mediumint', 'tinyint', 'bigint'])) {
+                        $addFields .= '(int) $post[\'' . $item->COLUMN_NAME . '\'];';
+                    } else if (in_array(strtolower($item->DATA_TYPE), ['varchar', 'text', 'date', 'datetime', 'timestamp', 'mediumtext', 'longtext', 'char'])){
+                        $addFields .= '(string) $post[\'' . $item->COLUMN_NAME . '\'];';
+                    } else if (in_array(strtolower($item->DATA_TYPE), ['json'])){
+                        $addFields .= '(array) $post[\'' . $item->COLUMN_NAME . '\'];';
+                    } else if (in_array(strtolower($item->DATA_TYPE), ['double', 'float', 'decimal'])){
+                        $addFields .= '(float) $post[\'' . $item->COLUMN_NAME . '\'];';
+                    } else {
+                        $addFields .= '$post[\'' . $item->COLUMN_NAME . '\'];';
+                    }
+                    $addFields .=  PHP_EOL . '        ';
                 }
             }
             $stub = str_replace('%ADD_FIELDS%', trim($addFields), $stub);
-
-            $editFields = '';
-            foreach ($columns as $item) {
-                if (! in_array($item, ['id', 'org_id', 'created_at', 'updated_at', 'deleted_at'])) {
-                    if (in_array($item, $fields)) {
-                        $editFields .= '$detail->' . $item . ' = $post[\'' . $item . '\'];' . PHP_EOL . '        ';
-                    } else {
-                        if (in_array($columnsTypeArr[$item]['data_type'], ['int', 'smallint', 'mediumint', 'tinyint', 'bigint'])) {
-                            $editFields .= 'isset($post[\'' . $item . '\']) && $detail->' . $item . ' = (int) $post[\'' . $item . '\'];' . PHP_EOL . '        ';
-                        } else {
-                            $editFields .= 'isset($post[\'' . $item . '\']) && $detail->' . $item . ' = $post[\'' . $item . '\'];' . PHP_EOL . '        ';
-                        }
-                    }
-                }
-            }
-            $stub = str_replace('%EDIT_FIELDS%', trim($editFields), $stub);
         }
         return $stub;
     }
 
     protected function replaceRequestFields(string $stub, string $table, array $fields): string
     {
-        $columns = Schema::getColumnListing($table);
+        $columnsDefaultArr = Db::table('INFORMATION_SCHEMA.columns')->where(['TABLE_NAME' => $table])->orderBy('ORDINAL_POSITION')->get(['COLUMN_NAME', 'COLUMN_DEFAULT', 'IS_NULLABLE'])->toArray();
         $columnsTypeArr = array_column(Schema::getColumnTypeListing($table), null, 'column_name');
-        if ($columns) {
+        if ($columnsDefaultArr) {
             $requestFields = '';
-            foreach ($columns as $item) {
-                if (! in_array($item, ['id', 'org_id', 'created_at', 'updated_at', 'deleted_at'])) {
-                    if (in_array($item, $fields)) {
-                        $length = (str_replace([$columnsTypeArr[$item]['data_type'], '(', ')'], '', $columnsTypeArr[$item]['column_type']));
-                        $requestFields .= "'" . $item . "' => 'required|max:" . $length . "'," . PHP_EOL . '            ';
-                    } elseif (in_array($columnsTypeArr[$item]['data_type'], ['int', 'smallint', 'mediumint'])) {
-                        $requestFields .= "'" . $item . "' => 'integer'," . PHP_EOL . '            ';
-                    } elseif (in_array($columnsTypeArr[$item]['data_type'], ['tinyint'])) {
-                        $requestFields .= "'" . $item . "' => 'integer|lte:128'," . PHP_EOL . '            ';
-                    } elseif (in_array($columnsTypeArr[$item]['data_type'], ['timestamp', 'datetime', 'date'])) {
-                        $requestFields .= "'" . $item . "' => 'date'," . PHP_EOL . '            ';
+            foreach ($columnsDefaultArr as $item) {
+                if (! in_array($item->COLUMN_NAME, ['id', 'org_id', 'created_at', 'updated_at', 'deleted_at'])) {
+                    if (in_array($item->COLUMN_NAME, $fields)) {
+                        $length = (str_replace([$columnsTypeArr[$item->COLUMN_NAME]['data_type'], '(', ')'], '', $columnsTypeArr[$item->COLUMN_NAME]['column_type']));
+                        $requestFields .= "'" . $item->COLUMN_NAME . "' => '" . ($item->COLUMN_DEFAULT === null && $item->IS_NULLABLE === 'NO' ? 'required|' : '') . 'max:' . $length . "'," . PHP_EOL . '            ';
+                    } elseif (in_array($columnsTypeArr[$item->COLUMN_NAME]['data_type'], ['int', 'smallint', 'mediumint'])) {
+                        $requestFields .= "'" . $item->COLUMN_NAME . "' => '" . ($item->COLUMN_DEFAULT === null && $item->IS_NULLABLE === 'NO' ? 'required|' : '') . "integer'," . PHP_EOL . '            ';
+                    } elseif (in_array($columnsTypeArr[$item->COLUMN_NAME]['data_type'], ['tinyint'])) {
+                        $requestFields .= "'" . $item->COLUMN_NAME . "' => '" . ($item->COLUMN_DEFAULT === null && $item->IS_NULLABLE === 'NO' ? 'required|' : '') . "integer|lte:128'," . PHP_EOL . '            ';
+                    } elseif (in_array($columnsTypeArr[$item->COLUMN_NAME]['data_type'], ['timestamp', 'datetime', 'date'])) {
+                        $requestFields .= "'" . $item->COLUMN_NAME . "' => '" . ($item->COLUMN_DEFAULT === null && $item->IS_NULLABLE === 'NO' ? 'required|' : '') . "date'," . PHP_EOL . '            ';
+                    } elseif (in_array($columnsTypeArr[$item->COLUMN_NAME]['data_type'], ['json'])) {
+                        $requestFields .= "'" . $item->COLUMN_NAME . "' => 'array'," . PHP_EOL . '            ';
                     }
                 }
             }
             $stub = str_replace('%REQUEST_RULES%', trim($requestFields), $stub);
+
+            // 替换验证字段
+            $str = implode("', '", arrayColumnUnique($columnsDefaultArr, 'COLUMN_NAME', ['id', 'org_id', 'created_at', 'updated_at', 'deleted_at']));
+            $str = "'" . $str . "'";
+            $stub = str_replace('%REQUEST_FIELDS%', $str, $stub);
         }
         return $stub;
     }

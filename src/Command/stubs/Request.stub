@@ -15,10 +15,9 @@ use Hyperf\Validation\Request\FormRequest;
 class %CLASS%Request extends FormRequest
 {
     protected array $scenes = [
-        'list' => [],
-        'add' => [%TRIM_FIELDS%],
+        'list' => ['filters', 'sorts'],
+        'edit' => [%REQUEST_FIELDS%],
         'detail' => [],
-        'edit' => ['id', %TRIM_FIELDS%],
         'delete' => [],
     ];
 
@@ -36,7 +35,8 @@ class %CLASS%Request extends FormRequest
     public function rules(): array
     {
         return [
-            'id' => 'required|integer',
+            'filters' => 'array',
+            'sorts' => 'array',
             %REQUEST_RULES%
         ];
     }

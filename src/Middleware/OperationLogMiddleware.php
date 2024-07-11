@@ -15,6 +15,7 @@ use Bailing\Helper\JwtHelper;
 use Bailing\Helper\RequestHelper;
 use Bailing\Helper\StrHelper;
 use Hyperf\Amqp\Producer;
+use Hyperf\Amqp\Result;
 use Hyperf\HttpServer\Contract\RequestInterface;
 use Hyperf\HttpServer\Contract\ResponseInterface as HttpResponse;
 use Psr\Container\ContainerInterface;
@@ -100,6 +101,10 @@ class OperationLogMiddleware implements MiddlewareInterface
 
         // GET请求的不存
         if ($operationLog['method'] == 'GET') {
+            return $result;
+        }
+        // 新的固定列表查询页，不存
+        if ($operationLog['method'] == 'POST' && str_ends_with($operationLog['router'], '/query')) {
             return $result;
         }
 

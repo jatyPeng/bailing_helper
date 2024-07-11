@@ -13,6 +13,7 @@ namespace App\Controller\%DIR%;
 use App\Controller\AbstractController;
 use App\Model\%CLASS%;
 use App\Request\%CLASS%Request;
+use Bailing\Annotation\OrgPermission;
 use Bailing\Helper\ApiHelper;
 use Bailing\Middleware\OrgMiddleware;
 use Bailing\Middleware\RateRequestMiddleware;
@@ -27,13 +28,23 @@ use Hyperf\HttpServer\Annotation\PutMapping;
 #[Middleware(OrgMiddleware::class)]
 class %CLASS%Controller extends AbstractController
 {
-    #[GetMapping(path: '%ROUTER%')]
+    #[PostMapping(path: '%ROUTER%/query')]
+    #[OrgPermission(module: '', action: 'curd:查看-list', icon: '', alias: '', url: '', sort: 0, app: '')]
     public function list(): array
     {
-        $get = validateForm(%CLASS%Request::class, 'list', %CLASS%::class);
+        $post = validateForm(%CLASS%Request::class, 'list', %CLASS%::class);
         $nowAdmin = contextGet('nowUser');
 
-        $list = %CLASS%::query()->where(['org_id' => $nowAdmin->org_id])->orderByDesc('id')->paginate((int) $this->request->input('pageSize', 20))->toArray();
+        // 默认为ID倒序
+        if (empty($post['sorts'])) {
+            $post['sorts'] = [
+                [
+                    'field' => 'id',
+                    'asc' => false,
+                ],
+            ];
+        }
+        $list = buildFormSearchQuery(%CLASS%::query()->where(['org_id' => $nowAdmin->org_id]), $post['filters'], $post['sorts'])->paginate((int) $this->request->input('pageSize', 20))->toArray();
         // 如果不需要处理列表，则删除掉
         if ($list['data']) {
             foreach ($list['data'] as $key => &$item) {
@@ -42,33 +53,62 @@ class %CLASS%Controller extends AbstractController
             }
         }
 
-        return ApiHelper::genSuccessData(genListData($list));
+        return ApiHelper::genSuccessData(
+            genListData(
+                $list,
+                [
+                    'dict_menu_alias' => '',
+                ]
+            )
+        );
     }
 
     #[PostMapping(path: '%ROUTER%')]
     #[Middleware(RateRequestMiddleware::class)]
+    #[OrgPermission(module: '', action: 'curd:新增-add')]
     public function add(): array
     {
-        $post = validateForm(%CLASS%Request::class, 'add', %CLASS%::class);
+        return self::editHandle();
+    }
+
+    #[PutMapping(path: '%ROUTER%/{id:\d+}')]
+    #[Middleware(RateRequestMiddleware::class)]
+    #[OrgPermission(module: '', action: 'curd:编辑-edit')]
+    public function edit(?int $id): array
+    {
+        return self::editHandle($id);
+    }
+
+    private function editHandle(?int $id = 0): array
+    {
+        $post = validateForm(%CLASS%Request::class, 'edit', %CLASS%::class);
         $nowAdmin = contextGet('nowUser');
 
-        $model = new %CLASS%();
+        if (! empty($id)) {
+            $model = %CLASS%::query()->where(['id' => $id, 'org_id' => $nowAdmin->org_id])->first();
+            if (empty($model)) {
+                return ApiHelper::genErrorDataEmpty();
+            }
+        } else {
+            $model = new %CLASS%();
+            $model->org_id = $nowAdmin->org_id;
+        }
         %ADD_FIELDS%
 
         if (! $model->save()) {
-            return ApiHelper::genErrorData('添加失败，请重试');
+            return ApiHelper::genErrorData('保存失败，请重试');
         }
 
-        return ApiHelper::genSuccessData(['id' => $model->id], '添加成功');
+        return ApiHelper::genSuccessData(['id' => $model->id], '保存成功');
     }
 
     #[GetMapping(path: '%ROUTER%/{id:\d+}')]
-    public function detail($id): array
+    public function detail(int $id): array
     {
         $get = validateForm(%CLASS%Request::class, 'detail', %CLASS%::class);
         $nowAdmin = contextGet('nowUser');
 
-        $detail = %CLASS%::query()->where(['id' => (int) $id, 'org_id' => $nowAdmin->org_id])->first();
+        $detail = %CLASS%::query()->where(['id' => $id, 'org_id' => $nowAdmin->org_id])->first();
         if (empty($detail)) {
              return ApiHelper::genErrorDataEmpty();
         }
@@ -77,33 +117,14 @@ class %CLASS%Controller extends AbstractController
         return ApiHelper::genSuccessData(['detail' => $detailArr]);
     }
 
-    #[PutMapping(path: '%ROUTER%')]
-    public function edit(): array
-    {
-        $post = validateForm(%CLASS%Request::class, 'edit', %CLASS%::class);
-        $nowAdmin = contextGet('nowUser');
-
-        $detail = %CLASS%::query()->where(['id' => (int) $post['id'], 'org_id' => $nowAdmin->org_id])->first();
-        if (empty($detail)) {
-            return ApiHelper::genErrorDataEmpty();
-        }
-
-        %EDIT_FIELDS%
-
-        if (! $detail->save()) {
-            return ApiHelper::genErrorData('保存失败，请重试');
-        }
-
-        return ApiHelper::genSuccessData(['id' => $detail->id], '保存成功');
-    }
-
     #[DeleteMapping(path: '%ROUTER%/{id:\d+}')]
-    public function delete($id): array
+    #[OrgPermission(module: '', action: 'curd:删除-delete')]
+    public function delete(int $id): array
     {
         $get = validateForm(%CLASS%Request::class, 'delete', %CLASS%::class);
         $nowAdmin = contextGet('nowUser');
 
-        $detail = %CLASS%::query()->where(['id' => (int) $id, 'org_id' => $nowAdmin->org_id])->first();
+        $detail = %CLASS%::query()->where(['id' => $id, 'org_id' => $nowAdmin->org_id])->first();
         if (empty($detail)) {
             return ApiHelper::genErrorDataEmpty();
         }

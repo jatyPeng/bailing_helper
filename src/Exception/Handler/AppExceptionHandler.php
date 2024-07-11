@@ -69,7 +69,7 @@ class AppExceptionHandler extends ExceptionHandler
                 ]],
                 [[
                     'tag' => 'text',
-                    'text' => sprintf('访问参数：%s', http_build_query($nowUser)),
+                    'text' => sprintf('用户信息：%s', http_build_query($nowUser)),
                 ]],
                 [[
                     'tag' => 'text',
