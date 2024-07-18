@@ -23,6 +23,9 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
+/**
+ * 弃用，使用 RateRequest 注解.
+ */
 class RateRequestMiddleware implements MiddlewareInterface
 {
     protected ContainerInterface $container;

@@ -14,9 +14,9 @@ use App\Controller\AbstractController;
 use App\Model\%CLASS%;
 use App\Request\%CLASS%Request;
 use Bailing\Annotation\OrgPermission;
+use Bailing\Annotation\RateRequest;
 use Bailing\Helper\ApiHelper;
 use Bailing\Middleware\OrgMiddleware;
-use Bailing\Middleware\RateRequestMiddleware;
 use Hyperf\HttpServer\Annotation\Controller;
 use Hyperf\HttpServer\Annotation\DeleteMapping;
 use Hyperf\HttpServer\Annotation\GetMapping;
@@ -64,7 +64,7 @@ class %CLASS%Controller extends AbstractController
     }
 
     #[PostMapping(path: '%ROUTER%')]
-    #[Middleware(RateRequestMiddleware::class)]
+    #[RateRequest]
     #[OrgPermission(module: '', action: 'curd:新增-add')]
     public function add(): array
     {
@@ -72,7 +72,7 @@ class %CLASS%Controller extends AbstractController
     }
 
     #[PutMapping(path: '%ROUTER%/{id:\d+}')]
-    #[Middleware(RateRequestMiddleware::class)]
+    #[RateRequest(rateKey: 'id')]
     #[OrgPermission(module: '', action: 'curd:编辑-edit')]
     public function edit(?int $id): array
     {
@@ -118,6 +118,7 @@ class %CLASS%Controller extends AbstractController
     }
 
     #[DeleteMapping(path: '%ROUTER%/{id:\d+}')]
+    #[RateRequest(rateKey: 'id')]
     #[OrgPermission(module: '', action: 'curd:删除-delete')]
     public function delete(int $id): array
     {

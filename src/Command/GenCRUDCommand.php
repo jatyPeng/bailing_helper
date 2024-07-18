@@ -45,7 +45,7 @@ class GenCRUDCommand extends HyperfCommand
         } else {
             $dirArr = explode('/', $dir);
             foreach ($dirArr as &$item) {
-                $item = ucfirst($item);
+                $item = Str::studly($item);
             }
             $dir = implode('/', $dirArr);
         }

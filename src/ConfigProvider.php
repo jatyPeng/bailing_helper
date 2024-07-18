@@ -10,6 +10,7 @@ declare(strict_types=1);
  */
 namespace Bailing;
 
+use Bailing\Aspect\RateRequestAspect;
 use Bailing\Listener\MainWorkerStartListener;
 use Bailing\Middleware\TranslationMiddleware;
 
@@ -18,6 +19,9 @@ class ConfigProvider
     public function __invoke(): array
     {
         return [
+            'aspects' => [
+                RateRequestAspect::class,
+            ],
             'dependencies' => [
                 \Bailing\IotCloud\HikCloud\Application::class => \Bailing\IotCloud\HikCloud\ApplicationFactory::class,
                 \Bailing\IotCloud\YunRui\Application::class => \Bailing\IotCloud\YunRui\ApplicationFactory::class,
