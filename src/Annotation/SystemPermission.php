@@ -20,7 +20,7 @@ class SystemPermission extends AbstractAnnotation
 
     public string $action = ''; // 查看、增加、修改、删除
 
-    public string $icon = ''; // 参考: http://layuimini.99php.cn/iframe/v2/index.html#/page/icon.html
+    public string $icon = '';
 
     public string $menu_type = '1'; // 1展示，0归类
 
