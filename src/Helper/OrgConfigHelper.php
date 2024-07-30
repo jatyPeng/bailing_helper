@@ -25,6 +25,12 @@ class OrgConfigHelper
     #[Cacheable(prefix: 'bailingOrgConfigTable', ttl: 86400)]
     public static function createTable(): string
     {
+        self::createTableCode();
+        return 'bailingOrgConfigTable';
+    }
+
+    public static function createTableCode(): string
+    {
         if (! Schema::hasTable('bailing_org_config')) {
             Schema::create('bailing_org_config', function (Blueprint $table) {
                 $table->bigIncrements('id');
@@ -36,7 +42,7 @@ class OrgConfigHelper
                 $table->comment('机构配置表');
             });
         }
-        return 'bailingOrgConfigTable';
+        return true;
     }
 
     /**
