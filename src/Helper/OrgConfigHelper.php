@@ -29,7 +29,7 @@ class OrgConfigHelper
         return 'bailingOrgConfigTable';
     }
 
-    public static function createTableCode(): string
+    public static function createTableCode(): bool
     {
         if (! Schema::hasTable('bailing_org_config')) {
             Schema::create('bailing_org_config', function (Blueprint $table) {
