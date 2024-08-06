@@ -15,7 +15,7 @@ interface VillageServiceInterface
     /**
      * 获取项目和楼栋组合好的数据.
      */
-    public function getVillageAndBuild(array $villageIdArr, array $buildArr = [], bool $mergeData = true): array;
+    public function getVillageAndBuild(array $villageIdArr, array $buildArr = [], bool $mergeData = true, string $roomType = ''): array;
 
     /**
      * 获取单个项目数据.

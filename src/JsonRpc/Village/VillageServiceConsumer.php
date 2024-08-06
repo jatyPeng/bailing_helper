@@ -28,10 +28,10 @@ class VillageServiceConsumer extends AbstractServiceClient implements VillageSer
     /**
      * 添加菜单.
      */
-    public function getVillageAndBuild(array $villageIdArr, array $buildArr = [], bool $mergeData = true): array
+    public function getVillageAndBuild(array $villageIdArr, array $buildArr = [], bool $mergeData = true, string $roomType = ''): array
     {
         try {
-            return $this->__request(__FUNCTION__, compact('villageIdArr', 'buildArr', 'mergeData'));
+            return $this->__request(__FUNCTION__, compact('villageIdArr', 'buildArr', 'mergeData', 'roomType'));
         } catch (\Exception $exception) {
             return ApiHelper::genServiceErrorData($this->serviceName, $exception);
         }

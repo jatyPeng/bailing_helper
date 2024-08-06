@@ -1,12 +1,20 @@
 <?php
 
+declare(strict_types=1);
+/**
+ * This file is part of Kuaijing Bailing.
+ *
+ * @link     https://www.kuaijingai.com
+ * @document https://help.kuaijingai.com
+ * @contact  www.kuaijingai.com 7*12 9:00-21:00
+ */
 namespace Bailing\Aspect;
+
 use Bailing\Annotation\RateRequest;
 use Bailing\Helper\ApiHelper;
 use Bailing\Helper\RequestHelper;
 use Hyperf\Codec\Json;
 use Hyperf\Context\Context;
-use Hyperf\Di\Annotation\Aspect;
 use Hyperf\Di\Aop\AbstractAspect;
 use Hyperf\Di\Aop\ProceedingJoinPoint;
 use Hyperf\HttpMessage\Stream\SwooleStream;
@@ -27,33 +35,36 @@ class RateRequestAspect extends AbstractAspect
         // 获取限流时间
         $waitTimeout = 6;
         $rateKey = '';
-        foreach($metadata->method as $key => $annotation) {
-            if($annotation instanceof RateRequest){
+        foreach ($metadata->method as $key => $annotation) {
+            if ($annotation instanceof RateRequest) {
                 $waitTimeout = $annotation->waitTimeout;
                 $rateKey = $annotation->rateKey;
                 break;
             }
         }
 
-
         $classMethod = explode(':', RequestHelper::getAdminModule());
 
-        // 如果 ratekey为空，
-        if(empty($rateKey)){
+        // 如果 ratekey 为空，
+        if (empty($rateKey)) {
             $handleArr = request()->all();
         } else {
             $keyArr = explode(',', $rateKey);
-            foreach($keyArr as $item){
+            foreach ($keyArr as $item) {
                 $handleArr[$item] = request()->input($item, '') ?: $item;
             }
         }
 
-
-        //如果为空，认定为raw请求
+        // 如果为空，认定为raw请求
         if (empty($handleArr)) {
-            $handleArr = [
-                'body' => request()->getBody()->getContents(),
-            ];
+            $nowUser = contextGet('nowUser');
+            if (! empty($nowUser)) {
+                $handleArr = [
+                    'nowUser' => (array) $nowUser,
+                ];
+            } else {
+                return self::json('[技术错误]如果请求参数为空，则需要先引用鉴权登录的中间件生成协程中的用户信息');
+            }
         }
 
         $handleArr['class'] = $classMethod[0];
