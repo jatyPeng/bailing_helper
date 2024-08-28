@@ -72,6 +72,7 @@ class Application
         $apiaddr = '/v3/sign-flow/create-by-file';
         $requestType = HttpEmun::POST;
         $paramStr = json_encode($signData);
+        self::ESignDebugV3($paramStr);
 
         $signAndBuildSignAndJsonHeader = EsignHttpHelper::signAndBuildSignAndJsonHeader($config['eSignAppId'], $config['eSignAppSecret'], $paramStr, $requestType, $apiaddr);
 
@@ -356,6 +357,31 @@ class Application
         $responseArray = json_decode($response->getBody());
 
         return ['uploadRes' => self::object_array($responseArray), 'fileId' => $fileId, 'fileUploadUrl' => $fileUploadUrl];
+    }
+
+    /**
+     * 查询机构认证信息.
+     */
+    public function organizationsInfo(string $nameOrg, string $idTypeOrg, string $idNumberOrg)
+    {
+        $config = self::$config;
+
+        $apiAddr = sprintf('/v3/organizations/identity-info?orgIDCardNum=%s', $nameOrg);
+        $requestType = HttpEmun::GET;
+        //生成签名验签+json体的header
+
+        $signAndBuildSignAndJsonHeader = EsignHttpHelper::signAndBuildSignAndJsonHeader($config['eSignAppId'], $config['eSignAppSecret'], '', $requestType, $apiAddr);
+        //发起接口请求
+        self::ESignDebugV3($signAndBuildSignAndJsonHeader);
+        $response = EsignHttpHelper::doCommHttp($config['eSignHost'], $apiAddr, $requestType, $signAndBuildSignAndJsonHeader, '');
+        $responseArray = json_decode($response->getBody());
+
+        self::ESignDebugV3($config['eSignHost'] . $apiAddr);
+        self::ESignDebugV3($response->getStatus());
+        self::ESignDebugV3('==========查询机构认证信息==========');
+        self::ESignDebugV3($response->getBody());
+
+        return self::object_array($responseArray);
     }
 
     /**

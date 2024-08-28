@@ -12,10 +12,6 @@ namespace Bailing\IotCloud\HikCloud\Provider;
 
 trait AccessToken
 {
-    private ?string $accessToken = null;
-
-    private int     $expireTime = 0;
-
     public function getAccessToken()
     {
         $params = [
@@ -28,27 +24,24 @@ trait AccessToken
             return null;
         }
 
-        if (! $this->isExpired()) {
-            return $this->accessToken;
+        $redisKey = sprintf('hikCloudAccessToken:%s:%s', $params['client_id'], $params['client_secret']);
+        $accessToken = redis()->get($redisKey);
+        if (! empty($accessToken)) {
+            return $accessToken;
         }
         $options = [
             'headers' => [],
             'form_params' => $params,
         ];
         $result = $this->setBaseUri('https://api2.hik-cloud.com')->request('POST', '/oauth/token', $options);
-        //		    file_put_contents('Application2.log',print_r(["尝试获取 AccessToken trait "=>$options,
-        //		                                                  '生成授权凭证（access_token）'=>$result] ,true).PHP_EOL , 8);
-        $this->accessToken = $result['access_token'];
-        $this->expireTime = $result['expires_in'] + time();
 
-        return $this->accessToken;
-    }
-
-    public function isExpired(): bool
-    {
-        if (isset($this->accessToken) && $this->expireTime > time() + 60) {
-            return false;
+        if (empty($result['access_token'])) {
+            return null;
         }
-        return true;
+
+        // 缓存到有效期前10分钟
+        redis()->set($redisKey, $result['access_token'], $result['expires_in'] - 600);
+
+        return $result['access_token'];
     }
 }
