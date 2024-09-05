@@ -13,6 +13,7 @@ namespace Bailing\Helper;
 use Hyperf\Cache\Annotation\Cacheable;
 use Hyperf\Cache\Annotation\CacheEvict;
 use Hyperf\Cache\Annotation\CachePut;
+use Hyperf\Codec\Json;
 use Hyperf\Database\Schema\Blueprint;
 use Hyperf\Database\Schema\Schema;
 use Hyperf\DbConnection\Db;
@@ -46,6 +47,18 @@ class OrgConfigHelper
     }
 
     /**
+     * 读取数组格式的配置值（缓存10分钟），自行保证写时的缓存是数组.
+     */
+    public static function getConfigArr(int $orgId, string $name, string $index = ''): array
+    {
+        $config = self::getConfig($orgId, $name, $index);
+        if (empty($config)) {
+            return [];
+        }
+        return Json::decode($config);
+    }
+
+    /**
      * 读取配置值（缓存10分钟）.
      * @param int $orgId 机构ID
      * @param string $name 配置名
@@ -67,6 +80,14 @@ class OrgConfigHelper
         ! empty($index) && $where['index'] = $index;
         $configValue = Db::table('bailing_org_config')->where($where)->value('value');
         return (string) $configValue;
+    }
+
+    /**
+     * 写数组格式的配置值.
+     */
+    public static function setConfigArr(int $orgId, string $name, array $value, string $index = ''): string
+    {
+        return self::setConfig($orgId, $name, Json::encode($value ?: []), $index);
     }
 
     /**
