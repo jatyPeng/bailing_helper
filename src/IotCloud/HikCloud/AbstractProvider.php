@@ -13,6 +13,7 @@ namespace Bailing\IotCloud\HikCloud;
 use Bailing\IotCloud\Config;
 use Bailing\IotCloud\HikCloud\Provider\AccessToken;
 use Bailing\IotCloud\Kernel\HttpClient;
+use Swoole\Coroutine\System;
 
 abstract class AbstractProvider
 {
@@ -25,6 +26,7 @@ abstract class AbstractProvider
 
     public function get($endpoint, $params = [], $headers = [])
     {
+        stdLog()->info('Hik get【' . $endpoint . '】', $params);
         $header = $this->generateHeader();
         if (! empty($headers)) {
             $header = array_merge($header, $headers);
@@ -37,6 +39,7 @@ abstract class AbstractProvider
 
     public function getJson($endpoint, $params = [], $headers = [])
     {
+        stdLog()->info('Hik getJson【' . $endpoint . '】', $params);
         $header = $this->generateHeader();
         if (! empty($headers)) {
             $header = array_merge($header, $headers);
@@ -50,6 +53,7 @@ abstract class AbstractProvider
 
     public function postJson($endpoint, $params = [], $headers = [])
     {
+        stdLog()->info('Hik postJson【' . $endpoint . '】', $params);
         $header = $this->generateHeader();
         if (! empty($headers)) {
             $header = array_merge($header, $headers);
@@ -62,6 +66,7 @@ abstract class AbstractProvider
 
     public function deleteJson($endpoint, $params = [], $headers = [])
     {
+        stdLog()->info('Hik deleteJson【' . $endpoint . '】', $params);
         $header = $this->generateHeader();
         if (! empty($headers)) {
             $header = array_merge($header, $headers);
@@ -75,6 +80,7 @@ abstract class AbstractProvider
 
     public function post($endpoint, $params = [], $headers = [])
     {
+        stdLog()->info('Hik post【' . $endpoint . '】', $params);
         $header = $this->generateHeader();
         if (! empty($headers)) {
             $header = array_merge($header, $headers);
@@ -88,6 +94,7 @@ abstract class AbstractProvider
 
     public function generateHeader($headers = []): array
     {
+        System::sleep(0.6);
         $accessToken = $this->getAccessToken();
         return [
             'Authorization' => 'Bearer ' . $accessToken,
