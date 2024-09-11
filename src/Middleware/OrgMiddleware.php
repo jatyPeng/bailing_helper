@@ -92,8 +92,8 @@ class OrgMiddleware implements MiddlewareInterface
             logger()->error('ORG REDIS CLIENT ERROR', ['module' => RequestHelper::getAdminModule()]);
         }
 
-        if (! empty($jwtData->data->intranet_access) && RequestHelper::isLocalNetwork()) {
-            return self::json('需要内网才能访问该接口!');
+        if (! empty($jwtData->data->intranet_access) && ! RequestHelper::isLocalNetwork()) {
+            return self::json(sprintf('需要内网才能访问该接口（%s）', RequestHelper::getClientIp()));
         }
 
         $jwtData->data->tokenType = 'org';
