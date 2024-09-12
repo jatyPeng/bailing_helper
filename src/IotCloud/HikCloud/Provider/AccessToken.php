@@ -44,4 +44,21 @@ trait AccessToken
 
         return $result['access_token'];
     }
+
+    public function refreshAccessToken()
+    {
+        $params = [
+            'client_id' => trim($this->config->getHikConfig()['client_id']),
+            'client_secret' => trim($this->config->getHikConfig()['client_secret']),
+        ];
+
+        if (empty($params['client_id']) || empty($params['client_secret'])) {
+            return null;
+        }
+
+        $redisKey = sprintf('hikCloudAccessToken:%s:%s', $params['client_id'], $params['client_secret']);
+        redis()->del($redisKey);
+
+        return $this->getAccessToken();
+    }
 }

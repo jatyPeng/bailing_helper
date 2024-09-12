@@ -26,11 +26,11 @@ abstract class AbstractProvider
 
     public function get($endpoint, $params = [], $headers = [])
     {
-        stdLog()->info('Hik get【' . $endpoint . '】', $params);
         $header = $this->generateHeader();
         if (! empty($headers)) {
             $header = array_merge($header, $headers);
         }
+        stdLog()->info('Hik get【' . $endpoint . '】', [$params, $header]);
         return $this->httpClient()->request('GET', $endpoint, [
             'headers' => $header,
             'query' => $params,
@@ -39,11 +39,11 @@ abstract class AbstractProvider
 
     public function getJson($endpoint, $params = [], $headers = [])
     {
-        stdLog()->info('Hik getJson【' . $endpoint . '】', $params);
         $header = $this->generateHeader();
         if (! empty($headers)) {
             $header = array_merge($header, $headers);
         }
+        stdLog()->info('Hik getJson【' . $endpoint . '】', [$params, $header]);
         return $this->httpClient()->request('GET', $endpoint, [
             'headers' => $header,
             'json' => $params,
@@ -53,11 +53,11 @@ abstract class AbstractProvider
 
     public function postJson($endpoint, $params = [], $headers = [])
     {
-        stdLog()->info('Hik postJson【' . $endpoint . '】', $params);
         $header = $this->generateHeader();
         if (! empty($headers)) {
             $header = array_merge($header, $headers);
         }
+        stdLog()->info('Hik postJson【' . $endpoint . '】', [$params, $header]);
         return $this->httpClient()->request('POST', $endpoint, [
             'headers' => $header,
             'json' => $params,
@@ -66,11 +66,11 @@ abstract class AbstractProvider
 
     public function deleteJson($endpoint, $params = [], $headers = [])
     {
-        stdLog()->info('Hik deleteJson【' . $endpoint . '】', $params);
         $header = $this->generateHeader();
         if (! empty($headers)) {
             $header = array_merge($header, $headers);
         }
+        stdLog()->info('Hik deleteJson【' . $endpoint . '】', [$params, $header]);
         $options = [
             'form_params' => $params,
             'headers' => $header,
@@ -80,11 +80,11 @@ abstract class AbstractProvider
 
     public function post($endpoint, $params = [], $headers = [])
     {
-        stdLog()->info('Hik post【' . $endpoint . '】', $params);
         $header = $this->generateHeader();
         if (! empty($headers)) {
             $header = array_merge($header, $headers);
         }
+        stdLog()->info('Hik post【' . $endpoint . '】', [$params, $header]);
         return $this->httpClient()->request('POST', $endpoint, [
             'headers' => $header,
             'form_params' => $params,

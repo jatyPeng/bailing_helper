@@ -11,6 +11,7 @@ declare(strict_types=1);
 namespace Bailing\IotCloud\Kernel;
 
 use GuzzleHttp\Client;
+use Swoole\Coroutine\System;
 
 trait HttpClient
 {
@@ -20,7 +21,25 @@ trait HttpClient
 
     public function request($method, $endpoint, $options = [])
     {
-        return $this->unwrapResponse($this->getHttpClient()->{$method}($endpoint, $options));
+        $response = $this->getHttpClient()->{$method}($endpoint, $options);
+        $statusCode = $response->getStatusCode();
+        if ($statusCode != 200) {
+            stdLog()->warning('IotCloud request error：' . $statusCode);
+        }
+
+        // accessToken超时了，尝试重试
+        if ($statusCode == 401) {
+            $newAccessToken = $this->refreshAccessToken();
+            if (! empty($newAccessToken) && ! empty($options['headers']['Authorization'])) {
+                $options['headers']['Authorization'] = 'Bearer ' . $newAccessToken;
+            }
+            $response = $this->getHttpClient()->{$method}($endpoint, $options);
+        } elseif ($statusCode == 429) {
+            System::sleep(5);
+            $response = $this->getHttpClient()->{$method}($endpoint, $options);
+        }
+
+        return $this->unwrapResponse($response);
     }
 
     public function setGuzzleOptions(array $options)
