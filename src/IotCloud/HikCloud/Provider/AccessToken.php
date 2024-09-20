@@ -21,6 +21,7 @@ trait AccessToken
         ];
 
         if (empty($params['client_id']) || empty($params['client_secret'])) {
+            stdLog()->warning('HikCloud getAccessToken Error', ['params' => $params, 'hikConfig' => $this->config->getHikConfig()]);
             return null;
         }
 
