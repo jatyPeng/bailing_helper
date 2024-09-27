@@ -17,9 +17,11 @@ class DummyClass extends Migration
             // coding in here
 
 
-            $table->string('created_name', 100)->default('')->comment('创建数据的人员名字');
-            $table->string('updated_name', 100)->default('')->comment('最后修改数据的人员名字');
             $table->datetimes();
+            $table->integer('created_uid')->default(0)->comment('创建数据的用户服务uid');
+            $table->integer('updated_uid')->default(0)->comment('最后修改数据的用户服务uid');
+            $table->string('created_name', 100)->default('')->comment('创建数据的用户名字');
+            $table->string('updated_name', 100)->default('')->comment('最后修改数据的用户服务名字');
             $table->softDeletes();
             $table->comment('');
         });

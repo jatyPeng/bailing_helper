@@ -61,15 +61,28 @@ class GenCRUDCommand extends HyperfCommand
             // 尝试自动构建trimFields
             $columnsTypeArr = array_column(Schema::getColumnTypeListing($table), null, 'column_name');
             $trimFields = [];
+            $attributesArr = [];
             foreach ($columnsTypeArr as $item) {
                 if (! empty($item['data_type']) && in_array($item['data_type'], ['varchar', 'char'])) {
                     $trimFields[] = $item['column_name'];
                 }
+                if (! empty($item['column_comment'])) {
+                    $attributesArr[$item['column_name']] = $item['column_comment'];
+                }
             }
             $modelFile = $this->makeDirectory(BASE_PATH . '/app/Model/') . $model . '.php';
+
+            // 新增使用到的类（软删除、修改事件监听）
+            $modelFileContent = file_get_contents($modelFile);
+            $modelFileContent = str_replace('namespace App\Model;', 'namespace App\Model;' . PHP_EOL . 'use Hyperf\Database\Model\SoftDeletes;' . PHP_EOL . 'use Bailing\Trait\DbModifyLog;', $modelFileContent);
+
             $stub = file_get_contents(__DIR__ . '/stubs/TrimFields.stub');
             $stub = $this->replaceTrimFields($stub, $trimFields);
-            $trimFieldsStr = str_replace(PHP_EOL . '}' . PHP_EOL, $stub . PHP_EOL . '}' . PHP_EOL, file_get_contents($modelFile));
+            $stub = $this->replaceAttributes($stub, $attributesArr);
+            $trimFieldsStr = str_replace(PHP_EOL . '}' . PHP_EOL, $stub . PHP_EOL . '}' . PHP_EOL, $modelFileContent);
+
+
+
             file_put_contents($modelFile, $trimFieldsStr);
             // trimFields完成
 
@@ -134,6 +147,11 @@ class GenCRUDCommand extends HyperfCommand
         return str_replace('%TRIM_FIELDS%', $str, $stub);
     }
 
+    protected function replaceAttributes(string $stub, array $attributes): string
+    {
+        return str_replace('%ATTRIBUTES%', var_export($attributes, true), $stub);
+    }
+
     protected function replaceControllerFields(string $stub, string $table): string
     {
         $columnsDefaultArr = Db::table('INFORMATION_SCHEMA.columns')->where(['TABLE_NAME' => $table])->orderBy('ORDINAL_POSITION')->get(['COLUMN_NAME', 'COLUMN_DEFAULT', 'IS_NULLABLE', 'DATA_TYPE'])->toArray();
@@ -149,16 +167,16 @@ class GenCRUDCommand extends HyperfCommand
                     }
                     if (in_array(strtolower($item->DATA_TYPE), ['int', 'smallint', 'mediumint', 'tinyint', 'bigint'])) {
                         $addFields .= '(int) $post[\'' . $item->COLUMN_NAME . '\'];';
-                    } else if (in_array(strtolower($item->DATA_TYPE), ['varchar', 'text', 'date', 'datetime', 'timestamp', 'mediumtext', 'longtext', 'char'])){
+                    } elseif (in_array(strtolower($item->DATA_TYPE), ['varchar', 'text', 'date', 'datetime', 'timestamp', 'mediumtext', 'longtext', 'char'])) {
                         $addFields .= '(string) $post[\'' . $item->COLUMN_NAME . '\'];';
-                    } else if (in_array(strtolower($item->DATA_TYPE), ['json'])){
+                    } elseif (in_array(strtolower($item->DATA_TYPE), ['json'])) {
                         $addFields .= '(array) $post[\'' . $item->COLUMN_NAME . '\'];';
-                    } else if (in_array(strtolower($item->DATA_TYPE), ['double', 'float', 'decimal'])){
+                    } elseif (in_array(strtolower($item->DATA_TYPE), ['double', 'float', 'decimal'])) {
                         $addFields .= '(float) $post[\'' . $item->COLUMN_NAME . '\'];';
                     } else {
                         $addFields .= '$post[\'' . $item->COLUMN_NAME . '\'];';
                     }
-                    $addFields .=  PHP_EOL . '        ';
+                    $addFields .= PHP_EOL . '        ';
                 }
             }
             $stub = str_replace('%ADD_FIELDS%', trim($addFields), $stub);

@@ -4,3 +4,11 @@
     {
         return [%TRIM_FIELDS%];
     }
+
+    public function attributesDict(): array
+    {
+        return [%ATTRIBUTES%];
+    }
+
+    use SoftDeletes;
+    use DbModifyLog;
