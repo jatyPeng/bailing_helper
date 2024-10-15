@@ -81,8 +81,6 @@ class GenCRUDCommand extends HyperfCommand
             $stub = $this->replaceAttributes($stub, $attributesArr);
             $trimFieldsStr = str_replace(PHP_EOL . '}' . PHP_EOL, $stub . PHP_EOL . '}' . PHP_EOL, $modelFileContent);
 
-
-
             file_put_contents($modelFile, $trimFieldsStr);
             // trimFields完成
 
@@ -191,7 +189,7 @@ class GenCRUDCommand extends HyperfCommand
         if ($columnsDefaultArr) {
             $requestFields = '';
             foreach ($columnsDefaultArr as $item) {
-                if (! in_array($item->COLUMN_NAME, ['id', 'org_id', 'created_at', 'updated_at', 'deleted_at'])) {
+                if (! in_array($item->COLUMN_NAME, ['id', 'org_id', 'created_at', 'updated_at', 'deleted_at', 'created_uid', 'updated_uid', 'created_name', 'updated_name'])) {
                     if (in_array($item->COLUMN_NAME, $fields)) {
                         $length = (str_replace([$columnsTypeArr[$item->COLUMN_NAME]['data_type'], '(', ')'], '', $columnsTypeArr[$item->COLUMN_NAME]['column_type']));
                         $requestFields .= "'" . $item->COLUMN_NAME . "' => '" . ($item->COLUMN_DEFAULT === null && $item->IS_NULLABLE === 'NO' ? 'required|' : '') . 'max:' . $length . "'," . PHP_EOL . '            ';
@@ -202,14 +200,14 @@ class GenCRUDCommand extends HyperfCommand
                     } elseif (in_array($columnsTypeArr[$item->COLUMN_NAME]['data_type'], ['timestamp', 'datetime', 'date'])) {
                         $requestFields .= "'" . $item->COLUMN_NAME . "' => '" . ($item->COLUMN_DEFAULT === null && $item->IS_NULLABLE === 'NO' ? 'required|' : '') . "date'," . PHP_EOL . '            ';
                     } elseif (in_array($columnsTypeArr[$item->COLUMN_NAME]['data_type'], ['json'])) {
-                        $requestFields .= "'" . $item->COLUMN_NAME . "' => 'array'," . PHP_EOL . '            ';
+                        $requestFields .= "'" . $item->COLUMN_NAME . "' => " . ($item->COLUMN_DEFAULT === null && $item->IS_NULLABLE === 'NO' ? 'required|' : '') . "'array'," . PHP_EOL . '            ';
                     }
                 }
             }
             $stub = str_replace('%REQUEST_RULES%', trim($requestFields), $stub);
 
             // 替换验证字段
-            $str = implode("', '", arrayColumnUnique($columnsDefaultArr, 'COLUMN_NAME', ['id', 'org_id', 'created_at', 'updated_at', 'deleted_at']));
+            $str = implode("', '", arrayColumnUnique($columnsDefaultArr, 'COLUMN_NAME', ['id', 'org_id', 'created_at', 'updated_at', 'deleted_at', 'created_uid', 'updated_uid', 'created_name', 'updated_name']));
             $str = "'" . $str . "'";
             $stub = str_replace('%REQUEST_FIELDS%', $str, $stub);
         }

@@ -7,7 +7,7 @@
 
     public function attributesDict(): array
     {
-        return [%ATTRIBUTES%];
+        return %ATTRIBUTES%;
     }
 
     use SoftDeletes;
