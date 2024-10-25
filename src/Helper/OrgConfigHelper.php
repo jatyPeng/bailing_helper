@@ -39,8 +39,13 @@ class OrgConfigHelper
                 $table->string('index', 100)->nullable()->comment('额外的唯一索引名，例如（项目ID_楼宇ID）')->index('idx_index');
                 $table->string('name', 100)->nullable()->comment('名称')->index('idx_name');
                 $table->text('value')->nullable()->comment('值');
+                $table->string('remark', 100)->nullable()->comment('备注');
                 $table->timestamps();
                 $table->comment('机构配置表');
+            });
+        } elseif (! Schema::hasColumn('bailing_org_config', 'remark')) {
+            Schema::table('bailing_org_config', function (Blueprint $table) {
+                $table->string('remark', 100)->nullable()->comment('备注')->after('value');
             });
         }
         return true;
