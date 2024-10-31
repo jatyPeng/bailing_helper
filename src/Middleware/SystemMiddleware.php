@@ -58,7 +58,7 @@ class SystemMiddleware implements MiddlewareInterface
                 return self::json('请登录！');
             }
         } catch (\Exception $exception) {
-            logger()->error('SYSTEM REDIS CLIENT ERROR', ['module' => RequestHelper::getAdminModule()]);
+            stdLog()->debug('SYSTEM REDIS CLIENT ERROR', ['module' => RequestHelper::getAdminModule()]);
         }
         try {
             $redisOrgClient = redis('org');
@@ -66,7 +66,7 @@ class SystemMiddleware implements MiddlewareInterface
                 return self::json('您已被移出该机构!');
             }
         } catch (\Exception $exception) {
-            logger()->error('ORG REDIS CLIENT ERROR', ['module' => RequestHelper::getAdminModule()]);
+            stdLog()->debug('ORG REDIS CLIENT ERROR', ['module' => RequestHelper::getAdminModule()]);
         }
 
         $jwtData->data->tokenType = 'system';

@@ -81,7 +81,7 @@ class OrgMiddleware implements MiddlewareInterface
                 return self::json('用户信息不存在,请重新注册登录！');
             }
         } catch (\Exception $exception) {
-            logger()->error('USER REDIS CLIENT ERROR', ['module' => RequestHelper::getAdminModule()]);
+            stdLog()->debug('USER REDIS CLIENT ERROR', ['module' => RequestHelper::getAdminModule()]);
         }
         try {
             $redisOrgClient = redis('org');
@@ -89,7 +89,7 @@ class OrgMiddleware implements MiddlewareInterface
                 return self::json('您已被移出该机构!');
             }
         } catch (\Exception $exception) {
-            logger()->error('ORG REDIS CLIENT ERROR', ['module' => RequestHelper::getAdminModule()]);
+            stdLog()->debug('ORG REDIS CLIENT ERROR', ['module' => RequestHelper::getAdminModule()]);
         }
 
         if (! empty($jwtData->data->intranet_access) && ! RequestHelper::isLocalNetwork()) {
