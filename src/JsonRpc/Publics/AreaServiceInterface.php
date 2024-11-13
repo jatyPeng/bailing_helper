@@ -17,7 +17,9 @@ interface AreaServiceInterface
      */
     public function getArea(int $areaCode): array;
 
-	public function getAreaByShortName(string $name): array;
+    public function getAreaByShortName(string $name): array;
+
+    public function getAreaByName(string $name): array;
 
     /**
      * 根据中心坐标获取周边的区域地点.

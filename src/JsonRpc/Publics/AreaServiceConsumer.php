@@ -37,14 +37,23 @@ class AreaServiceConsumer extends AbstractServiceClient implements AreaServiceIn
         }
     }
 
-	public function getAreaByShortName(string $name): array
-	{
-		try {
-			return $this->__request(__FUNCTION__, compact('name'));
-		} catch (\Exception $exception) {
-			return ApiHelper::genServiceErrorData($this->serviceName, $exception);
-		}
-	}
+    public function getAreaByShortName(string $name): array
+    {
+        try {
+            return $this->__request(__FUNCTION__, compact('name'));
+        } catch (\Exception $exception) {
+            return ApiHelper::genServiceErrorData($this->serviceName, $exception);
+        }
+    }
+
+    public function getAreaByName(string $name): array
+    {
+        try {
+            return $this->__request(__FUNCTION__, compact('name'));
+        } catch (\Exception $exception) {
+            return ApiHelper::genServiceErrorData($this->serviceName, $exception);
+        }
+    }
 
     /**
      * 根据中心坐标获取周边的区域地点.

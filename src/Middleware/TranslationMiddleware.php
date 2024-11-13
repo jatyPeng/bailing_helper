@@ -43,7 +43,6 @@ class TranslationMiddleware implements MiddlewareInterface
         }
 
         if (! empty($language)) {
-            $language = str_replace('-', '_', $language);
             container()->get(TranslatorInterface::class)->setLocale($language);
         }
 
