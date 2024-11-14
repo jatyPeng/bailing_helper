@@ -79,6 +79,9 @@ class MinioAdapter implements FilesystemAdapter
         //上传到minio
         $response = $this->minio->putObject($tmpFile, $prefixedPath);
 
+        // 删除临时文件
+        unlink($tmpFile);
+
         if ($response['code'] != 200) {
             stdLog()->error('minio write file error：' . ($response['error']['Message'] ?? '写入失败'), ['tmpFile' => $tmpFile, 'prefixedPath' => $prefixedPath, 'response' => $response]);
             throw UnableToWriteFile::atLocation($path, (string) ($response['error']['Message'] ?? '写入失败'));

@@ -58,6 +58,20 @@ class RuntimeFileClearJob extends AbstractJobHandler
         }
         stdLog()->info('清空缓存日志文件完成执行，删除文件总数：' . strval($clearCount));
 
+        // 删除24小时前的临时缓存文件
+        $fileList = FileHelper::getDirFiles(tmpDir() . '/', false);
+        stdLog()->info('清空缓存上传文件开始执行，文件总数：' . strval(count($fileList)));
+        $clearCount = 0;
+        foreach ($fileList as $item) {
+            if ($item['mTime'] < time() - 86400) {
+                stdLog()->info('清空缓存上传文件欲删除：', [$item['pathName'], date('Y-m-d H:i:s', $item['mTime'])]);
+                if (@unlink($item['pathName'])) {
+                    ++$clearCount;
+                }
+            }
+        }
+        stdLog()->info('清空缓存上传文件完成执行，删除文件总数：' . strval($clearCount));
+
         container()->get(EventDispatcherInterface::class)->dispatch(new RuntimeFileClear());
 
     }
