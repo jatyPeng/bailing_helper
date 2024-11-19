@@ -10,6 +10,9 @@ declare(strict_types=1);
  */
 namespace Bailing\Listener;
 
+use Bailing\Helper\LanguageHelper;
+use Bailing\Helper\OrgConfigHelper;
+use Bailing\Helper\TranslationHelper;
 use Bailing\Helper\XxlJobTaskHelper;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
@@ -39,6 +42,11 @@ class MainWorkerStartListener implements ListenerInterface
 
     public function process(object $event): void
     {
+
+        // 初始化配置文件
+        OrgConfigHelper::createTable();
+        TranslationHelper::createTable();
+
         // 生产环境，执行下 preStart，初始下sql语句
         if (env('APP_ENV') == 'production') {
             $input = new ArrayInput(['command' => 'preStart']);

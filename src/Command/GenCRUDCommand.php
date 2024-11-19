@@ -152,7 +152,7 @@ class GenCRUDCommand extends HyperfCommand
 
     protected function replaceControllerFields(string $stub, string $table): string
     {
-        $columnsDefaultArr = Db::table('INFORMATION_SCHEMA.columns')->where(['TABLE_NAME' => $table])->orderBy('ORDINAL_POSITION')->get(['COLUMN_NAME', 'COLUMN_DEFAULT', 'IS_NULLABLE', 'DATA_TYPE'])->toArray();
+        $columnsDefaultArr = Db::table('INFORMATION_SCHEMA.columns')->where(['TABLE_NAME' => $table, 'TABLE_SCHEMA' => config('databases.default.database')])->orderBy('ORDINAL_POSITION')->get(['COLUMN_NAME', 'COLUMN_DEFAULT', 'IS_NULLABLE', 'DATA_TYPE'])->toArray();
         if ($columnsDefaultArr) {
             // 控制器的表单
             $addFields = '';
@@ -184,7 +184,7 @@ class GenCRUDCommand extends HyperfCommand
 
     protected function replaceRequestFields(string $stub, string $table, array $fields): string
     {
-        $columnsDefaultArr = Db::table('INFORMATION_SCHEMA.columns')->where(['TABLE_NAME' => $table])->orderBy('ORDINAL_POSITION')->get(['COLUMN_NAME', 'COLUMN_DEFAULT', 'IS_NULLABLE'])->toArray();
+        $columnsDefaultArr = Db::table('INFORMATION_SCHEMA.columns')->where(['TABLE_NAME' => $table, 'TABLE_SCHEMA' => config('databases.default.database')])->orderBy('ORDINAL_POSITION')->get(['COLUMN_NAME', 'COLUMN_DEFAULT', 'IS_NULLABLE'])->toArray();
         $columnsTypeArr = array_column(Schema::getColumnTypeListing($table), null, 'column_name');
         if ($columnsDefaultArr) {
             $requestFields = '';
