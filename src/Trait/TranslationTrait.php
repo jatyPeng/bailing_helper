@@ -88,6 +88,26 @@ trait TranslationTrait
     }
 
     /**
+     * 保存多语言内容.
+     */
+    public static function saveTranslation(int $orgId, string $field, int|string $dataId, array $value, bool $isCover = true): bool
+    {
+        $tableName = (new self())->getTable();
+
+        if (isDevEnv()) {
+            $tableI18n = config('translation.i18n_table.' . $tableName);
+            if (empty($tableI18n)) {
+                throw new \Exception(sprintf('需要先将该表(%s)绑定至多语言文件', $tableName));
+            }
+            if (empty($tableI18n['i18n']) || ! in_array($field, $tableI18n['i18n'])) {
+                throw new \Exception(sprintf('需要先将该字段(%s)绑定至多语言文件的i18n字段', $field));
+            }
+        }
+
+        return TranslationHelper::saveTranslation($orgId, $tableName . '_' . $field, $dataId, $value, $isCover);
+    }
+
+    /**
      * 自动遍历数组保存多语言内容.
      */
     public static function autoSaveTranslation(int|string $dataId, array $postArr, int $orgId = 0): bool

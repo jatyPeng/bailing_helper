@@ -64,7 +64,9 @@ class TranslationAspect extends AbstractAspect
             if ($model instanceof Model) {
                 foreach ($tableI18nConfig['i18n'] as $item) {
                     $tmpField = 'i18n_' . $item;
-                    $model->{$tmpField} = $i18nResult[$model->{$relationField}][$tmpField];
+                    if (! empty($i18nResult[$model->{$relationField}][$tmpField])) {
+                        $model->{$tmpField} = $i18nResult[$model->{$relationField}][$tmpField];
+                    }
                 }
             }
         }

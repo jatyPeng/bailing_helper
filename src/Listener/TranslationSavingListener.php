@@ -10,13 +10,12 @@ declare(strict_types=1);
  */
 namespace Bailing\Listener;
 
-use Bailing\Trait\DbModifyLog;
 use Hyperf\Database\Model\Events\Saving;
 use Hyperf\Event\Annotation\Listener;
 use Hyperf\Event\Contract\ListenerInterface;
 
 #[Listener]
-class DbSavingListener implements ListenerInterface
+class TranslationSavingListener implements ListenerInterface
 {
     public function listen(): array
     {
@@ -29,21 +28,15 @@ class DbSavingListener implements ListenerInterface
     {
         $model = $event->getModel();
 
-        if (! array_key_exists(DbModifyLog::class, class_uses($model))) {
-            return;
-        }
-
-        $nowUser = contextGet('nowUser');
-        if (empty($nowUser)) {
-            return;
-        }
-
-        if (empty($model->id)) {
-            $model->created_uid = $nowUser->id;
-            $model->created_name = $nowUser->name ?? '';
-        } else {
-            $model->updated_uid = $nowUser->id;
-            $model->updated_name = $nowUser->name ?? '';
+        // 保存时去除国际化字段
+        if (cfg('open_internationalize')) {
+            $tableI18nConfig = config('translation.i18n_table.' . $model->getTable());
+            if (! empty($tableI18nConfig)) {
+                foreach ($tableI18nConfig['i18n'] as $item) {
+                    $tmpField = 'i18n_' . $item;
+                    unset($model->{$tmpField});
+                }
+            }
         }
     }
 }

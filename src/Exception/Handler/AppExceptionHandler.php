@@ -82,7 +82,7 @@ class AppExceptionHandler extends ExceptionHandler
             ]);
         }
 
-        $errorData = Json::encode(ApiHelper::genErrorData(env('APP_ENV') == 'dev' ? $errMsg : 'Internal Server Error.', ApiHelper::CODE_ERROR));
+        $errorData = Json::encode(ApiHelper::genErrorData(isDevEnv() ? $errMsg : 'Internal Server Error.', ApiHelper::CODE_ERROR));
 
         return $response->withHeader('Server', 'Hyperf')->withStatus(500)->withBody(new SwooleStream($errorData));
     }

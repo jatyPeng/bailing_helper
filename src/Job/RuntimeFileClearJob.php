@@ -43,7 +43,7 @@ class RuntimeFileClearJob extends AbstractJobHandler
         foreach ($fileList as $item) {
             //程序缓存文件不删除
             if (! str_contains($item['pathName'], '/container/') && ! str_contains($item['pathName'], 'hyperf.pid')) {
-                if (env('APP_ENV') == 'dev') {
+                if (isDevEnv()) {
                     $day = cfg('clear_cache_day') ?: 1;
                 } else {
                     $day = cfg('clear_cache_day') ?: 7;
