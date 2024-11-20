@@ -29,13 +29,11 @@ class TranslationSavingListener implements ListenerInterface
         $model = $event->getModel();
 
         // 保存时去除国际化字段
-        if (cfg('open_internationalize')) {
-            $tableI18nConfig = config('translation.i18n_table.' . $model->getTable());
-            if (! empty($tableI18nConfig)) {
-                foreach ($tableI18nConfig['i18n'] as $item) {
-                    $tmpField = 'i18n_' . $item;
-                    unset($model->{$tmpField});
-                }
+        $tableI18nConfig = config('translation.i18n_table.' . $model->getTable());
+        if (! empty($tableI18nConfig)) {
+            foreach ($tableI18nConfig['i18n'] as $item) {
+                $tmpField = 'i18n_' . $item;
+                unset($model->{$tmpField});
             }
         }
     }
