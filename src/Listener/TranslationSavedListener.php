@@ -50,7 +50,7 @@ class TranslationSavedListener implements ListenerInterface
                 }
 
                 // 用户端编辑保存
-                $requestData = $request->all();
+                $requestData = request()->all();
                 if (empty($requestData)) {
                     return;
                 }
