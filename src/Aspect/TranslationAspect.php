@@ -40,8 +40,9 @@ class TranslationAspect extends AbstractAspect
             return $result;
         }
 
-        // 得到需要i18n的配置项
         $tableName = $result->offsetGet(0)->getTable();
+
+        // 得到需要i18n的配置项
         $tableI18nConfig = config('translation.i18n_table.' . $tableName);
         if (empty($tableI18nConfig)) {
             return $result;

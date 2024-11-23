@@ -10,6 +10,7 @@ declare(strict_types=1);
  */
 namespace Bailing\Listener;
 
+use Bailing\Helper\Annotation\TranslationReportHelper;
 use Bailing\Helper\OrgConfigHelper;
 use Bailing\Helper\TranslationHelper;
 use Bailing\Helper\XxlJobTaskHelper;
@@ -110,5 +111,8 @@ class MainWorkerStartListener implements ListenerInterface
                 stdLog()->error('rabbit vhost create error：' . $e->getMessage());
             }
         }
+
+        // 国际化上报
+        (new TranslationReportHelper())->build();
     }
 }

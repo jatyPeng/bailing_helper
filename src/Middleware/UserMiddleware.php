@@ -10,6 +10,8 @@ declare(strict_types=1);
  */
 namespace Bailing\Middleware;
 
+use Bailing\Annotation\EnumCodeInterface;
+use Bailing\Constants\Code\Common\CommonCode;
 use Bailing\Helper\ApiHelper;
 use Bailing\Helper\JwtHelper;
 use Hyperf\Context\Context;
@@ -36,7 +38,7 @@ class UserMiddleware implements MiddlewareInterface
 
         // 未登录，或登录状态超过14天
         if (! $jwtData || time() - $jwtData->iat > 86400 * (cfg('user_login_expire_day') ?: 14)) {
-            return self::json('请登录！');
+            return self::json(CommonCode::NEED_LOGIN);
         }
 
         $jwtData->data->tokenType = 'user';
@@ -46,7 +48,7 @@ class UserMiddleware implements MiddlewareInterface
         return $handler->handle($request);
     }
 
-    private static function json(string $msg, int $errCode = ApiHelper::LOGIN_ERROR)
+    private static function json(string|array|EnumCodeInterface $msg, int $errCode = ApiHelper::LOGIN_ERROR)
     {
         $body = new SwooleStream(Json::encode(ApiHelper::genErrorData($msg, $errCode)));
         return Context::get(ResponseInterface::class)
