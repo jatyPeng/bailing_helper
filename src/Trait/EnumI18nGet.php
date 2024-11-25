@@ -78,22 +78,24 @@ trait EnumI18nGet
      * 获取i18n的组装内容，用于返回.
      * @param array $i18nParam i18n参数
      */
-    public function genI18nTxt(array $i18nParam = [], bool $returnNowLang = false): array|string
+    public function genI18nTxt(array $i18nParam = [], bool $returnNowLang = false, string $language = ''): array|string
     {
         $txtArr = self::getEnums()[$this->name];
 
         if ($returnNowLang) {
-            $nowLang = container()->get(TranslatorInterface::class)->getLocale();
-            $nowLangValue = 'zh_cn';
+            if (empty($language)) {
+                $language = container()->get(TranslatorInterface::class)->getLocale();
+            }
+            $nowLang = 'zh_cn';
             $langList = config('lang_list');
             foreach ($langList as $key => $lang) {
-                if ($lang == $nowLang) {
-                    $nowLangValue = $key;
+                if ($lang == $language) {
+                    $nowLang = $key;
                 }
             }
-            $txt = $txtArr['i18nTxt'][$nowLangValue] ?? ($txtArr['i18nTxt']['zh_cn'] ?? $txtArr['txt']);
+            $txt = $txtArr['i18nTxt'][$nowLang] ?? ($txtArr['i18nTxt']['zh_cn'] ?? $txtArr['txt']);
             foreach ($i18nParam as $key => $value) {
-                $txt = str_replace(sprintf('{%s}', $key), $value, $msgArr['txt']);
+                $txt = str_replace(sprintf('{%s}', $key), $value, $txt);
             }
             return $txt;
         }
@@ -101,7 +103,7 @@ trait EnumI18nGet
         return [
             'value' => $txtArr['txt'],
             'i18n_value' => $txtArr['i18nTxt'],
-            'i18n_key' => $msgArr['i18nKey'],
+            'i18n_key' => $txtArr['i18nKey'],
             'i18n_msg_param' => $i18nParam,
         ];
     }
