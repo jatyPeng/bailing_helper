@@ -22,12 +22,12 @@ class EnumCode extends AbstractAnnotation
     // 中文错误提示
     public string $msg = '';
 
-    // 错误提示，i18n格式 {en: 'xxxxx', zh_hk: 'xxxxxx', zn_tw: 'xxxxxx', ja: 'xxxxxx'}
+    // 错误提示，i18n格式 {en: 'xxxxx', zh_hk: 'xxxxxx', zh_tw: 'xxxxxx', ja: 'xxxxxx'}
     public ?array  $i18nMsg = null;
 
     /**
      * @param string $msg 中文错误提示
-     * @param ?array $i18nMsg 错误提示，i18n格式 {en: 'xxxxx', zh_hk: 'xxxxxx', zn_tw: 'xxxxxx', ja: 'xxxxxx'}
+     * @param ?array $i18nMsg 错误提示，i18n格式 {en: 'xxxxx', zh_hk: 'xxxxxx', zh_tw: 'xxxxxx', ja: 'xxxxxx'}
      */
     public function __construct(
         string $msg,

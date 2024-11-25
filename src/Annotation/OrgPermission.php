@@ -36,7 +36,7 @@ class OrgPermission extends AbstractAnnotation
 
     public int $sort = 0; // 排序，越大越前，一级菜单千进位，二级菜单百进位，默认0
 
-    public int $status = 1; // 状态，0和1，默认1
+    public int $status = 1; // 状态（0、1、2），默认1， 2仅在子应用展示
 
     public string $type = ''; // 类型，label作为小标识，无法点击
 

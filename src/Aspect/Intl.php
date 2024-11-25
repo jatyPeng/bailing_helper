@@ -60,12 +60,8 @@ class Intl extends AbstractAspect
                         }
 
                         if (isset($model->{$tmpField})) {
-                            $tmpNumber = (float) getFormatNumber($model->{$tmpField}, $tmpDecimals);
                             $tmpNewField = 'i18n_' . $tmpField;
-                            $model->{$tmpNewField} = [
-                                'show' => NumberFormatHelper::getFormatNumber($tmpNumber),
-                                'spellOut' => NumberFormatHelper::getFormatNumberSpellOut($tmpNumber),
-                            ];
+                            $model->{$tmpNewField} = NumberFormatHelper::getFormatNumberArray((float) getFormatNumber($model->{$tmpField}, $tmpDecimals));
                         } else {
                             // 如果一旦不存在该字段，则直接跳出循环。部分情况下，查单个字段。
                             break;
@@ -95,11 +91,7 @@ class Intl extends AbstractAspect
                         $tmpNewField = 'i18n_' . $tmpField;
                         if (isset($model->{$tmpField})) {
                             $tmpNumber = (float) getFormatNumber($model->{$tmpField}, $tmpDecimals);
-                            $model->{$tmpNewField} = [
-                                'number' => NumberFormatHelper::getFormatNumber($tmpNumber),
-                                'show' => NumberFormatHelper::getFormatCurrency($tmpNumber),
-                                'spellOut' => NumberFormatHelper::getFormatCurrencySpellOut($tmpNumber, $model->{$tmpCodeField} ?? 'CNY'),
-                            ];
+                            $model->{$tmpNewField} = NumberFormatHelper::getFormatCurrencyArray($tmpNumber, $model->{$tmpCodeField} ?? 'CNY');
                         } else {
                             // 如果一旦不存在该字段，则直接跳出循环。部分情况下，查单个字段。
                             break;

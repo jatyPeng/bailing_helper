@@ -39,8 +39,8 @@ class TranslationSavedListener implements ListenerInterface
                 $request = Context::get(ServerRequestInterface::class);
                 $relationField = $tableI18nConfig['relation'];
 
-                // 一般在于内网交互、系统启动时，不存在请求头，初始化中文的内容，不覆盖
-                if (empty($request)) {
+                // 一般在于内网交互、系统启动时，不存在请求头，初始化中文的内容，不覆盖（两个IP参数的判断是用于jsonRpc请求）
+                if (empty($request) || (empty(request()->getHeaderLine('x-forwarded-for')) && empty(request()->getHeaderLine('x-real-ip')))) {
                     foreach ($tableI18nConfig['i18n'] as $item) {
                         if (! empty($model->{$item})) {
                             TranslationHelper::saveTranslation(! empty($model->org_id) ? $model->org_id : 0, $table . '_' . $item, $model->{$relationField}, ['zh_cn' => $model->{$item}], false);
