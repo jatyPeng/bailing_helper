@@ -11,6 +11,7 @@ declare(strict_types=1);
 namespace Bailing\Listener;
 
 use Bailing\Helper\TranslationHelper;
+use Hyperf\Codec\Json;
 use Hyperf\Context\Context;
 use Hyperf\Database\Model\Events\Saved;
 use Hyperf\Event\Annotation\Listener;
@@ -33,6 +34,7 @@ class TranslationSavedListener implements ListenerInterface
 
         // 保存时去除国际化字段
         if (cfg('open_internationalize')) {
+            $redis = redis();
             $table = $model->getTable();
             $tableI18nConfig = config('translation.i18n_table.' . $table);
             if (! empty($tableI18nConfig)) {
@@ -43,7 +45,16 @@ class TranslationSavedListener implements ListenerInterface
                 if (empty($request) || (empty(request()->getHeaderLine('x-forwarded-for')) && empty(request()->getHeaderLine('x-real-ip')))) {
                     foreach ($tableI18nConfig['i18n'] as $item) {
                         if (! empty($model->{$item})) {
-                            TranslationHelper::saveTranslation(! empty($model->org_id) ? $model->org_id : 0, $table . '_' . $item, $model->{$relationField}, ['zh_cn' => $model->{$item}], false);
+                            // 优先判断redis中有没有，可以事先埋入(表名、缓存标识辅助字段、值的md5)
+                            $redisKey = sprintf('i18n:%s%s:%s', $table, ! empty($tableI18nConfig['saveUniqueField']) ? ':' . $model->{$tableI18nConfig['saveUniqueField']} : '', md5($model->{$item}));
+                            $cacheI18nValue = $redis->get($redisKey);
+                            if (! empty($cacheI18nValue)) {
+                                $i18nValue = Json::decode($cacheI18nValue);
+                                $redis->del($redisKey);
+                            } else {
+                                $i18nValue = ['zh_cn' => $model->{$item}];
+                            }
+                            TranslationHelper::saveTranslation(! empty($model->org_id) ? $model->org_id : 0, $table . '_' . $item, $model->{$relationField}, $i18nValue, false);
                         }
                     }
                     return;

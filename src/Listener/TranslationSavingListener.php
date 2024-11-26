@@ -36,5 +36,40 @@ class TranslationSavingListener implements ListenerInterface
                 unset($model->{$tmpField});
             }
         }
+
+        // 保存时去除数字的国际化字段
+        $tableI18nConfig = config('translation.number.' . $model->getTable());
+        if (! empty($tableI18nConfig)) {
+            foreach ($tableI18nConfig as $key => $item) {
+                if (is_numeric($key)) {
+                    $tmpField = 'i18n_' . $item;
+                } else {
+                    $tmpField = 'i18n_' . $key;
+                }
+                unset($model->{$tmpField});
+            }
+        }
+
+        // 保存时去除金额的国际化字段
+        $tableI18nConfig = config('translation.currency.' . $model->getTable());
+        if (! empty($tableI18nConfig)) {
+            foreach ($tableI18nConfig['field'] as $item) {
+                $tmpField = 'i18n_' . $item;
+                unset($model->{$tmpField});
+            }
+        }
+
+        // 保存时去除时间的国际化字段
+        $tableI18nConfig = config('translation.datetime.' . $model->getTable());
+        if (! empty($tableI18nConfig)) {
+            foreach ($tableI18nConfig as $key => $item) {
+                if (is_numeric($key)) {
+                    $tmpField = 'i18n_' . $item;
+                } else {
+                    $tmpField = 'i18n_' . $key;
+                }
+                unset($model->{$tmpField});
+            }
+        }
     }
 }

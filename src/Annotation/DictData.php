@@ -22,6 +22,9 @@ class DictData extends AbstractAnnotation
     // 字典标签
     public string $label = '';
 
+    // 字典标签，i18n格式 {en: 'xxxxx', zh_hk: 'xxxxxx', zh_tw: 'xxxxxx', ja: 'xxxxxx'}
+    public ?array  $i18nLabel = null;
+
     // 字典排序
     public int $sort = 0;
 
@@ -39,6 +42,7 @@ class DictData extends AbstractAnnotation
 
     /**
      * @param string $label 字典标签
+     * @param array $i18nLabel 字典标签(i18n)
      * @param int $sort 字典排序
      * @param int $status 状态（1正常 0停用）
      * @param string $colorType 颜色类型（default、primary、success、info、warning、danger）
@@ -47,6 +51,7 @@ class DictData extends AbstractAnnotation
      */
     public function __construct(
         string $label,
+        array $i18nLabel = [],
         int $sort = 0,
         int $status = 1,
         string $colorType = '',
@@ -54,6 +59,7 @@ class DictData extends AbstractAnnotation
         string $remark = '',
     ) {
         $this->label = $label;
+        $this->i18nLabel = $i18nLabel;
         $this->sort = $sort;
         $this->status = $status;
         $this->colorType = $colorType;

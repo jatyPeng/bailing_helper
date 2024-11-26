@@ -13,6 +13,7 @@ namespace Bailing\Trait;
 use Bailing\Annotation\EnumI18n;
 use Bailing\Annotation\EnumI18nGroup;
 use Bailing\Helper\EnumStore;
+use Bailing\Helper\Intl\I18nHelper;
 use Hyperf\Contract\TranslatorInterface;
 use ReflectionEnum;
 use ReflectionEnumUnitCase;
@@ -83,16 +84,7 @@ trait EnumI18nGet
         $txtArr = self::getEnums()[$this->name];
 
         if ($returnNowLang) {
-            if (empty($language)) {
-                $language = container()->get(TranslatorInterface::class)->getLocale();
-            }
-            $nowLang = 'zh_cn';
-            $langList = config('lang_list');
-            foreach ($langList as $key => $lang) {
-                if ($lang == $language) {
-                    $nowLang = $key;
-                }
-            }
+            $nowLang = I18nHelper::getNowLang($language);
             $txt = $txtArr['i18nTxt'][$nowLang] ?? ($txtArr['i18nTxt']['zh_cn'] ?? $txtArr['txt']);
             foreach ($i18nParam as $key => $value) {
                 $txt = str_replace(sprintf('{%s}', $key), $value, $txt);
