@@ -68,4 +68,15 @@ enum CommonCode: int implements EnumCodeInterface
     #[EnumCode(msg: '账号异常，请重新登录', i18nMsg: ['en' => 'Account abnormal, please log in again', 'zh_tw' => '帳號異常，請重新登入', 'zh_hk' => '帳號異常，請重新登入', 'ja' => 'アカウント異常です。再ログインしてください'])]
     case ACCOUNT_ABNORMAL = 16;
 
+    #[EnumCode(msg: '导入成功', i18nMsg: ['en' => 'Import successful', 'zh_tw' => '導入成功', 'zh_hk' => '導入成功', 'ja' => 'インポートに成功しました'])]
+    case IMPORT_SUCCESS = 17;
+
+    #[EnumCode(msg: '导入失败，请重试', i18nMsg: ['en' => 'Import failed, please try again', 'zh_tw' => '導入失敗，請重試', 'zh_hk' => '導入失敗，請重試', 'ja' => 'インポートに失敗しました。再試行してください'])]
+    case IMPORT_FAILED = 18;
+
+    #[EnumCode(msg: '导出成功', i18nMsg: ['en' => 'Export successful', 'zh_tw' => '導出成功', 'zh_hk' => '導出成功', 'ja' => 'エクスポートに成功しました'])]
+    case EXPORT_SUCCESS = 19;
+
+    #[EnumCode(msg: '导出失败，请重试', i18nMsg: ['en' => 'Export failed, please try again', 'zh_tw' => '導出失敗，請重試', 'zh_hk' => '導出失敗，請重試', 'ja' => 'エクスポートに失敗しました。再試行してください'])]
+    case EXPORT_FAILED = 20;
 }
