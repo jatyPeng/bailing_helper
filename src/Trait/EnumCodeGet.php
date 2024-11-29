@@ -130,6 +130,9 @@ trait EnumCodeGet
         if (EnumStore::isset($enum->getName())) {
             return EnumStore::get($enum->getName());
         }
+
+        $isBailing = str_contains($enum->getName(), 'Bailing\Constants\Code');
+
         $enumCases = $enum->getCases();
         $classObj = self::getEnumClassAttitude();
         foreach ($enumCases as $enumCase) {
@@ -147,7 +150,7 @@ trait EnumCodeGet
                     'prefixCode' => $classObj->prefixCode,
                 ],
             ];
-            $caseArr['i18nKey'] = 'code.' . env('APP_NAME') . '.' . $caseArr['code'];
+            $caseArr['i18nKey'] = 'code.' . ($isBailing ? 'common' : env('MICRO_NAME', env('APP_NAME'))) . '.' . $caseArr['code'];
 
             EnumStore::set($enum->getName(), $case->name, $caseArr);
         }
