@@ -36,6 +36,9 @@ class ConfigProvider
                 'http' => [
                     TranslationMiddleware::class,
                 ],
+                'jsonrpc-http' => [
+                    TranslationMiddleware::class,
+                ],
             ],
             'annotations' => [
                 'scan' => [
