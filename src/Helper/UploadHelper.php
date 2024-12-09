@@ -264,7 +264,12 @@ class UploadHelper
             $this->filesystemFactory->get('local')->write($localFile, $cosStream);
             $downLoadFile = $this->filesystemFactory->get('local')->fileExists($localFile);
             if ($downLoadFile) {
-                return ['fileName' => $localFile, 'fileUrl' => 'runtime/' . $localFile];
+                return [
+                    'fileName' => $localFile,
+                    'fileUrl' => 'runtime/' . $localFile,
+                    'basename' => $fileName,
+                    'relativePath' => RUNTIME_BASE_PATH . '/' . $localFile,
+                ];
             }
         }
         throw new Exception('操作异常');

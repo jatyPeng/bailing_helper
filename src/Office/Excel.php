@@ -11,6 +11,7 @@ declare(strict_types=1);
 namespace Bailing\Office;
 
 use Bailing\Exception\BusinessException;
+use Bailing\Helper\Intl\I18nHelper;
 use Bailing\Office\Interfaces\ModelExcelInterface;
 use Hyperf\Di\Annotation\AnnotationCollector;
 use Hyperf\HttpMessage\Stream\SwooleStream;
@@ -28,7 +29,7 @@ abstract class Excel
     public function __construct(string $dto)
     {
         if (! (new $dto()) instanceof ModelExcelInterface) {
-            throw new BusinessException(0, 'dto does not implement an interface of the MineModelExcel');
+            throw new BusinessException(0, 'Dto does not implement an interface of the MineModelExcel');
         }
 
         $dtoObject = new $dto();
@@ -52,14 +53,19 @@ abstract class Excel
     protected function parseProperty(): void
     {
         if (empty($this->annotationMate) || ! isset($this->annotationMate['_c'])) {
-            throw new BusinessException(0, 'dto annotation info is empty');
+            throw new BusinessException(0, 'Dto annotation info is empty');
         }
 
+        $nowLang = I18nHelper::getNowLang();
+
         foreach ($this->annotationMate['_p'] as $name => $mate) {
+            $value = $mate[self::ANNOTATION_NAME]->i18nValue[$nowLang] ?? $mate[self::ANNOTATION_NAME]->value;
+            // 英文、日语环境下，宽度放大0.4倍
+            $width = ! empty($mate[self::ANNOTATION_NAME]->width) ? (in_array($nowLang, ['en', 'ja']) ? intval($mate[self::ANNOTATION_NAME]->width * 1.4) : $mate[self::ANNOTATION_NAME]->width) : null;
             $this->property[$mate[self::ANNOTATION_NAME]->index] = [
                 'name' => $name,
-                'value' => $mate[self::ANNOTATION_NAME]->value,
-                'width' => $mate[self::ANNOTATION_NAME]->width ?? null,
+                'value' => $value,
+                'width' => $width,
                 'height' => $mate[self::ANNOTATION_NAME]->height ?? null,
                 'align' => $mate[self::ANNOTATION_NAME]->align ?? null,
                 'headColor' => $mate[self::ANNOTATION_NAME]->headColor ?? null,

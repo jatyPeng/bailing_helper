@@ -79,4 +79,7 @@ enum CommonCode: int implements EnumCodeInterface
 
     #[EnumCode(msg: '导出失败，请重试', i18nMsg: ['en' => 'Export failed, please try again', 'zh_tw' => '導出失敗，請重試', 'zh_hk' => '導出失敗，請重試', 'ja' => 'エクスポートに失敗しました。再試行してください'])]
     case EXPORT_FAILED = 20;
+
+    #[EnumCode(msg: '未查询到该条数据，请检查该数据是否存在', i18nMsg: ['en' => 'The data was not found. Please check whether the data exists.', 'zh_tw' => '未查詢到該條數據，請檢查該數據是否存在', 'zh_hk' => '未查詢到該條數據，請檢查該數據是否存在', 'ja' => '該データが見つかりません。データが存在するか確認してください'])]
+    case DATA_NOT_FOUND = 21;
 }
