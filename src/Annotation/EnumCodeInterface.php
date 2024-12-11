@@ -35,5 +35,5 @@ interface EnumCodeInterface
     /**
      * 获取i18n的组装内容，用于返回.
      */
-    public function genI18nMsg(array $i18nParam = [], bool $returnNowLang = false, string $language = ''): array|string
+    public function genI18nMsg(array $i18nParam = [], bool $returnNowLang = false, string $language = ''): array|string;
 }
