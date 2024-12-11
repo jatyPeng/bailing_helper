@@ -98,9 +98,19 @@ trait EnumCodeGet
      * 获取i18n的组装内容，用于返回.
      * @param array $i18nParam i18n参数
      */
-    public function genI18nMsg(array $i18nParam = []): array
+    public function genI18nMsg(array $i18nParam = [], bool $returnNowLang = false, string $language = ''): array|string
     {
         $msgArr = self::getEnums()[$this->name];
+
+        // 返回当前语言的字符串，一般用于服务间的错误.
+        if ($returnNowLang) {
+            $nowLang = I18nHelper::getNowLang($language);
+            $msg = $msgArr['i18nMsg'][$nowLang] ?? ($msgArr['i18nMsg']['zh_cn'] ?? $txtArr['txt']);
+            foreach ($i18nParam as $key => $value) {
+                $msg = str_replace(sprintf('{%s}', $key), $value, $msg);
+            }
+            return $msg;
+        }
 
         // 替换 i18n 的参数
         if (! empty($i18nParam)) {
