@@ -8,13 +8,17 @@ declare(strict_types=1);
  * @document https://help.kuaijingai.com
  * @contact  www.kuaijingai.com 7*12 9:00-21:00
  */
+
 namespace Bailing\Office;
 
 use Bailing\Exception\BusinessException;
 use Bailing\Helper\Intl\I18nHelper;
+use Bailing\Office\Annotation\ExcelProperty;
 use Bailing\Office\Interfaces\ModelExcelInterface;
 use Hyperf\Di\Annotation\AnnotationCollector;
 use Hyperf\HttpMessage\Stream\SwooleStream;
+use Psr\Http\Message\ResponseInterface;
+use Vtiful\Kernel\Format;
 
 abstract class Excel
 {
@@ -26,7 +30,7 @@ abstract class Excel
 
     protected array $dictData = [];
 
-    public function __construct(string $dto)
+    public function __construct(string $dto, array $extraData = [])
     {
         if (! (new $dto()) instanceof ModelExcelInterface) {
             throw new BusinessException(0, 'Dto does not implement an interface of the MineModelExcel');
@@ -37,6 +41,20 @@ abstract class Excel
             $this->dictData = $dtoObject->dictData();
         }
         $this->annotationMate = AnnotationCollector::get($dto);
+        if (! empty($extraData)) {
+            if (! empty($this->annotationMate['_c'])) {
+                $startIndex = count($this->annotationMate['_p']) - 1;
+                foreach ($extraData as $key => $value) {
+                    ++$startIndex;
+                    if ($value['fill'] == 1) {
+                        $dataObj = new ExcelProperty($value['fields_name'], $startIndex, $value['i18n_fields_name']['i18n_value'], 20, null, 'left', Format::COLOR_WHITE, Format::COLOR_RED);
+                    } else {
+                        $dataObj = new ExcelProperty($value['fields_name'], $startIndex, $value['i18n_fields_name']['i18n_value'], 20, null, 'left', Format::COLOR_WHITE, 0x5A5A5A);
+                    }
+                    $this->annotationMate['_p'][$value['key']][self::ANNOTATION_NAME] = $dataObj;
+                }
+            }
+        }
         $this->parseProperty();
     }
 
@@ -84,9 +102,9 @@ abstract class Excel
     /**
      * 下载excel.
      */
-    protected function downloadExcel(string $filename, string $content): \Psr\Http\Message\ResponseInterface
+    protected function downloadExcel(string $filename, string $content): ResponseInterface
     {
-        return $response = contextGet(\Psr\Http\Message\ResponseInterface::class)
+        return $response = contextGet(ResponseInterface::class)
             ->withHeader('Server', 'Bailing')
             ->withHeader('access-control-expose-headers', 'content-disposition')
             ->withHeader('content-description', 'File Transfer')

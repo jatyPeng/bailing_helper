@@ -13,6 +13,7 @@ namespace Bailing\Trait;
 use Bailing\Annotation\EnumCode;
 use Bailing\Annotation\EnumCodePrefix;
 use Bailing\Helper\EnumStore;
+use Bailing\Helper\Intl\I18nHelper;
 use ReflectionEnum;
 use ReflectionEnumUnitCase;
 
@@ -105,7 +106,7 @@ trait EnumCodeGet
         // 返回当前语言的字符串，一般用于服务间的错误.
         if ($returnNowLang) {
             $nowLang = I18nHelper::getNowLang($language);
-            $msg = $msgArr['i18nMsg'][$nowLang] ?? ($msgArr['i18nMsg']['zh_cn'] ?? $txtArr['txt']);
+            $msg = $msgArr['i18nMsg'][$nowLang] ?? ($msgArr['i18nMsg']['zh_cn'] ?? $msgArr['txt']);
             foreach ($i18nParam as $key => $value) {
                 $msg = str_replace(sprintf('{%s}', $key), $value, $msg);
             }

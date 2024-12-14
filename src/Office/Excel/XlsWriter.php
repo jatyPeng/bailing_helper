@@ -38,7 +38,7 @@ class XlsWriter extends Excel implements ExcelPropertyInterface
         $request = container()->get(RequestInterface::class);
         if ($request->hasFile('file')) {
             $file = $request->file('file');
-            $tempFileName = 'import_' . time() . '.' . $file->getExtension();
+            $tempFileName = 'import_' . time() . '_' . mt_rand(10000, 99999) . '.' . $file->getExtension();
             $tempFilePath = RUNTIME_BASE_PATH . '/' . $tempFileName;
             file_put_contents($tempFilePath, $file->getStream()->getContents());
             $xlsxObject = new \Vtiful\Kernel\Excel(['path' => RUNTIME_BASE_PATH . '/']);

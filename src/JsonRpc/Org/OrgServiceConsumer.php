@@ -343,7 +343,7 @@ class OrgServiceConsumer extends AbstractServiceClient implements OrgServiceInte
     /**
      * 获取当前指定角色的权限.
      */
-    public function getRoleRbacList(int $roleId, int $orgId, int $userId): array
+    public function getRoleRbacList(array $roleId, int $orgId, int $userId): array
     {
         try {
             return $this->__request(__FUNCTION__, compact('roleId', 'orgId', 'userId'));

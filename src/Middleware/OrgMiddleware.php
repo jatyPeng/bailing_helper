@@ -144,12 +144,12 @@ class OrgMiddleware implements MiddlewareInterface
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    private function allowAccess(int $roleId, int $orgId, int $userId): bool
+    private function allowAccess(int|array $roleId, int $orgId, int $userId): bool
     {
         if (env('APP_NAME') == 'org' && class_exists('\App\JsonRpc\OrgService')) {
-            $orgService = container()->get(\App\JsonRpc\OrgService::class)->getRoleRbacList($roleId, $orgId, $userId);
+            $orgService = container()->get(\App\JsonRpc\OrgService::class)->getRoleRbacList(is_array($roleId) ? $roleId : [$roleId], $orgId, $userId);
         } else {
-            $orgService = container()->get(OrgServiceInterface::class)->getRoleRbacList($roleId, $orgId, $userId);
+            $orgService = container()->get(OrgServiceInterface::class)->getRoleRbacList(is_array($roleId) ? $roleId : [$roleId], $orgId, $userId);
         }
         $adminModule = RequestHelper::getAdminModule();
         $rbacAccess = ! empty($orgService['data']['rbacList']) ? $orgService['data']['rbacList'] : [];
