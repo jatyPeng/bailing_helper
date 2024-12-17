@@ -82,4 +82,19 @@ enum CommonCode: int implements EnumCodeInterface
 
     #[EnumCode(msg: '未查询到该条数据，请检查该数据是否存在', i18nMsg: ['en' => 'The data was not found. Please check whether the data exists.', 'zh_tw' => '未查詢到該條數據，請檢查該數據是否存在', 'zh_hk' => '未查詢到該條數據，請檢查該數據是否存在', 'ja' => '該データが見つかりません。データが存在するか確認してください'])]
     case DATA_NOT_FOUND = 21;
+
+    #[EnumCode(msg: '提交审批成功', i18nMsg: ['en' => 'Submit approval successful', 'zh_tw' => '提交審批成功', 'zh_hk' => '提交審批成功', 'ja' => '申請に成功しました'])]
+    case APPROVAL_SUBMIT_SUCCESS = 22;
+
+    #[EnumCode(msg: '提交审批失败，请重试', i18nMsg: ['en' => 'Submit approval failed, please try again', 'zh_tw' => '提交審批失敗，請重試', 'zh_hk' => '提交審批失敗，請重試', 'ja' => '申請に失敗しました。再試行してください'])]
+    case APPROVAL_SUBMIT_FAILED = 23;
+
+    #[EnumCode(msg: '提交成功', i18nMsg: ['en' => 'Submit successful', 'zh_tw' => '提交成功', 'zh_hk' => '提交成功', 'ja' => '提交に成功しました'])]
+    case SUBMIT_SUCCESS = 24;
+
+    #[EnumCode(msg: '提交失败，请重试', i18nMsg: ['en' => 'Submit failed, please try again', 'zh_tw' => '提交失敗，請重試', 'zh_hk' => '提交失敗，請重試', 'ja' => '提交に失敗しました。再試行してください'])]
+    case SUBMIT_FAILED = 25;
+
+    #[EnumCode(msg: '服务异常（{service_name}）[{error_msg}]', i18nMsg: ['en' => 'Service exception ({service_name}) [{error_msg}]', 'zh_tw' => '服務異常（{service_name}）[{error_msg}]', 'zh_hk' => '服務異常（{service_name}）[{error_msg}]', 'ja' => 'サービス異常（{service_name}）[{error_msg}]'])]
+    case SERVICE_EXCEPTION = 26;
 }
