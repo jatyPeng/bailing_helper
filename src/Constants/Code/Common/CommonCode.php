@@ -97,4 +97,10 @@ enum CommonCode: int implements EnumCodeInterface
 
     #[EnumCode(msg: '服务异常（{service_name}）[{error_msg}]', i18nMsg: ['en' => 'Service exception ({service_name}) [{error_msg}]', 'zh_tw' => '服務異常（{service_name}）[{error_msg}]', 'zh_hk' => '服務異常（{service_name}）[{error_msg}]', 'ja' => 'サービス異常（{service_name}）[{error_msg}]'])]
     case SERVICE_EXCEPTION = 26;
+
+    #[EnumCode(msg: '请上传文件', i18nMsg: ['en' => 'Please upload a file', 'zh_tw' => '請上傳文件', 'zh_hk' => '請上傳文件', 'ja' => 'ファイルをアップロードしてください'])]
+    case UPLOAD_FILE_EMPTY = 27;
+
+    #[EnumCode(msg: '文件格式（{file_ext}）不允许，只允许（{allow_ext}）', i18nMsg: ['en' => 'File format ({file_ext}) is not allowed, only allow ({allow_ext})', 'zh_tw' => '文件格式（{file_ext}）不允许，只允許（{allow_ext}）', 'zh_hk' => '文件格式（{file_ext}）不允许，只允許（{allow_ext}）', 'ja' => 'ファイル形式（{file_ext}）は許可されていません。{allow_ext}のみ許可されています'])]
+    case FILE_FORMAT_NOT_ALLOW = 28;
 }

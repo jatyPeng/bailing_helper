@@ -8,9 +8,11 @@ declare(strict_types=1);
  * @document https://help.kuaijingai.com
  * @contact  www.kuaijingai.com 7*12 9:00-21:00
  */
+
 namespace Bailing\Listener;
 
 use Bailing\Helper\Annotation\TranslationReportHelper;
+use Bailing\Helper\Approval\ApprovalProcessHelper;
 use Bailing\Helper\OrgConfigHelper;
 use Bailing\Helper\TranslationHelper;
 use Bailing\Helper\XxlJobTaskHelper;
@@ -45,6 +47,7 @@ class MainWorkerStartListener implements ListenerInterface
         // 初始化配置文件
         OrgConfigHelper::createTable();
         TranslationHelper::createTable();
+        ApprovalProcessHelper::createTable();
 
         // 生产环境，执行下 preStart，初始下sql语句
         if (! isDevEnv()) {
