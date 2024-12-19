@@ -84,6 +84,7 @@ class WorkApprovalController
             }
             $temp['name'] = $item['name'];
             $temp['alias'] = $item['alias'];
+            $temp['icon'] = domain() . '/public_web/static/images' . $item['icon'];
             $result[] = $temp;
         }
 
