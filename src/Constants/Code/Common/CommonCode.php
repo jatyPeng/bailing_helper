@@ -103,4 +103,10 @@ enum CommonCode: int implements EnumCodeInterface
 
     #[EnumCode(msg: '文件格式（{file_ext}）不允许，只允许（{allow_ext}）', i18nMsg: ['en' => 'File format ({file_ext}) is not allowed, only allow ({allow_ext})', 'zh_tw' => '文件格式（{file_ext}）不允许，只允許（{allow_ext}）', 'zh_hk' => '文件格式（{file_ext}）不允许，只允許（{allow_ext}）', 'ja' => 'ファイル形式（{file_ext}）は許可されていません。{allow_ext}のみ許可されています'])]
     case FILE_FORMAT_NOT_ALLOW = 28;
+
+    #[EnumCode(msg: '绑定成功', i18nMsg: ['en' => 'Bind successful', 'zh_tw' => '綁定成功', 'zh_hk' => '綁定成功', 'ja' => 'バインドに成功しました'])]
+    case BIND_SUCCESS = 29;
+
+    #[EnumCode(msg: '绑定失败，请重试', i18nMsg: ['en' => 'Binding failed, please try again', 'zh_tw' => '綁定失敗，請重試', 'zh_hk' => '綁定失敗，請重試', 'ja' => 'バインドに失敗しました。再試行してください'])]
+    case BIND_FAILED = 30;
 }

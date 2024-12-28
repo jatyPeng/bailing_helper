@@ -62,9 +62,6 @@ class IntlAspect extends AbstractAspect
                         if (isset($model->{$tmpField})) {
                             $tmpNewField = 'i18n_' . $tmpField;
                             $model->{$tmpNewField} = NumberFormatHelper::getFormatNumberArray((float) getFormatNumber($model->{$tmpField}, $tmpDecimals));
-                        } else {
-                            // 如果一旦不存在该字段，则直接跳出循环。部分情况下，查单个字段。
-                            break;
                         }
                     }
                 }
@@ -92,9 +89,6 @@ class IntlAspect extends AbstractAspect
                         if (isset($model->{$tmpField})) {
                             $tmpNumber = (float) getFormatNumber($model->{$tmpField}, $tmpDecimals);
                             $model->{$tmpNewField} = NumberFormatHelper::getFormatCurrencyArray($tmpNumber, $model->{$tmpCodeField} ?? 'CNY');
-                        } else {
-                            // 如果一旦不存在该字段，则直接跳出循环。部分情况下，查单个字段。
-                            break;
                         }
                     }
                 }
@@ -116,7 +110,20 @@ class IntlAspect extends AbstractAspect
                             $tmpField = $key;
                         }
 
-                        if (! empty($model->{$tmpField})) {
+                        // 二维数组
+                        if (str_contains($tmpField, '.')) {
+                            $tmpFieldArr = explode('.', $tmpField);
+                            if (! empty($model->{$tmpFieldArr[0]}[$tmpFieldArr[1]])) {
+                                $tmpValue = $model->{$tmpFieldArr[0]}[$tmpFieldArr[1]];
+                                $tmpNewField = 'i18n_' . $tmpFieldArr[1];
+                                // 兼容Carbon对象
+                                if ($tmpValue instanceof Carbon) {
+                                    $model->{$tmpFieldArr[0]} = array_merge($model->{$tmpFieldArr[0]}, [$tmpNewField => DateTimeHelper::getDateTimeByUnixTimestamp($tmpValue->getTimestamp(), $tmpFormat)]);
+                                } else {
+                                    $model->{$tmpFieldArr[0]} = array_merge($model->{$tmpFieldArr[0]}, [$tmpNewField => DateTimeHelper::getDateTimeByUnixTimestamp(DateTimeHelper::strtotime($tmpValue), $tmpFormat)]);
+                                }
+                            }
+                        } elseif (! empty($model->{$tmpField})) {
                             $tmpValue = $model->{$tmpField};
                             $tmpNewField = 'i18n_' . $tmpField;
                             // 兼容Carbon对象
@@ -125,9 +132,6 @@ class IntlAspect extends AbstractAspect
                             } else {
                                 $model->{$tmpNewField} = DateTimeHelper::getDateTimeByUnixTimestamp(DateTimeHelper::strtotime($tmpValue), $tmpFormat);
                             }
-                        } else {
-                            // 如果一旦不存在该字段，则直接跳出循环。部分情况下，查单个字段。
-                            break;
                         }
                     }
                 }
