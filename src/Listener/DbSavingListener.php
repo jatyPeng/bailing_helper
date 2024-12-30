@@ -28,7 +28,6 @@ class DbSavingListener implements ListenerInterface
     public function process(object $event): void
     {
         $model = $event->getModel();
-
         if (! array_key_exists(DbModifyLog::class, class_uses($model))) {
             return;
         }

@@ -6,7 +6,7 @@
         "php",
         "hyperf"
     ],
-    "description": "常见帮助类",
+    "description": "常见帮助类V1",
     "autoload": {
         "psr-4": {
             "Bailing\\": "src/",

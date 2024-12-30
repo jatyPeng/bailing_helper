@@ -24,8 +24,6 @@ class OrgPermission extends AbstractAnnotation
 
     public string $activeIcon = ''; // 选中后图标
 
-    public array $i18nName = []; // 多语言名称
-
     public int $menuType = 1; // 1展示，0归类
 
     public string $urlType = 'path'; // 	URL类别(path, frame_url, target_url)
@@ -38,7 +36,7 @@ class OrgPermission extends AbstractAnnotation
 
     public int $sort = 0; // 排序，越大越前，一级菜单千进位，二级菜单百进位，默认0
 
-    public int $status = 1; // 状态（0、1、2），默认1， 2仅在子应用展示
+    public int $status = 1; // 状态，0和1，默认1
 
     public string $type = ''; // 类型，label作为小标识，无法点击
 
@@ -55,7 +53,6 @@ class OrgPermission extends AbstractAnnotation
         string $action = '',
         string $icon = '',
         string $activeIcon = '',
-        array $i18nName = [],
         int $menuType = 1,
         string $urlType = 'path',
         string $alias = '',
@@ -73,7 +70,6 @@ class OrgPermission extends AbstractAnnotation
         $this->action = $action;
         $this->icon = $icon;
         $this->activeIcon = $activeIcon;
-        $this->i18nName = $i18nName;
         $this->menuType = $menuType;
         $this->urlType = $urlType;
         $this->alias = $alias;

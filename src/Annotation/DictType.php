@@ -22,9 +22,6 @@ class DictType extends AbstractAnnotation
     // 字典名称
     public string $name = '';
 
-    // 字典名称，i18n格式 {en: 'xxxxx', zh_hk: 'xxxxxx', zh_tw: 'xxxxxx', ja: 'xxxxxx'}
-    public ?array  $i18nName = null;
-
     // 字典类型
     public string $type = '';
 
@@ -38,15 +35,13 @@ class DictType extends AbstractAnnotation
     public string $remark = '';
 
     public function __construct(
-        string $name = '',
-        array $i18nName = [],
-        string $type = '',
-        string $menuAlias = '',
+        string $name,
+        string $type,
+        string $menuAlias,
         int $status = 1,
         string $remark = '',
     ) {
         $this->name = $name;
-        $this->i18nName = $i18nName;
         $this->type = $type;
         $this->menuAlias = $menuAlias;
         $this->status = $status;
