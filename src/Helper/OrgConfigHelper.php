@@ -73,6 +73,11 @@ class OrgConfigHelper
     #[Cacheable(prefix: 'bailingOrgConfig', value: '_#{orgId}_#{name}_#{index}', ttl: 600)]
     public static function getConfig(int $orgId, string $name, string $index = ''): string
     {
+        //自动创建表，通过缓存来判断有没有创建过.
+        if (! env('BAILING_ORG_CONFIG_BUILDED')) {
+            self::createTable();
+        }
+
         $where = [
             'org_id' => $orgId,
             'name' => $name,

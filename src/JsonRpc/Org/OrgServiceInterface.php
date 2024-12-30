@@ -148,7 +148,7 @@ interface OrgServiceInterface
     /**
      * 获取当前指定角色的权限.
      */
-    public function getRoleRbacList(array $roleId, int $orgId, int $userId): array;
+    public function getRoleRbacList(int $roleId, int $orgId, int $userId): array;
 
     /**
      * 获取菜单名称和权限名称.

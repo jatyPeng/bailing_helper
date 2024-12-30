@@ -10,8 +10,10 @@ declare(strict_types=1);
  */
 namespace Bailing\Job;
 
+use App\Event\OrgBillApproved;
 use Bailing\Annotation\XxlJobTask;
 use Bailing\Event\RuntimeFileClear;
+use Bailing\Event\RuntimeFileClearEvent;
 use Bailing\Helper\FileHelper;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\XxlJob\Annotation\XxlJob;
@@ -41,7 +43,7 @@ class RuntimeFileClearJob extends AbstractJobHandler
         foreach ($fileList as $item) {
             //程序缓存文件不删除
             if (! str_contains($item['pathName'], '/container/') && ! str_contains($item['pathName'], 'hyperf.pid')) {
-                if (isDevEnv()) {
+                if (env('APP_ENV') == 'dev') {
                     $day = cfg('clear_cache_day') ?: 1;
                 } else {
                     $day = cfg('clear_cache_day') ?: 7;

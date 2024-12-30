@@ -8,13 +8,8 @@ declare(strict_types=1);
  * @document https://help.kuaijingai.com
  * @contact  www.kuaijingai.com 7*12 9:00-21:00
  */
-
 namespace Bailing\Listener;
 
-use Bailing\Helper\Annotation\TranslationReportHelper;
-use Bailing\Helper\Approval\ApprovalProcessHelper;
-use Bailing\Helper\OrgConfigHelper;
-use Bailing\Helper\TranslationHelper;
 use Bailing\Helper\XxlJobTaskHelper;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
@@ -44,13 +39,8 @@ class MainWorkerStartListener implements ListenerInterface
 
     public function process(object $event): void
     {
-        // 初始化配置文件
-        OrgConfigHelper::createTable();
-        TranslationHelper::createTable();
-        ApprovalProcessHelper::createTable();
-
         // 生产环境，执行下 preStart，初始下sql语句
-        if (! isDevEnv()) {
+        if (env('APP_ENV') == 'production') {
             $input = new ArrayInput(['command' => 'preStart']);
             $output = new ConsoleOutput();
             $application = container()->get(ApplicationInterface::class);
@@ -114,8 +104,5 @@ class MainWorkerStartListener implements ListenerInterface
                 stdLog()->error('rabbit vhost create error：' . $e->getMessage());
             }
         }
-
-        // 国际化上报
-        (new TranslationReportHelper())->build();
     }
 }

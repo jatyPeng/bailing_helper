@@ -10,8 +10,6 @@ declare(strict_types=1);
  */
 namespace Bailing\Middleware;
 
-use Bailing\Annotation\EnumCodeInterface;
-use Bailing\Constants\Code\Common\CommonCode;
 use Bailing\Helper\ApiHelper;
 use Bailing\Helper\JwtHelper;
 use Bailing\Helper\RequestHelper;
@@ -71,16 +69,16 @@ class OrgMiddleware implements MiddlewareInterface
             //针对单个接口继承多个服务中间件鉴权 则只校验本服务token-type的token 其他服务则放行
         }
         if (! $jwtData) { // 未登录，或登录状态超过14天
-            return self::json(CommonCode::NEED_LOGIN);
+            return self::json('请登录！');
         }
         if (time() - $jwtData->iat > 86400 * (cfg('org_login_expire_day') ?: 14)) { // 未登录，或登录状态超过14天
-            return self::json(CommonCode::LOGIN_EXPIRED);
+            return self::json('登录状态已过期，请重新登录！');
         }
 
         try {
             $redisUserClient = redis('user');
             if ($redisUserClient->exists('user_status_' . $jwtData->data->id) && $redisUserClient->get('user_status_' . $jwtData->data->id) == 'deleted') {
-                return self::json(CommonCode::USER_NOT_EXITS);
+                return self::json('用户信息不存在,请重新注册登录！');
             }
         } catch (\Exception $exception) {
             stdLog()->debug('USER REDIS CLIENT ERROR', ['module' => RequestHelper::getAdminModule()]);
@@ -88,14 +86,14 @@ class OrgMiddleware implements MiddlewareInterface
         try {
             $redisOrgClient = redis('org');
             if ($redisOrgClient->exists('org_user_status_' . $jwtData->data->id) && $redisOrgClient->get('org_user_status_' . $jwtData->data->id) == 'deleted') {
-                return self::json(CommonCode::USER_NOT_IN_ORG);
+                return self::json('您已被移出该机构!');
             }
         } catch (\Exception $exception) {
             stdLog()->debug('ORG REDIS CLIENT ERROR', ['module' => RequestHelper::getAdminModule()]);
         }
 
         if (! empty($jwtData->data->intranet_access) && ! RequestHelper::isLocalNetwork()) {
-            return self::json(CommonCode::VISIT_NEED_INTRANET->genI18nMsg(['ip' => RequestHelper::getClientIp()]));
+            return self::json(sprintf('需要内网才能访问该接口（%s）', RequestHelper::getClientIp()));
         }
 
         $jwtData->data->tokenType = 'org';
@@ -114,21 +112,21 @@ class OrgMiddleware implements MiddlewareInterface
 
         $adminRole = $jwtData->data->role_id ?? 0;
         if ($jwtData->data->id && empty($adminRole)) {
-            return self::json(CommonCode::NOT_BIND_ROLE, ApiHelper::AUTH_ERROR);
+            return self::json('账号异常!未绑定角色身份', ApiHelper::AUTH_ERROR);
         }
         if (! $adminRole || ! $this->allowAccess($jwtData->data->role_id, $jwtData->data->org_id, $jwtData->data->id)) {
             $authName = $this->getAuthName();
             if (! empty($authName)) {
-                return self::json(CommonCode::AUTH_ERROR_ACTION->genI18nMsg(['action' => $authName]), ApiHelper::AUTH_ERROR);
+                return self::json('无权访问' . '【' . $authName . '】', ApiHelper::AUTH_ERROR);
             }
-            return self::json(CommonCode::AUTH_ERROR, ApiHelper::AUTH_ERROR);
+            return self::json('无权访问', ApiHelper::AUTH_ERROR);
         }
         contextSet('nowUser', $jwtData->data); //将登录信息存储到协程上下文
         unset($jwtData, $adminRole);
         return $handler->handle($request);
     }
 
-    private static function json(string|array|EnumCodeInterface $msg, int $errCode = ApiHelper::LOGIN_ERROR)
+    private static function json(string $msg, int $errCode = ApiHelper::LOGIN_ERROR)
     {
         $body = new SwooleStream(Json::encode(ApiHelper::genErrorData($msg, $errCode)));
         return Context::get(ResponseInterface::class)
@@ -144,12 +142,12 @@ class OrgMiddleware implements MiddlewareInterface
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    private function allowAccess(int|array $roleId, int $orgId, int $userId): bool
+    private function allowAccess(int $roleId, int $orgId, int $userId): bool
     {
         if (env('APP_NAME') == 'org' && class_exists('\App\JsonRpc\OrgService')) {
-            $orgService = container()->get(\App\JsonRpc\OrgService::class)->getRoleRbacList(is_array($roleId) ? $roleId : [$roleId], $orgId, $userId);
+            $orgService = container()->get(\App\JsonRpc\OrgService::class)->getRoleRbacList($roleId, $orgId, $userId);
         } else {
-            $orgService = container()->get(OrgServiceInterface::class)->getRoleRbacList(is_array($roleId) ? $roleId : [$roleId], $orgId, $userId);
+            $orgService = container()->get(OrgServiceInterface::class)->getRoleRbacList($roleId, $orgId, $userId);
         }
         $adminModule = RequestHelper::getAdminModule();
         $rbacAccess = ! empty($orgService['data']['rbacList']) ? $orgService['data']['rbacList'] : [];

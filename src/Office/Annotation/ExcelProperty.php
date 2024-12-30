@@ -25,11 +25,6 @@ class ExcelProperty extends AbstractAnnotation
     public string $value;
 
     /**
-     * 列表头名称（国际化）.
-     */
-    public array $i18nValue;
-
-    /**
      * 列顺序.
      */
     public int $index;
@@ -92,7 +87,6 @@ class ExcelProperty extends AbstractAnnotation
     public function __construct(
         string $value,
         int $index,
-        array $i18nValue = [],
         int $width = null,
         int $height = null,
         string $align = null,
@@ -107,7 +101,6 @@ class ExcelProperty extends AbstractAnnotation
     ) {
         $this->value = $value;
         $this->index = $index;
-        isset($i18nValue) && $this->i18nValue = $i18nValue;
         isset($width) && $this->width = $width;
         isset($height) && $this->height = $height;
         isset($align) && $this->align = $align;

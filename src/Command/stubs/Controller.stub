@@ -15,7 +15,6 @@ use App\Model\%CLASS%;
 use App\Request\%CLASS%Request;
 use Bailing\Annotation\OrgPermission;
 use Bailing\Annotation\RateRequest;
-use Bailing\Constants\Code\Common\CommonCode;
 use Bailing\Helper\ApiHelper;
 use Bailing\Middleware\OrgMiddleware;
 use Hyperf\HttpServer\Annotation\Controller;
@@ -97,10 +96,10 @@ class %CLASS%Controller extends AbstractController
         %ADD_FIELDS%
 
         if (! $model->save()) {
-            return ApiHelper::genErrorData(CommonCode::SAVE_FAILED);
+            return ApiHelper::genErrorData('保存失败，请重试');
         }
 
-        return ApiHelper::genSuccessData(['id' => $model->id], CommonCode::SAVE_SUCCESS);
+        return ApiHelper::genSuccessData(['id' => $model->id], '保存成功');
     }
 
     #[GetMapping(path: '%ROUTER%/{id:\d+}')]
@@ -141,13 +140,13 @@ class %CLASS%Controller extends AbstractController
 
         try {
             if (! $detail->delete()) {
-                return ApiHelper::genErrorData(CommonCode::OPERATION_FAILED);
+                return ApiHelper::genErrorData('删除失败，请重试');
             }
         } catch (\Exception $e) {
             stdLog()->error('%CLASS% delete error：' . $e->getMessage());
-            return ApiHelper::genErrorData(CommonCode::OPERATION_FAILED);
+            return ApiHelper::genErrorData('删除失败，' . $e->getMessage());
         }
 
-        return ApiHelper::genSuccessData(['id' => $detail->id], CommonCode::OPERATION_SUCCESS);
+        return ApiHelper::genSuccessData(['id' => $detail->id], '删除成功');
     }
 }
