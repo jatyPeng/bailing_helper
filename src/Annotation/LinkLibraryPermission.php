@@ -22,6 +22,8 @@ class LinkLibraryPermission extends AbstractAnnotation
 
     public string $name = ''; // 名称，
 
+    public ?array  $i18nName = null; // 国际化名称，i18n格式 {en: 'xxxxx', zh_hk: 'xxxxxx', zh_tw: 'xxxxxx', ja: 'xxxxxx'}
+
     public string $alias = ''; // 链接别名，不填不能选
 
     public string $link = ''; // 移动端具体链接，不含域名，不填不能选
