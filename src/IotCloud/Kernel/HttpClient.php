@@ -10,7 +10,11 @@ declare(strict_types=1);
  */
 namespace Bailing\IotCloud\Kernel;
 
+use Bailing\Helper\HttpHelper;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Exception\RequestException;
 use Swoole\Coroutine\System;
 
 trait HttpClient
@@ -21,11 +25,18 @@ trait HttpClient
 
     public function request($method, $endpoint, $options = [])
     {
-        $response = $this->getHttpClient()->{$method}($endpoint, $options);
-        $statusCode = $response->getStatusCode();
-        if ($statusCode != 200) {
-            stdLog()->warning('IotCloud request error：' . $statusCode);
+        try {
+            $response = $this->getHttpClient()->{$method}($endpoint, $options);
+            $statusCode = $response->getStatusCode();
+            if ($statusCode != 200) {
+                stdLog()->warning('IotCloud request error：' . $statusCode);
+            }
+        } catch (RequestException $e) {
+            stdLog()->warning('IotCloud request error：' . $e->getMessage() . $e->getResponse()->getStatusCode());
+            $response = $e->getResponse();
+            $statusCode = $e->getResponse()->getStatusCode();
         }
+
 
         // accessToken超时了，尝试重试
         if ($statusCode == 401) {
@@ -33,10 +44,20 @@ trait HttpClient
             if (! empty($newAccessToken) && ! empty($options['headers']['Authorization'])) {
                 $options['headers']['Authorization'] = 'Bearer ' . $newAccessToken;
             }
-            $response = $this->getHttpClient()->{$method}($endpoint, $options);
+            try {
+                $response = $this->getHttpClient()->{$method}($endpoint, $options);
+            } catch (RequestException $e) {
+                stdLog()->warning('IotCloud request error 401：' . $e->getMessage() . $e->getResponse()->getStatusCode());
+                $response = $e->getResponse();
+            }
         } elseif ($statusCode == 429) {
             System::sleep(5);
-            $response = $this->getHttpClient()->{$method}($endpoint, $options);
+            try {
+                $response = $this->getHttpClient()->{$method}($endpoint, $options);
+            } catch (RequestException $e) {
+                stdLog()->warning('IotCloud request error 429：' . $e->getMessage() . $e->getResponse()->getStatusCode());
+                $response = $e->getResponse();
+            }
         }
 
         return $this->unwrapResponse($response);

@@ -94,7 +94,7 @@ abstract class AbstractProvider
 
     public function generateHeader($headers = []): array
     {
-        System::sleep(0.6);
+        System::sleep(1);
         $accessToken = $this->getAccessToken();
         return [
             'Authorization' => 'Bearer ' . $accessToken,
