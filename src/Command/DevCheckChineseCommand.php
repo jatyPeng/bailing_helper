@@ -72,6 +72,7 @@ class DevCheckChineseCommand extends HyperfCommand
             '/#\[(.*?)\]/m', // 去除PHP的#[]注解
             '/stdLog\(.*$/m', // 去除stdLog注释
             '/logger\(.*$/m', // 去除logger注释
+            '/\$this->jobExecutorLogger->info\(.*$/m', // 去除xxlJob注释
         ];
         foreach ($patternArr as $pattern) {
             $code = preg_replace($pattern, '', $code);
@@ -82,7 +83,7 @@ class DevCheckChineseCommand extends HyperfCommand
     protected function containsChinese($string)
     {
         // 使用正则表达式检查是否包含中文字符
-        $result = preg_match('/[\x{4e00}-\x{9fa5}]/u', $string, $matches);
+        $result = preg_match('/[\x{4e00}-\x{9fa5}]+/u', $string, $matches);
         if (empty($result)) {
             return [];
         }
