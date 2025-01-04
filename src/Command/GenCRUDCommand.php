@@ -193,8 +193,14 @@ class GenCRUDCommand extends HyperfCommand
                     if (in_array($item->COLUMN_NAME, $fields)) {
                         $length = (str_replace([$columnsTypeArr[$item->COLUMN_NAME]['data_type'], '(', ')'], '', $columnsTypeArr[$item->COLUMN_NAME]['column_type']));
                         $requestFields .= "'" . $item->COLUMN_NAME . "' => '" . ($item->COLUMN_DEFAULT === null && $item->IS_NULLABLE === 'NO' ? 'required|' : '') . 'max:' . $length . "'," . PHP_EOL . '            ';
-                    } elseif (in_array($columnsTypeArr[$item->COLUMN_NAME]['data_type'], ['int', 'smallint', 'mediumint'])) {
+                    } elseif (in_array($columnsTypeArr[$item->COLUMN_NAME]['data_type'], ['bigint'])) {
                         $requestFields .= "'" . $item->COLUMN_NAME . "' => '" . ($item->COLUMN_DEFAULT === null && $item->IS_NULLABLE === 'NO' ? 'required|' : '') . "integer'," . PHP_EOL . '            ';
+                    } elseif (in_array($columnsTypeArr[$item->COLUMN_NAME]['data_type'], ['int'])) {
+                        $requestFields .= "'" . $item->COLUMN_NAME . "' => '" . ($item->COLUMN_DEFAULT === null && $item->IS_NULLABLE === 'NO' ? 'required|' : '') . "integer|lte:2147483647'," . PHP_EOL . '            ';
+                    } elseif (in_array($columnsTypeArr[$item->COLUMN_NAME]['data_type'], ['mediumint'])) {
+                        $requestFields .= "'" . $item->COLUMN_NAME . "' => '" . ($item->COLUMN_DEFAULT === null && $item->IS_NULLABLE === 'NO' ? 'required|' : '') . "integer|lte:8388607'," . PHP_EOL . '            ';
+                    } elseif (in_array($columnsTypeArr[$item->COLUMN_NAME]['data_type'], ['smallint'])) {
+                        $requestFields .= "'" . $item->COLUMN_NAME . "' => '" . ($item->COLUMN_DEFAULT === null && $item->IS_NULLABLE === 'NO' ? 'required|' : '') . "integer|lte:32767'," . PHP_EOL . '            ';
                     } elseif (in_array($columnsTypeArr[$item->COLUMN_NAME]['data_type'], ['tinyint'])) {
                         $requestFields .= "'" . $item->COLUMN_NAME . "' => '" . ($item->COLUMN_DEFAULT === null && $item->IS_NULLABLE === 'NO' ? 'required|' : '') . "integer|lte:128'," . PHP_EOL . '            ';
                     } elseif (in_array($columnsTypeArr[$item->COLUMN_NAME]['data_type'], ['timestamp', 'datetime', 'date'])) {

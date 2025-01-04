@@ -18,6 +18,7 @@ class VillageControlMenuPermission extends AbstractAnnotation
 {
     /**
      * @param string $name 菜单名称
+     * @param null|array $i18nName 菜单多语言
      * @param null|string $icon 图标，http开头即认定为图片
      * @param null|string $active_icon 选中后图标，http开头即认定为图片
      * @param null|string $menu_type 按钮集合类型，暂定 village、build、room、villageUser
@@ -27,6 +28,7 @@ class VillageControlMenuPermission extends AbstractAnnotation
      */
     public function __construct(
         public string $name,
+        public ?array $i18nName = [],
         public ?string $icon = null,
         public ?string $active_icon = null,
         public ?string $menu_type = 'room',

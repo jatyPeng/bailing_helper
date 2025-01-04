@@ -109,4 +109,7 @@ enum CommonCode: int implements EnumCodeInterface
 
     #[EnumCode(msg: '绑定失败，请重试', i18nMsg: ['en' => 'Binding failed, please try again', 'zh_tw' => '綁定失敗，請重試', 'zh_hk' => '綁定失敗，請重試', 'ja' => 'バインドに失敗しました。再試行してください'])]
     case BIND_FAILED = 30;
+
+    #[EnumCode(msg: '手机号格式不正确', i18nMsg: ['en' => 'Phone number format is incorrect', 'zh_tw' => '手機號格式不正確', 'zh_hk' => '手機號格式不正確', 'ja' => '電話番号の形式が正しくありません'])]
+    case PHONE_FORMAT_ERROR = 31;
 }
