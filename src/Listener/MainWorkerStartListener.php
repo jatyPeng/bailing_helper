@@ -48,6 +48,7 @@ class MainWorkerStartListener implements ListenerInterface
         OrgConfigHelper::createTable();
         TranslationHelper::createTable();
         ApprovalProcessHelper::createTable();
+        ApprovalProcessHelper::createCategoryTable();
 
         // 生产环境，执行下 preStart，初始下sql语句
         if (! isDevEnv()) {

@@ -17,6 +17,7 @@ use Bailing\Helper\Approval\ApprovalProcessHelper;
 use Bailing\Helper\OrgConfigHelper;
 use Bailing\Helper\Webhook\WebhookInvokeHelper;
 use Bailing\Middleware\OrgMiddleware;
+use Bailing\Model\BailingApprovalCategory;
 use Bailing\Model\BailingApprovalModule;
 use Hyperf\Codec\Json;
 use Hyperf\HttpServer\Annotation\Controller;
@@ -83,6 +84,7 @@ class WorkApprovalController
                 $isInit = false;
             }
             $temp['name'] = $item['name'];
+            $temp['i18n_name'] = $item['i18n_name'];
             $temp['alias'] = $item['alias'];
             $temp['icon'] = domain() . '/public_web/static/images' . $item['icon'];
             $result[] = $temp;
@@ -119,15 +121,26 @@ class WorkApprovalController
                 }
                 $initData = [];
                 foreach ($catApprovalList as $list) {
+                    $firstCategory = BailingApprovalCategory::query()->where('alias', $list['source_type'])->first();
+                    if (! $firstCategory) {
+                        return ApiHelper::genErrorData('category is not exist,please add category first');
+                    }
+                    $secondCategory = BailingApprovalCategory::query()->where('alias', $list['sub_cat_type'])->first();
                     $temp = [
                         'alias' => $list['alias'],
                         'name' => $list['name'],
+                        'i18n_name' => $list['i18n_name'],
+                        'desc' => $list['desc'],
+                        'i18n_desc' => $list['i18n_desc'],
                         'approval_type' => $list['approval_type'],
-                        'source_type' => $list['source_type'],
-                        'source_txt' => $list['source_txt'],
-                        'cat_type' => $list['cat_type'],
-                        'sub_cat_type' => $list['sub_cat_type'],
-                        'sub_cat_alias' => $list['sub_cat_alias'],
+                        'source_type' => $firstCategory->alias,
+                        'source_txt' => $firstCategory->source_txt,
+                        'i18n_source_txt' => $firstCategory->i18n_source_txt,
+                        'cat_type' => $firstCategory->name,
+                        'i18n_cat_type' => $firstCategory->i18n_name,
+                        'sub_cat_type' => $secondCategory ? $secondCategory->name : '',
+                        'i18n_sub_cat_type' => $secondCategory ? $secondCategory->i18n_name : '',
+                        'sub_cat_alias' => $secondCategory ? $secondCategory->alias : '',
                         'icon' => $list['icon'],
                         'form' => $list['form'],
                         'start_user_type' => $list['start_user_type'], // 2所有人不能发起,0所有人可以发起
