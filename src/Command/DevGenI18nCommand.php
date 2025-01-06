@@ -71,8 +71,12 @@ class DevGenI18nCommand extends HyperfCommand
             $i18nArr = Json::decode($i18nJson);
 
             if (empty($i18nArr[0])) {
-                $this->line('runtime/i18n.json文件不是标准数组', 'error');
-                return;
+                $i18nArr = [
+                    [
+                        'title' => 'demo',
+                        'key' => 'demo',
+                    ]
+                ];
             }
 
             if (empty($field)) {
@@ -98,10 +102,14 @@ class DevGenI18nCommand extends HyperfCommand
         $i18nCode = '';
         foreach ($i18nArr as $item) {
             $chinese = $item[$field];
-            $i18nTxt = I18nHelper::translateArr($chinese, true);
+            $i18nTxt = '';
+            if($chinese != 'demo'){
+                $i18nTxt = I18nHelper::translateArr($chinese, true);
+            }
+
             $enumKey = strtoupper($item[$key]);
 
-            $i18nCode .= "    #[EnumI18n(txt: '" . $chinese . "', i18nTxt: " . $i18nTxt . ')]' . PHP_EOL . '    case ' . $enumKey . " = '" . $item[$key] . "';" . PHP_EOL;
+            $i18nCode .= "    #[EnumI18n(txt: '" . $chinese . "'" .  (!empty($i18nTxt) ? ", i18nTxt: " . $i18nTxt : '') . ')]' . PHP_EOL . '    case ' . $enumKey . " = '" . $item[$key] . "';" . PHP_EOL;
         }
 
         $stub = str_replace('%I18N_CODE%', $i18nCode, $stub);
