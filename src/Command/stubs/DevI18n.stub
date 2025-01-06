@@ -1,0 +1,24 @@
+<?php
+
+declare(strict_types=1);
+/**
+ * This file is part of Bailing.
+ *
+ * @link     https://www.yunbailing.cn
+ * @document https://www.yunbailing.cn/document/
+ * @contact  www.yunbailing.cn 7*12 9:00-21:00
+ * @license  https://www.yunbailing.cn/LICENSE
+ */
+namespace App\Constants\I18n\%DIR_NAME%;
+
+use Bailing\Annotation\EnumI18n;
+use Bailing\Annotation\EnumI18nGroup;
+use Bailing\Annotation\EnumI18nInterface;
+use Bailing\Trait\EnumI18nGet;
+
+#[EnumI18nGroup(groupCode: '%CLASS_NAME%', info: '%CLASS_NAME%')]
+enum %CLASS_NAME%: string  implements EnumI18nInterface
+{
+    use EnumI18nGet;
+%I18N_CODE%
+}

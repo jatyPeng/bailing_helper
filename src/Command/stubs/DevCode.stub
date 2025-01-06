@@ -1,0 +1,25 @@
+<?php
+
+declare(strict_types=1);
+/**
+ * This file is part of Kuaijing Bailing.
+ *
+ * @link     https://www.kuaijingai.com
+ * @document https://help.kuaijingai.com
+ * @contact  www.kuaijingai.com 7*12 9:00-21:00
+ */
+namespace App\Constants\Code\%DIR_NAME%;
+
+use Bailing\Annotation\EnumCode;
+use Bailing\Annotation\EnumCodeInterface;
+use Bailing\Annotation\EnumCodePrefix;
+use Bailing\Trait\EnumCodeGet;
+
+#[EnumCodePrefix(prefixCode: %PREFIX_CODE%, info: '%CLASS_NAME%')]
+enum %CLASS_NAME%: int implements EnumCodeInterface
+{
+    use EnumCodeGet;
+
+    #[EnumCode(msg: '错误提示')]
+    case TIPS = 1;
+}

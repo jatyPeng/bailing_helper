@@ -1,0 +1,27 @@
+<?php
+
+declare(strict_types=1);
+/**
+ * This file is part of Kuaijing Bailing.
+ *
+ * @link     https://www.kuaijingai.com
+ * @document https://help.kuaijingai.com
+ * @contact  www.kuaijingai.com 7*12 9:00-21:00
+ */
+namespace App\Constants\Dict\%DIR_NAME%;
+
+use Bailing\Annotation\DictData;
+use Bailing\Annotation\DictType;
+
+#[DictType(name: '自行补全', type: '%DIR_CLASS_NAME%', menuAlias: '自行补全')]
+enum %CLASS_NAME%: string
+{
+    #[DictData(label: 'Label1')]
+    case TIPS1 = '1';
+
+    #[DictData(label: 'Label2')]
+    case TIPS2 = '2';
+
+    #[DictData(label: 'Label3')]
+    case TIPS3 = '3';
+}

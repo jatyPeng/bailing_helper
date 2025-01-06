@@ -112,4 +112,7 @@ enum CommonCode: int implements EnumCodeInterface
 
     #[EnumCode(msg: '手机号格式不正确', i18nMsg: ['en' => 'Phone number format is incorrect', 'zh_tw' => '手機號格式不正確', 'zh_hk' => '手機號格式不正確', 'ja' => '電話番号の形式が正しくありません'])]
     case PHONE_FORMAT_ERROR = 31;
+
+    #[EnumCode(msg: '请先删除子数据后，再删除此数据', i18nMsg: ['en' => 'Please delete the sub-data first, then delete this data', 'zh_tw' => '請先刪除子數據後，再刪除此數據', 'zh_hk' => '請先刪除子數據後，再刪除此數據', 'ja' => '子データを削除してからこのデータを削除してください'])]
+    case HAS_SUB_DATA = 33;
 }

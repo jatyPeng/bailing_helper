@@ -1,0 +1,351 @@
+<?php
+
+declare(strict_types=1);
+/**
+ * This file is part of Kuaijing Bailing.
+ *
+ * @link     https://www.kuaijingai.com
+ * @document https://help.kuaijingai.com
+ * @contact  www.kuaijingai.com 7*12 9:00-21:00
+ */
+namespace Bailing\Command;
+
+use Bailing\Annotation\DictType;
+use Bailing\Annotation\EnumCodePrefix;
+use Bailing\Annotation\EnumI18nGroup;
+use Bailing\Annotation\LinkLibraryPermission;
+use Bailing\Annotation\OrgPermission;
+use Bailing\Helper\Intl\I18nHelper;
+use Bailing\Office\Annotation\ExcelData;
+use Hyperf\Command\Annotation\Command;
+use Hyperf\Command\Command as HyperfCommand;
+use Hyperf\Coordinator\Constants;
+use Hyperf\Coordinator\CoordinatorManager;
+use Hyperf\Di\Annotation\AnnotationCollector;
+use ReflectionClass;
+use ReflectionEnumBackedCase;
+
+#[Command]
+class DevI18nCommand extends HyperfCommand
+{
+    public function __construct()
+    {
+        parent::__construct('dev:i18n');
+    }
+
+    public function configure()
+    {
+        parent::configure();
+    }
+
+    public function handle()
+    {
+        $this->line('开始生成机构菜单!', 'info');
+        $this->orgPermission();
+
+        $this->line('开始生成链接库!', 'info');
+        $this->linkLibraryPermission();
+
+        $this->line('开始生成字典项!', 'info');
+        $this->dictI18n();
+
+        $this->line('开始生成Code!', 'info');
+        $this->CodeI18n();
+
+        $this->line('开始生成I18n!', 'info');
+        $this->I18n();
+
+        $this->line('开始生成Dto!', 'info');
+        $this->DtoI18n();
+
+        system('rm -rf ' . BASE_PATH . '/runtime');
+
+        CoordinatorManager::until(Constants::WORKER_EXIT)->resume();
+    }
+
+    protected function orgPermission()
+    {
+        $class = AnnotationCollector::getClassesByAnnotation(OrgPermission::class);
+
+        foreach ($class as $key => $value) {
+            $tmp = (array) $value;
+
+            // 得到文件名和文件内容
+            $reflection = new ReflectionClass($key);
+            $fileName = $reflection->getFileName();
+            if (str_contains($fileName, 'runtime/container/proxy')) {
+                $file = basename($fileName);
+                $fileName = str_replace('_', '/', $file);
+                $fileName = str_replace('App/', 'app/', $fileName);
+                $fileName = str_replace('.proxy.php', '.php', BASE_PATH . '/' . $fileName);
+                if (! file_exists($fileName)) {
+                    $this->line('文件(' . $file . ')不存在: ' . $fileName, 'error');
+                    continue;
+                }
+            }
+            $fileContent = file_get_contents($fileName);
+
+            // 自动补全原文件
+            if (! empty($tmp['module']) && empty($tmp['i18nName'])) {
+                $moduleNameArr = explode(':', $tmp['module']);
+                $name = end($moduleNameArr);
+
+                $matchFileContent = "/#\\[OrgPermission\\(module: '" . $tmp['module'] . "',.*\\]/";
+                preg_match($matchFileContent, $fileContent, $matchResult);
+
+                $i18nTxt = I18nHelper::translateArr($name, true);
+
+                $matchContent = "#[OrgPermission(module: '" . $tmp['module'] . "',";
+                $fileSubContent = str_replace($matchContent, $matchContent . ' i18nName: ' . $i18nTxt . ',', $matchResult[0]);
+
+                $fileContent = str_replace($matchResult[0], $fileSubContent, $fileContent);
+
+                file_put_contents($fileName, $fileContent);
+            }
+        }
+
+        //得到类方法的所有注解
+        $methods = AnnotationCollector::getMethodsByAnnotation(OrgPermission::class);
+
+        foreach ($methods as $value) {
+            $tmp = (array) $value;
+            $annotation = (array) $value['annotation'];
+
+            // 得到文件名和文件内容
+            $reflection = new ReflectionClass($value['class']);
+            $fileName = $reflection->getFileName();
+            if (str_contains($fileName, 'runtime/container/proxy')) {
+                $file = basename($fileName);
+                $fileName = str_replace('_', '/', $file);
+                $fileName = str_replace('App/', 'app/', $fileName);
+                $fileName = str_replace('.proxy.php', '.php', BASE_PATH . '/' . $fileName);
+                if (! file_exists($fileName)) {
+                    $this->line('文件(' . $file . ')不存在: ' . $fileName, 'error');
+                    continue;
+                }
+            }
+            $fileContent = file_get_contents($fileName);
+
+            // 自动补全原文件
+            if (! empty($annotation['module']) && ! empty($annotation['alias']) && empty($annotation['i18nName'])) {
+                $moduleNameArr = explode(':', $annotation['module']);
+                $name = end($moduleNameArr);
+
+                $matchFileContent = "/#\\[OrgPermission\\(module: '" . $annotation['module'] . "',.*\\]/";
+                preg_match($matchFileContent, $fileContent, $matchResult);
+
+                if (empty($matchResult[0])) {
+                    continue;
+                }
+
+                if (str_contains($matchResult[0], 'i18nName:')) {
+                    continue;
+                }
+
+                $i18nTxt = I18nHelper::translateArr($name, true);
+
+                $matchContent = "#[OrgPermission(module: '" . $annotation['module'] . "',";
+                $fileSubContent = str_replace($matchContent, $matchContent . ' i18nName: ' . $i18nTxt . ',', $matchResult[0]);
+
+                $fileContent = str_replace($matchResult[0], $fileSubContent, $fileContent);
+
+                file_put_contents($fileName, $fileContent);
+            }
+        }
+    }
+
+    protected function linkLibraryPermission()
+    {
+        //得到类方法的所有注解
+        $methods = AnnotationCollector::getMethodsByAnnotation(LinkLibraryPermission::class);
+
+        foreach ($methods as $value) {
+            $tmp = (array) $value;
+            $annotation = (array) $value['annotation'];
+
+            // 得到文件名和文件内容
+            $reflection = new ReflectionClass($value['class']);
+            $fileName = $reflection->getFileName();
+            if (str_contains($fileName, 'runtime/container/proxy')) {
+                $file = basename($fileName);
+                $fileName = str_replace('_', '/', $file);
+                $fileName = str_replace('App/', 'app/', $fileName);
+                $fileName = str_replace('.proxy.php', '.php', BASE_PATH . '/' . $fileName);
+                if (! file_exists($fileName)) {
+                    $this->line('文件(' . $file . ')不存在: ' . $fileName, 'error');
+                    continue;
+                }
+            }
+            $fileContent = file_get_contents($fileName);
+
+            // 自动补全原文件
+            if (! empty($annotation['name']) && empty($annotation['i18nName'])) {
+                $moduleNameArr = explode(':', $annotation['name']);
+                $name = end($moduleNameArr);
+                if (! empty($annotation['port'])) {
+                    $matchContent = "/#\\[LinkLibraryPermission\\(port: '(\\w+)', name: '" . $annotation['name'] . "',/";
+                    preg_match($matchContent, $fileContent, $matchArr);
+                    if (empty($matchArr[0])) {
+                        $matchContent = "/#\\[LinkLibraryPermission\\(name: '" . $annotation['name'] . "',/";
+                        preg_match($matchContent, $fileContent, $matchArr);
+                        if (empty($matchArr[0])) {
+                            continue;
+                        }
+                        $matchContent = $matchArr[0];
+                    } else {
+                        $matchContent = $matchArr[0];
+                    }
+                } else {
+                    $matchContent = "/#\\[LinkLibraryPermission\\(name: '" . $annotation['name'] . "',/";
+                }
+
+                $i18nTxt = I18nHelper::translateArr($name, true);
+
+                $fileContent = str_replace($matchContent, $matchContent . ' i18nName: ' . $i18nTxt . ',', $fileContent);
+
+                file_put_contents($fileName, $fileContent);
+            }
+        }
+    }
+
+    protected function DtoI18n()
+    {
+        //得到类方法的所有注解
+        $classes = AnnotationCollector::getClassesByAnnotation(ExcelData::class);
+        foreach ($classes as $key => $value) {
+            $tmp = (array) $value;
+
+            // 得到文件名和文件内容
+            $reflection = new ReflectionClass($key);
+            $fileName = $reflection->getFileName();
+            $fileContent = file_get_contents($fileName);
+
+            $cases = AnnotationCollector::get($key)['_p'];
+            foreach ($cases as $k => $v) {
+                $attributes = (array) $v;
+
+                foreach ($attributes as $attribute) {
+                    $attributeArr = (array) $attribute;
+
+                    // 自动补全原文件
+                    if (! empty($attributeArr['value']) && empty($attributeArr['i18nValue'])) {
+                        $i18nTxt = I18nHelper::translateArr($attributeArr['value'], true);
+
+                        $matchContent = "#[ExcelProperty(value: '" . $attributeArr['value'] . "'";
+                        if (str_contains($fileContent, $matchContent . ')]')) {
+                            $fileContent = str_replace($matchContent . ')]', $matchContent . ', i18nValue: ' . $i18nTxt . ')]', $fileContent);
+                        } else {
+                            $fileContent = str_replace($matchContent, $matchContent . ', i18nValue: ' . $i18nTxt, $fileContent);
+                        }
+                        file_put_contents($fileName, $fileContent);
+                    }
+                }
+            }
+        }
+    }
+
+    protected function dictI18n()
+    {
+        //得到类方法的所有注解
+        $classes = AnnotationCollector::getClassesByAnnotation(DictType::class);
+        foreach ($classes as $key => $value) {
+            $tmp = (array) $value;
+
+            // 得到文件名和文件内容
+            $reflection = new ReflectionClass($key);
+            $fileName = $reflection->getFileName();
+            $fileContent = file_get_contents($fileName);
+
+            // 自动补全原文件
+            if (! empty($tmp['name']) && empty($tmp['i18nName'])) {
+                $matchContent = "#[DictType(name: '" . $tmp['name'] . "',";
+                $i18nTxt = I18nHelper::translateArr($tmp['name'], true);
+
+                $fileContent = str_replace($matchContent, $matchContent . ' i18nName: ' . $i18nTxt . ',', $fileContent);
+                file_put_contents($fileName, $fileContent);
+            }
+
+            $cases = (new ReflectionClass($key))->getReflectionConstants();
+            foreach ($cases as $k => $v) {
+                $reflection = new ReflectionEnumBackedCase($key, $v->getName());
+                $attributes = $reflection->getAttributes();
+                foreach ($attributes as $attribute) {
+                    $attributeArr = (array) $attribute->newInstance();
+
+                    // 自动补全原文件
+                    if (! empty($attributeArr['label']) && empty($attributeArr['i18nLabel'])) {
+                        $i18nTxt = I18nHelper::translateArr($attributeArr['label'], true);
+
+                        $matchContent = "#[DictData(label: '" . $attributeArr['label'] . "'";
+                        if (str_contains($fileContent, $matchContent . ')]')) {
+                            $fileContent = str_replace($matchContent . ')]', $matchContent . ', i18nLabel: ' . $i18nTxt . ')]', $fileContent);
+                        } else {
+                            $fileContent = str_replace($matchContent, $matchContent . ', i18nLabel: ' . $i18nTxt, $fileContent);
+                        }
+                        file_put_contents($fileName, $fileContent);
+                    }
+                }
+            }
+        }
+    }
+
+    protected function CodeI18n()
+    {
+        //得到类方法的所有注解
+        $classes = AnnotationCollector::getClassesByAnnotation(EnumCodePrefix::class);
+        foreach ($classes as $key => $value) {
+            // 得到文件名和文件内容
+            $reflection = new ReflectionClass($key);
+            $fileName = $reflection->getFileName();
+            $fileContent = file_get_contents($fileName);
+
+            $cases = (new ReflectionClass($key))->getReflectionConstants();
+            foreach ($cases as $k => $v) {
+                $reflection = new ReflectionEnumBackedCase($key, $v->getName());
+                $attributes = $reflection->getAttributes();
+                foreach ($attributes as $attribute) {
+                    $attributeArr = (array) $attribute->newInstance();
+
+                    // 自动补全原文件
+                    if (! empty($attributeArr['msg']) && empty($attributeArr['i18nMsg'])) {
+                        $matchContent = "#[EnumCode(msg: '" . $attributeArr['msg'] . "'";
+                        $i18nTxt = I18nHelper::translateArr($attributeArr['msg'], true);
+
+                        $fileContent = str_replace($matchContent, $matchContent . ', i18nMsg: ' . $i18nTxt, $fileContent);
+                        file_put_contents($fileName, $fileContent);
+                    }
+                }
+            }
+        }
+    }
+
+    protected function I18n()
+    {
+        //得到类方法的所有注解
+        $classes = AnnotationCollector::getClassesByAnnotation(EnumI18nGroup::class);
+        foreach ($classes as $key => $value) {
+            // 得到文件名和文件内容
+            $reflection = new ReflectionClass($key);
+            $fileName = $reflection->getFileName();
+            $fileContent = file_get_contents($fileName);
+
+            $cases = (new ReflectionClass($key))->getReflectionConstants();
+            foreach ($cases as $k => $v) {
+                $reflection = new ReflectionEnumBackedCase($key, $v->getName());
+                $attributes = $reflection->getAttributes();
+                foreach ($attributes as $attribute) {
+                    $attributeArr = (array) $attribute->newInstance();
+
+                    // 自动补全原文件
+                    if (! empty($attributeArr['txt']) && empty($attributeArr['i18nTxt'])) {
+                        $matchContent = "#[EnumI18n(txt: '" . $attributeArr['txt'] . "'";
+                        $i18nTxt = I18nHelper::translateArr($attributeArr['txt'], true);
+
+                        $fileContent = str_replace($matchContent, $matchContent . ', i18nTxt: ' . $i18nTxt, $fileContent);
+                        file_put_contents($fileName, $fileContent);
+                    }
+                }
+            }
+        }
+    }
+}
