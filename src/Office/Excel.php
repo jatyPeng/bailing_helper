@@ -30,6 +30,8 @@ abstract class Excel
 
     protected array $dictData = [];
 
+    protected array $demoValue = [];
+
     public function __construct(string $dto, array $extraData = [])
     {
         if (! (new $dto()) instanceof ModelExcelInterface) {
@@ -95,6 +97,7 @@ abstract class Excel
                 'dictName' => empty($mate[self::ANNOTATION_NAME]->dictName) ? null : $this->getDictData($mate[self::ANNOTATION_NAME]->dictName),
                 'path' => $mate[self::ANNOTATION_NAME]->path ?? null,
             ];
+            $this->demoValue[$name] = $mate[self::ANNOTATION_NAME]->demo ?? '';
         }
         ksort($this->property);
     }

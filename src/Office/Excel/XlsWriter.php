@@ -8,6 +8,7 @@ declare(strict_types=1);
  * @document https://help.kuaijingai.com
  * @contact  www.kuaijingai.com 7*12 9:00-21:00
  */
+
 namespace Bailing\Office\Excel;
 
 use Bailing\Exception\BusinessException;
@@ -75,7 +76,7 @@ class XlsWriter extends Excel implements ExcelPropertyInterface
     /**
      * 导出excel.
      */
-    public function export(string $filename, array|\Closure $closure, \Closure $callbackData = null): \Psr\Http\Message\ResponseInterface
+    public function export(string $filename, array|\Closure $closure, \Closure $callbackData = null, bool $isDemo = false): \Psr\Http\Message\ResponseInterface
     {
         $filename .= '.xlsx';
         is_array($closure) ? $data = &$closure : $data = $closure();
@@ -168,6 +169,20 @@ class XlsWriter extends Excel implements ExcelPropertyInterface
                 }
             }
             $exportData[] = $yield;
+        }
+        if (! empty($this->demoValue) && $isDemo) {
+            $yieldData = [];
+            foreach ($this->property as $property) {
+                foreach ($this->demoValue as $key => $value) {
+                    if ($property['name'] == $key) {
+                        $yieldData[] = $value;
+                        break;
+                    }
+                }
+            }
+            if (! empty($yieldData)) {
+                $exportData[] = $yieldData;
+            }
         }
 
         $response = container()->get(ResponseInterface::class);

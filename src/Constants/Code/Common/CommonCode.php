@@ -115,4 +115,10 @@ enum CommonCode: int implements EnumCodeInterface
 
     #[EnumCode(msg: '请先删除子数据后，再删除此数据', i18nMsg: ['en' => 'Please delete the sub-data first, then delete this data', 'zh_tw' => '請先刪除子數據後，再刪除此數據', 'zh_hk' => '請先刪除子數據後，再刪除此數據', 'ja' => '子データを削除してからこのデータを削除してください'])]
     case HAS_SUB_DATA = 33;
+
+    #[EnumCode(msg: '文件标识未传递，请重试', i18nMsg: ['en' => 'File identifier not passed, please try again', 'zh_tw' => '文件標識未傳遞，請重試', 'zh_hk' => '文件標識未傳遞，請重試', 'ja' => 'ファイル識別子が渡されていません。再試行してください'])]
+    case IMPORT_FILE_ID_EMPTY = 34;
+
+    #[EnumCode(msg: '文件已失效，请重新导入后下载', i18nMsg: ['en' => 'File has expired, please re-import and download', 'zh_tw' => '文件已失效，請重新導入後下載', 'zh_hk' => '文件已失效，請重新導入後下載', 'ja' => 'ファイルが有効期限切れです。再インポートしてダウンロードしてください'])]
+    case IMPORT_FILE_EXPIRED = 35;
 }

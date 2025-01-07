@@ -18,7 +18,7 @@ use Psr\Http\Message\ResponseInterface;
 
 class Collection extends \Hyperf\Collection\Collection
 {
-    public function export(string $dto, string $filename, array|\Closure $closure = null, array $extra = []): ResponseInterface
+    public function export(string $dto, string $filename, array|\Closure $closure = null, array $extra = [], bool $isDemo = false): ResponseInterface
     {
         $excelDrive = \Hyperf\Config\config('excel.drive', 'auto');
         if ($excelDrive === 'auto') {
@@ -27,7 +27,7 @@ class Collection extends \Hyperf\Collection\Collection
             $excel = $excelDrive === 'xlsWriter' ? new XlsWriter($dto, $extra) : new PhpOffice($dto);
         }
 
-        return $excel->export($filename, is_null($closure) ? $this->toArray() : $closure);
+        return $excel->export($filename, is_null($closure) ? $this->toArray() : $closure, null, $isDemo);
     }
 
     public function import(string $dto, Model $model, ?\Closure $closure = null, array $extra = []): bool

@@ -8,6 +8,7 @@ declare(strict_types=1);
  * @document https://help.kuaijingai.com
  * @contact  www.kuaijingai.com 7*12 9:00-21:00
  */
+
 namespace Bailing\Command;
 
 use Bailing\Helper\Intl\I18nHelper;
@@ -18,6 +19,7 @@ use Hyperf\Coordinator\Constants;
 use Hyperf\Coordinator\CoordinatorManager;
 use Hyperf\Stringable\Str;
 use Symfony\Component\Console\Input\InputArgument;
+use Vtiful\Kernel\Excel;
 
 #[Command]
 class DevGenDtoCommand extends HyperfCommand
@@ -61,7 +63,7 @@ class DevGenDtoCommand extends HyperfCommand
         }
 
         $config = ['path' => dirname($fileName)];
-        $excel = new \Vtiful\Kernel\Excel($config);
+        $excel = new Excel($config);
         $data = $excel->openFile(basename($fileName))
             ->openSheet()
             ->getSheetData();
@@ -74,11 +76,16 @@ class DevGenDtoCommand extends HyperfCommand
         $stub = str_replace('%CLASS_NAME%', $className, $stub);
 
         $i18nCode = '';
+        $nowIndex = 0;
         foreach ($data[0] as $key => $value) {
+            if (empty($value)) {
+                continue;
+            }
             $i18nTxt = I18nHelper::translateArr($value, true);
 
-            $i18nCode .= "    #[ExcelProperty(value: '" . $value . "', index: " . $key . ", demo: '" . (! empty($data[1][$key]) ? addslashes($data[1][$key]) : '') . "', i18nValue: " . $i18nTxt . ", width: 30, height: 25, align: 'center', headColor: Format::COLOR_WHITE, headBgColor: Format::COLOR_RED, headHeight: 30)]" . PHP_EOL;
+            $i18nCode .= "    #[ExcelProperty(value: '" . $value . "', index: " . $nowIndex . ", demo: '" . (! empty($data[1][$key]) ? addslashes((string) $data[1][$key]) : '') . "', i18nValue: " . $i18nTxt . ", width: 30, height: 25, align: 'center', headColor: Format::COLOR_WHITE, headBgColor: Format::COLOR_RED, headHeight: 30)]" . PHP_EOL;
             $i18nCode .= '    public string $' . Str::snake(TranslationHelper::translate($value, 'zh-CN', 'en')) . ';' . PHP_EOL;
+            ++$nowIndex;
         }
 
         $stub = str_replace('%EXCEL_PROPERTY%', $i18nCode, $stub);
