@@ -83,7 +83,7 @@ class DevGenDtoCommand extends HyperfCommand
             }
             $i18nTxt = I18nHelper::translateArr($value, true);
 
-            $i18nCode .= "    #[ExcelProperty(value: '" . $value . "', index: " . $nowIndex . ", demo: '" . (! empty($data[1][$key]) ? addslashes((string) $data[1][$key]) : '') . "', i18nValue: " . $i18nTxt . ", width: 30, height: 25, align: 'center', headColor: Format::COLOR_WHITE, headBgColor: Format::COLOR_RED, headHeight: 30)]" . PHP_EOL;
+            $i18nCode .= "    #[ExcelProperty(value: '" . $value . "', index: " . $nowIndex . ", demo: '" . (! empty($data[1][$key]) ? addslashes((string) $data[1][$key]) : '') . "', i18nValue: " . $i18nTxt . ", width: 30, height: 25, align: 'center', required: false, headHeight: 30)]" . PHP_EOL;
             $i18nCode .= '    public string $' . Str::snake(TranslationHelper::translate($value, 'zh-CN', 'en')) . ';' . PHP_EOL;
             ++$nowIndex;
         }

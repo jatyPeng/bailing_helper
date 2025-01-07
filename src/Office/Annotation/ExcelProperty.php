@@ -8,15 +8,15 @@ declare(strict_types=1);
  * @document https://help.kuaijingai.com
  * @contact  www.kuaijingai.com 7*12 9:00-21:00
  */
+
 namespace Bailing\Office\Annotation;
 
-use Attribute;
 use Hyperf\Di\Annotation\AbstractAnnotation;
 
 /**
  * excel导入导出元数据。
  */
-#[Attribute(Attribute::TARGET_PROPERTY)]
+#[\Attribute(\Attribute::TARGET_PROPERTY)]
 class ExcelProperty extends AbstractAnnotation
 {
     /**
@@ -55,14 +55,9 @@ class ExcelProperty extends AbstractAnnotation
     public string $align;
 
     /**
-     * 列表头字体颜色.
+     * 列表头是否必填.
      */
-    public string|int $headColor;
-
-    /**
-     * 列表头背景颜色.
-     */
-    public string|int $headBgColor;
+    public bool $required;
 
     /**
      * 列表头的高度（仅取第一个的）.
@@ -72,12 +67,12 @@ class ExcelProperty extends AbstractAnnotation
     /**
      * 列表体字体颜色.
      */
-    public string|int $color;
+    public int|string $color;
 
     /**
      * 列表体背景颜色.
      */
-    public string|int $bgColor;
+    public int|string $bgColor;
 
     /**
      * 字典数据列表.
@@ -102,24 +97,22 @@ class ExcelProperty extends AbstractAnnotation
         int $width = null,
         int $height = null,
         string $align = null,
-        string|int $headColor = null,
-        string|int $headBgColor = null,
+        bool $required = false,
         int $headHeight = null,
-        string|int $color = null,
-        string|int $bgColor = null,
+        int|string $color = null,
+        int|string $bgColor = null,
         array $dictData = null,
         string $dictName = null,
         string $path = null,
     ) {
         $this->value = $value;
         $this->index = $index;
+        $this->required = $required;
         isset($demo) && $this->demo = $demo;
         isset($i18nValue) && $this->i18nValue = $i18nValue;
         isset($width) && $this->width = $width;
         isset($height) && $this->height = $height;
         isset($align) && $this->align = $align;
-        isset($headColor) && $this->headColor = $headColor;
-        isset($headBgColor) && $this->headBgColor = $headBgColor;
         isset($headHeight) && $this->headHeight = $headHeight;
         isset($color) && $this->color = $color;
         isset($bgColor) && $this->bgColor = $bgColor;
