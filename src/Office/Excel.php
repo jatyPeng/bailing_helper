@@ -48,11 +48,14 @@ abstract class Excel
                 $startIndex = count($this->annotationMate['_p']) - 1;
                 foreach ($extraData as $key => $value) {
                     ++$startIndex;
-                    if ($value['fill'] == 1) {
-                        $dataObj = new ExcelProperty($value['fields_name'], $startIndex, $value['i18n_fields_name']['i18n_value'] ?? [], 20, null, 'left', Format::COLOR_WHITE, Format::COLOR_RED);
-                    } else {
-                        $dataObj = new ExcelProperty($value['fields_name'], $startIndex, $value['i18n_fields_name']['i18n_value'] ?? [], 20, null, 'left', Format::COLOR_WHITE, 0x5A5A5A);
-                    }
+                    $dataObj = new ExcelProperty(
+                        value: $value['fields_name'],
+                        index: $startIndex,
+                        i18nValue:  $value['i18n_fields_name']['i18n_value'] ?? [],
+                        width: 20,
+                        align: 'left',
+                        required: (bool) $value['fill'],
+                    );
                     $this->annotationMate['_p'][$value['key']][self::ANNOTATION_NAME] = $dataObj;
                 }
             }
