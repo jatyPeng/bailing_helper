@@ -43,6 +43,24 @@ class SmsServiceConsumer extends AbstractServiceClient implements SmsServiceInte
         }
     }
 
+    public function sendMail(string $email, string $alias, array $templateParam, int $orgId = 0, string $microName = ''): array
+    {
+        try {
+            return $this->__request(__FUNCTION__, compact('email', 'alias', 'templateParam', 'orgId', 'microName'));
+        } catch (\Exception $exception) {
+            return ApiHelper::genServiceErrorData($this->serviceName, $exception);
+        }
+    }
+
+    public function checkMailCode(string $email, string $code): array
+    {
+        try {
+            return $this->__request(__FUNCTION__, compact('email', 'code'));
+        } catch (\Exception $exception) {
+            return ApiHelper::genServiceErrorData($this->serviceName, $exception);
+        }
+    }
+
     public function checkVerifyCode(string $token, string $input): array
     {
         try {

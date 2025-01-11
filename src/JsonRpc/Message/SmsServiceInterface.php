@@ -27,6 +27,19 @@ interface SmsServiceInterface
     public function checkSmsCode(string $phone, string $phoneCountry, string $code): array;
 
     /**
+     * 发送短信.
+     * @param string $email 邮箱地址
+     * @param string $alias 模板别名
+     * @param array $templateParam 模板参数
+     */
+    public function sendMail(string $email, string $alias, array $templateParam, int $orgId = 0, string $microName = ''): array;
+
+    /**
+     * 校验验证码.
+     */
+    public function checkMailCode(string $email, string $code): array;
+
+    /**
      * 图形验证码校验.
      */
     public function checkVerifyCode(string $token, string $input): array;

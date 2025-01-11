@@ -84,7 +84,10 @@ class WorkApprovalController
                 $isInit = false;
             }
             $temp['name'] = $item['name'];
-            $temp['i18n_name'] = $item['i18n_name'];
+            $temp['i18n_name'] = [
+                'value' => $item['name'],
+                'i18n_value' => $item['i18n_name']
+            ];
             $temp['alias'] = $item['alias'];
             $temp['icon'] = domain() . '/public_web/static/images' . $item['icon'];
             $result[] = $temp;
