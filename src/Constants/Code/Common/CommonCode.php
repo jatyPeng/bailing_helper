@@ -121,4 +121,10 @@ enum CommonCode: int implements EnumCodeInterface
 
     #[EnumCode(msg: '文件已失效，请重新导入后下载', i18nMsg: ['en' => 'File has expired, please re-import and download', 'zh_tw' => '文件已失效，請重新導入後下載', 'zh_hk' => '文件已失效，請重新導入後下載', 'ja' => 'ファイルが有効期限切れです。再インポートしてダウンロードしてください'])]
     case IMPORT_FILE_EXPIRED = 35;
+
+    #[EnumCode(msg: '字段（{field}）不能为空', i18nMsg: ['en' => 'Field ({field}) cannot be empty', 'zh_tw' => '欄位（{field}）不能為空', 'zh_hk' => '欄位（{field}）不能為空', 'ja' => 'フィールド（{field}）は空にできません'])]
+    case PARAMS_EMPTY_WITH_FIELD = 36;
+
+    #[EnumCode(msg: '字段（{field}）错误', i18nMsg: ['en' => 'Field ({field}) error', 'zh_tw' => '欄位（{field}）錯誤', 'zh_hk' => '欄位（{field}）錯誤', 'ja' => 'フィールド（{field}）のエラー'])]
+    case PARAMS_WRONG_WITH_FIELD = 37;
 }

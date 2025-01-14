@@ -18,26 +18,26 @@ use Psr\Http\Message\ResponseInterface;
 
 class Collection extends \Hyperf\Collection\Collection
 {
-    public function export(string $dto, string $filename, array|\Closure $closure = null, array $extra = [], bool $isDemo = false): ResponseInterface
+    public function export(string $dto, string $filename, array|\Closure $closure = null, array $extra = [], bool $isDemo = false, int $orgId = 0): ResponseInterface
     {
         $excelDrive = \Hyperf\Config\config('excel.drive', 'auto');
         if ($excelDrive === 'auto') {
-            $excel = extension_loaded('xlswriter') ? new XlsWriter($dto, $extra) : new PhpOffice($dto);
+            $excel = extension_loaded('xlswriter') ? new XlsWriter($dto, $extra, $isDemo, $orgId) : new PhpOffice($dto);
         } else {
-            $excel = $excelDrive === 'xlsWriter' ? new XlsWriter($dto, $extra) : new PhpOffice($dto);
+            $excel = $excelDrive === 'xlsWriter' ? new XlsWriter($dto, $extra, $isDemo, $orgId) : new PhpOffice($dto);
         }
 
-        return $excel->export($filename, is_null($closure) ? $this->toArray() : $closure, null, $isDemo);
+        return $excel->export($filename, is_null($closure) ? $this->toArray() : $closure, null, $isDemo, $orgId);
     }
 
-    public function import(string $dto, Model $model, ?\Closure $closure = null, array $extra = []): bool
+    public function import(string $dto, Model $model, ?\Closure $closure = null, array $extra = [], int $orgId = 0): bool
     {
         $excelDrive = \Hyperf\Config\config('excel.drive', 'auto');
         if ($excelDrive === 'auto') {
-            $excel = extension_loaded('xlswriter') ? new XlsWriter($dto, $extra) : new PhpOffice($dto);
+            $excel = extension_loaded('xlswriter') ? new XlsWriter($dto, $extra, false, $orgId) : new PhpOffice($dto);
         } else {
-            $excel = $excelDrive === 'xlsWriter' ? new XlsWriter($dto, $extra) : new PhpOffice($dto);
+            $excel = $excelDrive === 'xlsWriter' ? new XlsWriter($dto, $extra, false, $orgId) : new PhpOffice($dto);
         }
-        return $excel->import($model, $closure);
+        return $excel->import($model, $closure, $orgId);
     }
 }

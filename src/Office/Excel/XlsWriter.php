@@ -11,13 +11,16 @@ declare(strict_types=1);
 
 namespace Bailing\Office\Excel;
 
+use Bailing\Constants\Code\Common\CommonCode;
 use Bailing\Exception\BusinessException;
+use Bailing\Helper\StrHelper;
 use Bailing\Office\Excel;
 use Bailing\Office\Interfaces\ExcelPropertyInterface;
 use Hyperf\DbConnection\Model\Model;
 use Hyperf\HttpServer\Contract\RequestInterface;
 use Hyperf\HttpServer\Contract\ResponseInterface;
 use Vtiful\Kernel\Format;
+use Vtiful\Kernel\Validation;
 
 class XlsWriter extends Excel implements ExcelPropertyInterface
 {
@@ -34,7 +37,7 @@ class XlsWriter extends Excel implements ExcelPropertyInterface
     /**
      * 导入数据.
      */
-    public function import(Model $model, ?\Closure $closure = null): bool
+    public function import(Model $model, ?\Closure $closure = null, int $orgId = 0): bool
     {
         $request = container()->get(RequestInterface::class);
         if ($request->hasFile('file')) {
@@ -49,9 +52,37 @@ class XlsWriter extends Excel implements ExcelPropertyInterface
             $importData = [];
             foreach ($data as $item) {
                 $tmp = [];
+                $errorMsg = '';
                 foreach ($item as $key => $value) {
-                    $tmp[$this->property[$key]['name']] = (string) $value;
+                    $value = StrHelper::mb_trim((string) $value);
+                    $tmpProperty = $this->property[$key];
+                    $tmp[$tmpProperty['name']] = $value;
+
+                    // 判断必填字段
+                    if(empty($errorMsg) && $tmpProperty['required'] && empty($value)){
+                        $errorMsg = CommonCode::PARAMS_EMPTY_WITH_FIELD->genI18nMsg(['field' => $tmpProperty['value']], true, $this->nowLang);
+                    }
+
+                    // 判断字典值
+                    if(!empty($tmpProperty['dictNameArr'])) {
+                        stdLog()->info('dictNameArr', [$tmpProperty['dictNameArr'], $value]);
+                        if(in_array($value, $tmpProperty['dictNameArr'])){
+                            $tmp[$tmpProperty['name']] = array_search($value, $tmpProperty['dictNameArr']);
+                        } else if(empty($errorMsg)){
+                            $errorMsg = CommonCode::PARAMS_WRONG_WITH_FIELD->genI18nMsg(['field' => $tmpProperty['value']], true, $this->nowLang);
+                        }
+                    }
+
+                    // 判断字典数组
+                    if(!empty($tmpProperty['dictData'])) {
+                        if(in_array($value, $tmpProperty['dictData'])){
+                            $tmp[$tmpProperty['name']] = array_search($value, $tmpProperty['dictData']);
+                        } else if(empty($errorMsg)){
+                            $errorMsg = CommonCode::PARAMS_WRONG_WITH_FIELD->genI18nMsg(['field' => $tmpProperty['value']], true, $this->nowLang);
+                        }
+                    }
                 }
+                $tmp['result'] = $errorMsg;
                 $importData[] = $tmp;
             }
 
@@ -76,7 +107,7 @@ class XlsWriter extends Excel implements ExcelPropertyInterface
     /**
      * 导出excel.
      */
-    public function export(string $filename, array|\Closure $closure, \Closure $callbackData = null, bool $isDemo = false): \Psr\Http\Message\ResponseInterface
+    public function export(string $filename, array|\Closure $closure, \Closure $callbackData = null, bool $isDemo = false, int $orgId = 0): \Psr\Http\Message\ResponseInterface
     {
         $filename .= '.xlsx';
         is_array($closure) ? $data = &$closure : $data = $closure();
@@ -89,6 +120,7 @@ class XlsWriter extends Excel implements ExcelPropertyInterface
 
         $columnName = [];
         $columnField = [];
+        $validationField = [];
 
         foreach ($this->property as $item) {
             $columnName[] = $item['value'];
@@ -111,6 +143,12 @@ class XlsWriter extends Excel implements ExcelPropertyInterface
                     ->fontColor($this->property[$i]['color'] ?? Format::COLOR_BLACK)
                     ->toResource()
             );
+            // 判断校验字段
+            if(!empty($this->property[$i]['dictNameArr'])){
+                $validationField[$i] = array_values($this->property[$i]['dictNameArr']);
+            } else if(!empty($this->property[$i]['dictData'])){
+                $validationField[$i] = array_values($this->property[$i]['dictData']);
+            }
         }
 
         // 表头加样式
@@ -153,14 +191,12 @@ class XlsWriter extends Excel implements ExcelPropertyInterface
             foreach ($this->property as $property) {
                 foreach ($item as $name => $value) {
                     if ($property['name'] == $name) {
-                        if (! empty($property['dictName'])) {
-                            $yield[] = $property['dictName'][$value];
+                        if (! empty($property['dictNameArr'])) {
+                            $yield[] = $property['dictNameArr'][$value] ?? '';
                         } elseif (! empty($property['dictData'])) {
-                            $yield[] = $property['dictData'][$value];
+                            $yield[] = $property['dictData'][$value] ?? '';
                         } elseif (! empty($property['path'])) {
                             $yield[] = data_get($item, $property['path']);
-                        } elseif (! empty($this->dictData[$name])) {
-                            $yield[] = $this->dictData[$name][$value] ?? '';
                         } else {
                             $yield[] = $value;
                         }
@@ -186,7 +222,21 @@ class XlsWriter extends Excel implements ExcelPropertyInterface
         }
 
         $response = container()->get(ResponseInterface::class);
-        $filePath = $fileObject->data($exportData)->output();
+        $filePath = $fileObject->data($exportData);
+
+        // 判断校验字段
+        foreach($validationField as $key => $item) {
+            $validation = new Validation();
+            $validation = $validation->validationType(Validation::TYPE_LIST)->valueList($item);
+            $forRows = max(count($exportData), 22);
+            $column = $this->getColumnIndex($key);
+            stdLog()->info('$column', [$column]);
+            for($i=1; $i<$forRows; $i++){
+                $filePath = $filePath->validation($column . $i, $validation->toResource());
+            }
+        }
+
+        $filePath = $filePath->output();
 
         $response->download($filePath, $filename);
 

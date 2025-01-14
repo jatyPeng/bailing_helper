@@ -24,7 +24,7 @@ class PhpOffice extends Excel implements ExcelPropertyInterface
     /**
      * 导入.
      */
-    public function import(Model $model, ?\Closure $closure = null): bool
+    public function import(Model $model, ?\Closure $closure = null, int $orgId = 0): bool
     {
         $request = container()->get(RequestInterface::class);
         $data = [];
@@ -71,7 +71,7 @@ class PhpOffice extends Excel implements ExcelPropertyInterface
     /**
      * 导出.
      */
-    public function export(string $filename, array|\Closure $closure): \Psr\Http\Message\ResponseInterface
+    public function export(string $filename, array|\Closure $closure, bool $isDemo = false, int $orgId = 0): \Psr\Http\Message\ResponseInterface
     {
         $spread = new Spreadsheet();
         $sheet = $spread->getActiveSheet();

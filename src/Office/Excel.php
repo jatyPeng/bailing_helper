@@ -11,8 +11,10 @@ declare(strict_types=1);
 
 namespace Bailing\Office;
 
+use Bailing\Constants\I18n\Common\CommonI18n;
 use Bailing\Exception\BusinessException;
 use Bailing\Helper\Intl\I18nHelper;
+use Bailing\JsonRpc\Org\OrgUserServiceInterface;
 use Bailing\Office\Annotation\ExcelProperty;
 use Bailing\Office\Interfaces\ModelExcelInterface;
 use Hyperf\Di\Annotation\AnnotationCollector;
@@ -32,7 +34,13 @@ abstract class Excel
 
     protected array $demoValue = [];
 
-    public function __construct(string $dto, array $extraData = [])
+    protected bool $isDemo = false;
+
+    protected string $nowLang = '';
+
+    protected int $orgId = 0;
+
+    public function __construct(string $dto, array $extraData = [], bool $isDemo = false, int $orgId = 0)
     {
         if (! (new $dto()) instanceof ModelExcelInterface) {
             throw new BusinessException(0, 'Dto does not implement an interface of the MineModelExcel');
@@ -42,6 +50,7 @@ abstract class Excel
         if (method_exists($dtoObject, 'dictData')) {
             $this->dictData = $dtoObject->dictData();
         }
+        $this->orgId = $orgId;
         $this->annotationMate = AnnotationCollector::get($dto);
         if (! empty($extraData)) {
             if (! empty($this->annotationMate['_c'])) {
@@ -55,11 +64,26 @@ abstract class Excel
                         width: 20,
                         align: 'left',
                         required: (bool) $value['fill'],
+                        dictName: $value['dictName'] ?? '',
                     );
                     $this->annotationMate['_p'][$value['key']][self::ANNOTATION_NAME] = $dataObj;
                 }
             }
         }
+
+        // 拼接导入结果字段
+        if (!$isDemo) {
+            $i18nResult = CommonI18n::IMPORT_RESULT->genI18nTxt();
+            $this->annotationMate['_p']['result'][self::ANNOTATION_NAME] = new ExcelProperty(
+                value: '导入结果',
+                index: count($this->annotationMate['_p']),
+                i18nValue:  $i18nResult['i18n_value'],
+                width: 25,
+                align: 'left',
+                required: false,
+            );
+        }
+
         $this->parseProperty();
     }
 
@@ -79,12 +103,12 @@ abstract class Excel
             throw new BusinessException(0, 'Dto annotation info is empty');
         }
 
-        $nowLang = I18nHelper::getNowLang();
+        $this->nowLang = I18nHelper::getNowLang();
 
         foreach ($this->annotationMate['_p'] as $name => $mate) {
-            $value = $mate[self::ANNOTATION_NAME]->i18nValue[$nowLang] ?? $mate[self::ANNOTATION_NAME]->value;
+            $value = $mate[self::ANNOTATION_NAME]->i18nValue[$this->nowLang] ?? $mate[self::ANNOTATION_NAME]->value;
             // 英文、日语环境下，宽度放大0.4倍
-            $width = ! empty($mate[self::ANNOTATION_NAME]->width) ? (in_array($nowLang, ['en', 'ja']) ? intval($mate[self::ANNOTATION_NAME]->width * 1.4) : $mate[self::ANNOTATION_NAME]->width) : null;
+            $width = ! empty($mate[self::ANNOTATION_NAME]->width) ? (in_array($this->nowLang, ['en', 'ja']) ? intval($mate[self::ANNOTATION_NAME]->width * 1.4) : $mate[self::ANNOTATION_NAME]->width) : null;
             $this->property[$mate[self::ANNOTATION_NAME]->index] = [
                 'name' => $name,
                 'value' => $value,
@@ -96,12 +120,31 @@ abstract class Excel
                 'headHeight' => $mate[self::ANNOTATION_NAME]->headHeight ?? null,
                 'color' => $mate[self::ANNOTATION_NAME]->color ?? null,
                 'bgColor' => $mate[self::ANNOTATION_NAME]->bgColor ?? null,
-                'dictData' => $mate[self::ANNOTATION_NAME]->dictData,
-                'dictName' => empty($mate[self::ANNOTATION_NAME]->dictName) ? null : $this->getDictData($mate[self::ANNOTATION_NAME]->dictName),
-                'path' => $mate[self::ANNOTATION_NAME]->path ?? null,
+                'dictName' => $mate[self::ANNOTATION_NAME]->dictName ?? '',
+                'required' => $mate[self::ANNOTATION_NAME]->required ?? false,
             ];
+
             $this->demoValue[$name] = $mate[self::ANNOTATION_NAME]->demo ?? '';
         }
+
+        // 批量替换字典
+        $dictNameArr = arrayColumnUnique($this->property, 'dictName');
+        if(!empty($dictNameArr)){
+            $dictResult = container()->get(OrgUserServiceInterface::class)->call('getSystemDictData', ['org_id' => $this->orgId, 'typeArr' => $dictNameArr]);
+            if(empty($dictResult['data']['list'])){
+                throw new \Exception('Dict is empty, please check');
+            }
+            $dictResultArr = [];
+            foreach($dictResult['data']['list'] as $datum){
+                $dictResultArr[$datum['dict_type']][$datum['value']] = $datum['i18n_label']['i18n_value'][$this->nowLang] ?? $datum['label'];
+            }
+            foreach($this->property as &$propertyItem){
+                if(!empty($propertyItem['dictName']) && !empty($dictResultArr[$propertyItem['dictName']])){
+                    $propertyItem['dictNameArr'] = $dictResultArr[$propertyItem['dictName']];
+                }
+            }
+        }
+
         ksort($this->property);
     }
 
@@ -119,22 +162,6 @@ abstract class Excel
             ->withHeader('content-transfer-encoding', 'binary')
             ->withHeader('pragma', 'public')
             ->withBody(new SwooleStream($content));
-    }
-
-    /**
-     * 获取字典数据.
-     */
-    protected function getDictData(string $dictName): array
-    {
-        $data = [];
-        // todo 数据字典
-        //        $dictData = container()->get(SystemDictDataService::class)->getList(['code' => $dictName]);
-        $dictData = [];
-        foreach ($dictData as $item) {
-            $data[$item['key']] = $item['title'];
-        }
-
-        return $data;
     }
 
     /**

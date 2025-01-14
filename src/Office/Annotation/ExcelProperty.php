@@ -75,12 +75,12 @@ class ExcelProperty extends AbstractAnnotation
     public int|string $bgColor;
 
     /**
-     * 字典数据列表.
+     * 字典数组（例如公司列表等情况使用）.
      */
-    public ?array $dictData = null;
+    public array $dictData;
 
     /**
-     * 字典名称.
+     * 字典名单（将自动前往org服务查找字典内容，自行引入org服务）.
      */
     public string $dictName;
 
@@ -101,8 +101,8 @@ class ExcelProperty extends AbstractAnnotation
         int $headHeight = null,
         int|string $color = null,
         int|string $bgColor = null,
-        array $dictData = null,
-        string $dictName = null,
+        string $dictName = '',
+        array $dictData = [],
         string $path = null,
     ) {
         $this->value = $value;
@@ -116,8 +116,8 @@ class ExcelProperty extends AbstractAnnotation
         isset($headHeight) && $this->headHeight = $headHeight;
         isset($color) && $this->color = $color;
         isset($bgColor) && $this->bgColor = $bgColor;
-        isset($dictData) && $this->dictData = $dictData;
         isset($dictName) && $this->dictName = $dictName;
+        isset($dictData) && $this->dictData = $dictData;
         isset($path) && $this->path = $path;
     }
 }
