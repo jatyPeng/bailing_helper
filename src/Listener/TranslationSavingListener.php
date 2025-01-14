@@ -71,5 +71,12 @@ class TranslationSavingListener implements ListenerInterface
                 unset($model->{$tmpField});
             }
         }
+
+        // 保存时去除新增、修改时间的国际化字段
+        $dateTimeFieldArr = ['created_at', 'updated_at'];
+        foreach ($dateTimeFieldArr as $item) {
+            $tmpField = 'i18n_' . $item;
+            unset($model->{$tmpField});
+        }
     }
 }

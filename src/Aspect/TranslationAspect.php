@@ -10,7 +10,9 @@ declare(strict_types=1);
  */
 namespace Bailing\Aspect;
 
+use Bailing\Helper\Intl\DateTimeHelper;
 use Bailing\Helper\TranslationHelper;
+use Carbon\Carbon;
 use Hyperf\Database\Model\Collection;
 use Hyperf\Database\Model\Model;
 use Hyperf\Di\Annotation\Aspect;
@@ -44,29 +46,42 @@ class TranslationAspect extends AbstractAspect
 
         // 得到需要i18n的配置项
         $tableI18nConfig = config('translation.i18n_table.' . $tableName);
-        if (empty($tableI18nConfig)) {
-            return $result;
-        }
 
         // 得到i8n的值
-        $resultArr = $result->toArray();
-        $relationField = $tableI18nConfig['relation'] ?? 'id';
-        $i18nResult = TranslationHelper::i18nConvert(
-            $resultArr,
-            $tableName,
-            $tableI18nConfig['i18n'],
-            $relationField,
-            ! empty($tableI18nConfig['isOrg']) ? $resultArr[0]['org_id'] ?? 0 : 0
-        );
-        $i18nResult = array_column($i18nResult, null, $relationField);
+        $i18nResult = $result->toArray();
+        if (!empty($tableI18nConfig)) {
+            $relationField = $tableI18nConfig['relation'] ?? 'id';
+            $i18nResult = TranslationHelper::i18nConvert(
+                $i18nResult,
+                $tableName,
+                $tableI18nConfig['i18n'],
+                $relationField,
+                ! empty($tableI18nConfig['isOrg']) ? $i18nResult[0]['org_id'] ?? 0 : 0
+            );
+            $i18nResult = array_column($i18nResult, null, $relationField);
+        }
 
+        // 需要日期时间转换的字段
+        $dateTimeFieldArr = ['created_at', 'updated_at'];
         // 重组i18n的结果
         foreach ($newResult as $model) {
             if ($model instanceof Model) {
-                foreach ($tableI18nConfig['i18n'] as $item) {
-                    $tmpField = 'i18n_' . $item;
-                    if (! empty($i18nResult[$model->{$relationField}][$tmpField])) {
-                        $model->{$tmpField} = $i18nResult[$model->{$relationField}][$tmpField];
+                if (!empty($tableI18nConfig)) {
+                    foreach ($tableI18nConfig['i18n'] as $item) {
+                        $tmpField = 'i18n_' . $item;
+                        if (! empty($i18nResult[$model->{$relationField}][$tmpField])) {
+                            $model->{$tmpField} = $i18nResult[$model->{$relationField}][$tmpField];
+                        }
+                    }
+                }
+                foreach($dateTimeFieldArr as $item){
+                    if(!empty($model->{$item})){
+                        $tmpField = 'i18n_' . $item;
+                        if ($model->{$item} instanceof Carbon) {
+                            $model->{$tmpField} = DateTimeHelper::getDateTimeByUnixTimestamp($model->{$item}->getTimestamp(), 'datetime');
+                        } else {
+                            $model->{$tmpField} = DateTimeHelper::getDateTimeByUnixTimestamp(DateTimeHelper::strtotime($model->{$item}), 'datetime');
+                        }
                     }
                 }
             }

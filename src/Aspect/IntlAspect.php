@@ -71,6 +71,8 @@ class IntlAspect extends AbstractAspect
         // 得到需要货币文字展示的配置项
         $tableCurrencyConfig = config('translation.currency.' . $tableName);
         if (! empty($tableCurrencyConfig)) {
+            $tmpCodeField = $tableCurrencyConfig['currency'] ?? 'currency';
+
             foreach ($newResult as $model) {
                 if ($model instanceof Model) {
                     foreach ($tableCurrencyConfig['field'] as $key => $item) {
@@ -82,8 +84,6 @@ class IntlAspect extends AbstractAspect
                             $tmpDecimals = $item;
                             $tmpField = $key;
                         }
-
-                        $tmpCodeField = $tableCurrencyConfig['currency'] ?? 'currency';
 
                         $tmpNewField = 'i18n_' . $tmpField;
                         if (isset($model->{$tmpField})) {
