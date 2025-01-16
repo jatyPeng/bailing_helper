@@ -128,7 +128,7 @@ class WorkApprovalController
                     if (! $firstCategory) {
                         return ApiHelper::genErrorData('category is not exist,please add category first');
                     }
-                    $secondCategory = BailingApprovalCategory::query()->where('alias', $list['sub_cat_type'])->first();
+                    $secondCategory = BailingApprovalCategory::query()->where('alias', $list['sub_cat_alias'])->first();
                     $temp = [
                         'alias' => $list['alias'],
                         'name' => $list['name'],
