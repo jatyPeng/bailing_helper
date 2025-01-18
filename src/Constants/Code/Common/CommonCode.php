@@ -127,4 +127,7 @@ enum CommonCode: int implements EnumCodeInterface
 
     #[EnumCode(msg: '字段（{field}）错误', i18nMsg: ['en' => 'Field ({field}) error', 'zh_tw' => '欄位（{field}）錯誤', 'zh_hk' => '欄位（{field}）錯誤', 'ja' => 'フィールド（{field}）のエラー'])]
     case PARAMS_WRONG_WITH_FIELD = 37;
+
+    #[EnumCode(msg: '邮箱格式错误', i18nMsg: ['en' => 'Email format error', 'zh_tw' => '郵箱格式錯誤', 'ja' => 'メールフォーマットエラー', 'zh_hk' => '郵箱格式錯誤'])]
+    case EMAIL_RULE_ERROR = 38;
 }
