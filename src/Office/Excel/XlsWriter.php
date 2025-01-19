@@ -12,6 +12,7 @@ declare(strict_types=1);
 namespace Bailing\Office\Excel;
 
 use Bailing\Constants\Code\Common\CommonCode;
+use Bailing\Constants\I18n\Common\CommonI18n;
 use Bailing\Exception\BusinessException;
 use Bailing\Helper\StrHelper;
 use Bailing\Office\Excel;
@@ -48,6 +49,7 @@ class XlsWriter extends Excel implements ExcelPropertyInterface
             $xlsxObject = new \Vtiful\Kernel\Excel(['path' => RUNTIME_BASE_PATH . '/']);
             $data = $xlsxObject->openFile($tempFileName)->openSheet()->getSheetData();
             unset($data[0]);
+            unset($data[1]);
 
             $importData = [];
             foreach ($data as $item) {
@@ -120,11 +122,19 @@ class XlsWriter extends Excel implements ExcelPropertyInterface
 
         $columnName = [];
         $columnField = [];
+        $columnTip = [];
         $validationField = [];
 
         foreach ($this->property as $item) {
             $columnName[] = $item['value'];
             $columnField[] = $item['name'];
+
+            if(!empty($item['tip'])){
+                $columnTip[] = [
+                    'value' => $item['value'],
+                    'tip' => $item['tip'],
+                ];
+            }
         }
 
         $tempFileName = 'export_' . time() . '.xlsx';
@@ -154,19 +164,21 @@ class XlsWriter extends Excel implements ExcelPropertyInterface
         // 表头加样式
         $fileObject->setRow(
             sprintf('A1:%s1', $this->getColumnIndex(count($columnField))),
-            $this->property[0]['headHeight'] ?? 20,
+            $this->property[0]['headHeight'] ?? 24,
             $rowFormat->bold()->toResource()
         );
-        for ($i = 0; $i < count($data); ++$i) {
-            $fileObject->setRow(
-                sprintf('A%s:%s%s', $i + 2, $this->getColumnIndex(count($columnField)), $i + 2),
-                $this->property[0]['height'] ?? 20,
-                (new Format($fileObject->getHandle()))->border(Format::BORDER_THIN)->toResource()
-            );
-        }
+
+        // 表内容加样式
+        $dataLength = max(count($data), 50);
+        $fileObject->setRow(
+            sprintf('A2:A%s', $dataLength + 2),
+            $this->property[0]['height'] ?? 24,
+            (new Format($fileObject->getHandle()))->align(Format::FORMAT_ALIGN_VERTICAL_CENTER)->toResource()
+        );
+
         for ($i = 0; $i < count($columnField); ++$i) {
             $fileObject->insertText(
-                0,
+                1,
                 $i,
                 $columnName[$i],
                 null,
@@ -175,7 +187,6 @@ class XlsWriter extends Excel implements ExcelPropertyInterface
                     ->align(Format::FORMAT_ALIGN_CENTER, Format::FORMAT_ALIGN_VERTICAL_CENTER)
                     ->background($this->property[$i]['headBgColor'] ?? 0x4AC1FF)
                     ->fontColor($this->property[$i]['headColor'] ?? Format::COLOR_BLACK)
-                    ->border(Format::BORDER_THIN)
                     ->toResource()
             );
         }
@@ -221,7 +232,23 @@ class XlsWriter extends Excel implements ExcelPropertyInterface
             }
         }
 
+        $tipArr = [
+            CommonI18n::TIP->genI18nTxt(returnNowLang: true),
+            '1. ' . CommonI18n::DONT_MODIFY_TABLE_STRUCTURE->genI18nTxt(returnNowLang: true),
+            '2. ' . CommonI18n::RED_FIELDS_REQUIRED->genI18nTxt(returnNowLang: true),
+        ];
+        foreach($columnTip as $item){
+            $tipArr[] = count($tipArr) . '. ' . $item['value'] . ': ' . $item['tip'];
+        }
+        $fileObject->mergeCells(sprintf('A1:%s1', $this->getColumnIndex(count($columnField) - 1)), implode(PHP_EOL, $tipArr));
+        $fileObject->setRow(
+            'A1:A1',
+            20 * count($tipArr),
+            (new Format($fileObject->getHandle()))->align(Format::FORMAT_ALIGN_LEFT, Format::FORMAT_ALIGN_VERTICAL_TOP)->wrap()->toResource()
+        );
+
         $response = container()->get(ResponseInterface::class);
+
         $filePath = $fileObject->data($exportData);
 
         // 判断校验字段
@@ -230,7 +257,6 @@ class XlsWriter extends Excel implements ExcelPropertyInterface
             $validation = $validation->validationType(Validation::TYPE_LIST)->valueList($item);
             $forRows = max(count($exportData), 22);
             $column = $this->getColumnIndex($key);
-            stdLog()->info('$column', [$column]);
             for($i=1; $i<$forRows; $i++){
                 $filePath = $filePath->validation($column . $i, $validation->toResource());
             }
@@ -242,7 +268,7 @@ class XlsWriter extends Excel implements ExcelPropertyInterface
 
         ob_start();
         if (copy($filePath, 'php://output') === false) {
-            throw new BusinessException(0, '导出数据失败');
+            throw new BusinessException(0, CommonCode::EXPORT_FAILED->genI18nMsg(returnNowLang: true));
         }
         $res = $this->downloadExcel($filename, ob_get_contents());
         ob_end_clean();

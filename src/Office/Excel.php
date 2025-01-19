@@ -60,11 +60,16 @@ abstract class Excel
                     $dataObj = new ExcelProperty(
                         value: $value['fields_name'],
                         index: $startIndex,
+                        demo: $value['fields_demo'] ?? '',
+                        tip: $value['fields_tip'] ?? '',
                         i18nValue:  $value['i18n_fields_name']['i18n_value'] ?? [],
+                        i18nDemo:  $value['i18n_fields_demo']['i18n_value'] ?? [],
+                        i18nTip:  $value['i18n_fields_tip']['i18n_value'] ?? [],
                         width: 20,
                         align: 'left',
                         required: (bool) $value['fill'],
                         dictName: $value['dictName'] ?? '',
+                        dictData: $value['dictData'] ?? [],
                     );
                     $this->annotationMate['_p'][$value['key']][self::ANNOTATION_NAME] = $dataObj;
                 }
@@ -107,11 +112,13 @@ abstract class Excel
 
         foreach ($this->annotationMate['_p'] as $name => $mate) {
             $value = $mate[self::ANNOTATION_NAME]->i18nValue[$this->nowLang] ?? $mate[self::ANNOTATION_NAME]->value;
+            $tip = $mate[self::ANNOTATION_NAME]->i18nTip[$this->nowLang] ?? $mate[self::ANNOTATION_NAME]->tip;
             // 英文、日语环境下，宽度放大0.4倍
             $width = ! empty($mate[self::ANNOTATION_NAME]->width) ? (in_array($this->nowLang, ['en', 'ja']) ? intval($mate[self::ANNOTATION_NAME]->width * 1.4) : $mate[self::ANNOTATION_NAME]->width) : null;
             $this->property[$mate[self::ANNOTATION_NAME]->index] = [
                 'name' => $name,
                 'value' => $value,
+                'tip' => $tip,
                 'width' => $width,
                 'height' => $mate[self::ANNOTATION_NAME]->height ?? null,
                 'align' => $mate[self::ANNOTATION_NAME]->align ?? null,
@@ -124,7 +131,7 @@ abstract class Excel
                 'required' => $mate[self::ANNOTATION_NAME]->required ?? false,
             ];
 
-            $this->demoValue[$name] = $mate[self::ANNOTATION_NAME]->demo ?? '';
+            $this->demoValue[$name] = $mate[self::ANNOTATION_NAME]->i18nDemo[$this->nowLang] ?? $mate[self::ANNOTATION_NAME]->demo;
         }
 
         // 批量替换字典

@@ -50,13 +50,13 @@ class DevI18nCommand extends HyperfCommand
         $this->dictI18n();
 
         $this->line('开始生成Code!', 'info');
-        $this->CodeI18n();
+        $this->codeI18n();
 
         $this->line('开始生成I18n!', 'info');
-        $this->I18n();
+        $this->i18n();
 
         $this->line('开始生成Dto!', 'info');
-        $this->DtoI18n();
+        $this->dtoI18n();
 
         system('rm -rf ' . BASE_PATH . '/runtime');
 
@@ -208,7 +208,7 @@ class DevI18nCommand extends HyperfCommand
         }
     }
 
-    protected function DtoI18n()
+    protected function dtoI18n()
     {
         //得到类方法的所有注解
         $classes = AnnotationCollector::getClassesByAnnotation(ExcelData::class);
@@ -227,7 +227,7 @@ class DevI18nCommand extends HyperfCommand
                 foreach ($attributes as $attribute) {
                     $attributeArr = (array) $attribute;
 
-                    // 自动补全原文件
+                    // 自动补全原文件（字段名）
                     if (! empty($attributeArr['value']) && empty($attributeArr['i18nValue'])) {
                         $i18nTxt = I18nHelper::translateArr($attributeArr['value'], true);
 
@@ -236,6 +236,39 @@ class DevI18nCommand extends HyperfCommand
                             $fileContent = str_replace($matchContent . ')]', $matchContent . ', i18nValue: ' . $i18nTxt . ')]', $fileContent);
                         } else {
                             $fileContent = str_replace($matchContent, $matchContent . ', i18nValue: ' . $i18nTxt, $fileContent);
+                        }
+                        file_put_contents($fileName, $fileContent);
+                    }
+
+                    // 自动补全原文件（示例数据包含中文）
+                    if (! empty($attributeArr['demo']) && empty($attributeArr['i18nDemo']) && preg_match('/[\x{4e00}-\x{9fa5}]+/u', $attributeArr['demo'])) {
+                        $i18nTxt = I18nHelper::translateArr($attributeArr['demo'], true);
+
+                        $matchContent = "#[ExcelProperty(value: '" . $attributeArr['value'] . "', index: " . $attributeArr['index'] . ", demo: '" . $attributeArr['demo'] . "'";
+                        if (str_contains($fileContent, $matchContent . ')]')) {
+                            $fileContent = str_replace($matchContent . ')]', $matchContent . ', i18nDemo: ' . $i18nTxt . ')]', $fileContent);
+                        } else {
+                            $fileContent = str_replace($matchContent, $matchContent . ', i18nDemo: ' . $i18nTxt, $fileContent);
+                        }
+                        file_put_contents($fileName, $fileContent);
+                    }
+
+                    // 自动补全原文件（示例数据）
+                    if (! empty($attributeArr['tip']) && empty($attributeArr['i18nTip'])) {
+
+
+                        $matchContent = ", tip: '" . $attributeArr['tip'] . "'";
+                        if(substr_count($fileContent, $matchContent) > 1) {
+                            $this->line($attributeArr['tip'] . ' 这个tip出现了至少两次，请检查，不要输入通用意义的提示。', 'error');
+                            CoordinatorManager::until(Constants::WORKER_EXIT)->resume();
+                            return;
+                        }
+
+                        $i18nTxt = I18nHelper::translateArr($attributeArr['tip'], true);
+                        if (str_contains($fileContent, $matchContent . ')]')) {
+                            $fileContent = str_replace($matchContent . ')]', $matchContent . ', i18nTip: ' . $i18nTxt . ')]', $fileContent);
+                        } else {
+                            $fileContent = str_replace($matchContent, $matchContent . ', i18nTip: ' . $i18nTxt, $fileContent);
                         }
                         file_put_contents($fileName, $fileContent);
                     }
@@ -289,7 +322,7 @@ class DevI18nCommand extends HyperfCommand
         }
     }
 
-    protected function CodeI18n()
+    protected function codeI18n()
     {
         //得到类方法的所有注解
         $classes = AnnotationCollector::getClassesByAnnotation(EnumCodePrefix::class);
@@ -319,7 +352,7 @@ class DevI18nCommand extends HyperfCommand
         }
     }
 
-    protected function I18n()
+    protected function i18n()
     {
         //得到类方法的所有注解
         $classes = AnnotationCollector::getClassesByAnnotation(EnumI18nGroup::class);

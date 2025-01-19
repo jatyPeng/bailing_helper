@@ -11,8 +11,11 @@ declare(strict_types=1);
 
 namespace Bailing\Office;
 
+use Bailing\Constants\Code\Common\CommonCode;
+use Bailing\Helper\ApiHelper;
 use Bailing\Office\Excel\PhpOffice;
 use Bailing\Office\Excel\XlsWriter;
+use Hyperf\Codec\Json;
 use Hyperf\DbConnection\Model\Model;
 use Psr\Http\Message\ResponseInterface;
 
@@ -39,5 +42,26 @@ class Collection extends \Hyperf\Collection\Collection
             $excel = $excelDrive === 'xlsWriter' ? new XlsWriter($dto, $extra, false, $orgId) : new PhpOffice($dto);
         }
         return $excel->import($model, $closure, $orgId);
+    }
+
+    /**
+     * 错误内容导出.
+     * @param string $dto
+     * @param string $errorFileKey
+     * @param string $filename
+     * @return array|ResponseInterface
+     */
+    public function downloadImportErrorData(string $dto, string $errorFileKey, string $filename, int $orgId = 0): array|ResponseInterface
+    {
+        if (empty($errorFileKey)) {
+            throw new \Exception(CommonCode::IMPORT_FILE_ID_EMPTY->genI18nMsg(returnNowLang: true));
+        }
+
+        $data = redis()->get($errorFileKey);
+        if (empty($data)) {
+            throw new \Exception(CommonCode::IMPORT_FILE_EXPIRED->genI18nMsg(returnNowLang: true));
+        }
+
+        return $this->export($dto, $filename . '-' . date('Ymd-His'), Json::decode($data), [], false, $orgId);
     }
 }

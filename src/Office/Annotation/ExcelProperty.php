@@ -30,9 +30,24 @@ class ExcelProperty extends AbstractAnnotation
     public array $i18nValue;
 
     /**
-     * 列表示例数据.
+     * 示例数据.
      */
     public string $demo;
+
+    /**
+     * 示例数据（国际化）.
+     */
+    public array $i18nDemo;
+
+    /**
+     * 字段提示.
+     */
+    public string $tip;
+
+    /**
+     * 字段提示（国际化）.
+     */
+    public array $i18nTip;
 
     /**
      * 列顺序.
@@ -93,7 +108,10 @@ class ExcelProperty extends AbstractAnnotation
         string $value,
         int $index,
         string $demo = '',
+        string $tip = '',
         array $i18nValue = [],
+        array $i18nDemo = [],
+        array $i18nTip = [],
         int $width = null,
         int $height = null,
         string $align = null,
@@ -109,7 +127,10 @@ class ExcelProperty extends AbstractAnnotation
         $this->index = $index;
         $this->required = $required;
         isset($demo) && $this->demo = $demo;
+        isset($tip) && $this->tip = $tip;
         isset($i18nValue) && $this->i18nValue = $i18nValue;
+        isset($i18nDemo) && $this->i18nDemo = $i18nDemo;
+        isset($i18nTip) && $this->i18nTip = $i18nTip;
         isset($width) && $this->width = $width;
         isset($height) && $this->height = $height;
         isset($align) && $this->align = $align;
